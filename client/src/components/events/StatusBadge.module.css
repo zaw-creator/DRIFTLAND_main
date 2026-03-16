@@ -1,0 +1,36 @@
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ongoing {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.nearby {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.upcoming {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.previous {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ongoing  { background-color: #1e4d2b; color: #a3d9b1; }
+  .nearby   { background-color: #4d3a00; color: #ffd966; }
+  .upcoming { background-color: #003366; color: #99c2ff; }
+  .previous { background-color: #2e2e2e; color: #aaaaaa; }
+}

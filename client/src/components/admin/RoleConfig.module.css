@@ -1,0 +1,70 @@
+.container {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.heading {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 12px;
+}
+
+.roleRow {
+  margin-bottom: 12px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.toggle input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.roleLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 6px 0 0 24px;
+}
+
+.capacityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  margin-left: 24px;
+}
+
+.capacityLabel {
+  font-size: 13px;
+  color: #374151;
+  min-width: 70px;
+}
+
+.capacityInput {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.capacityInput:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}

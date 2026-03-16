@@ -1,0 +1,284 @@
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+/* ── Back button ─────────────────────────────────────────────────── */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+
+.backBtn:hover { color: var(--foreground); }
+
+/* ── Banner ──────────────────────────────────────────────────────── */
+.banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  background: #111;
+}
+
+.bannerImage {
+  object-fit: cover;
+}
+
+.bannerPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+}
+
+.bannerIcon { font-size: 4rem; opacity: 0.3; }
+
+/* ── Content ─────────────────────────────────────────────────────── */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0;
+  flex: 1;
+  color: var(--foreground);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Meta grid ───────────────────────────────────────────────────── */
+.metaGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+.metaValue {
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+
+.deadlinePassed { color: #c0392b; }
+
+/* ── Description ─────────────────────────────────────────────────── */
+.description p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--foreground);
+  margin: 8px 0 0;
+}
+
+/* ── Section headings ────────────────────────────────────────────── */
+.sectionHeading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--foreground);
+}
+
+/* ── Capacity breakdown ──────────────────────────────────────────── */
+.capacitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.driveTypeGroup { }
+
+.driveTypeHeading {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+  margin: 0 0 6px;
+}
+
+.classTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.classTable td {
+  padding: 6px 8px;
+  vertical-align: middle;
+}
+
+.classRow td { border-top: 1px solid #f0f0f0; }
+
+.totalRow td {
+  border-top: 2px solid #e0e0e0;
+  font-weight: 700;
+}
+
+.className { color: var(--foreground); }
+
+.classCount {
+  color: #555;
+  font-variant-numeric: tabular-nums;
+  min-width: 80px;
+}
+
+.fullBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fdecea;
+  color: #c0392b;
+}
+
+/* ── CTA section ─────────────────────────────────────────────────── */
+.ctaSection {
+  border-top: 2px solid #e0e0e0;
+  padding-top: 24px;
+}
+
+.registerRow {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.closedNotice {
+  font-size: 0.88rem;
+  color: #c0392b;
+  margin: 0;
+}
+
+.registerBtn {
+  align-self: flex-start;
+  padding: 12px 32px;
+  font-size: 1rem;
+  font-weight: 700;
+  background: #171717;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.registerBtn:hover:not(:disabled) { background: #333; }
+
+.registerDisabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.previousNotice {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ── Loading skeleton ────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.loadingState { display: flex; flex-direction: column; gap: 20px; }
+
+.skeletonBanner {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  background: #e0e0e0;
+  animation: shimmer 1.4s infinite linear;
+  background-image: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 800px 100%;
+}
+
+.skeletonContent { display: flex; flex-direction: column; gap: 14px; }
+
+.skeletonLine {
+  border-radius: 4px;
+  background: #e0e0e0;
+  animation: shimmer 1.4s infinite linear;
+  background-image: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 800px 100%;
+  height: 14px;
+}
+
+.skeletonTitle { width: 60%; height: 28px; }
+.skeletonMeta  { width: 40%; }
+.skeletonText  { width: 90%; }
+
+/* ── Error state ─────────────────────────────────────────────────── */
+.errorState {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.errorMsg {
+  color: #c0392b;
+  margin: 0 0 16px;
+}
+
+/* ── Dark mode ───────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .backBtn { color: #888; }
+  .classRow td { border-top-color: #2a2a2a; }
+  .totalRow td { border-top-color: #333; }
+  .classCount { color: #aaa; }
+  .fullBadge { background: #3d1515; color: #ff8a80; }
+  .ctaSection { border-top-color: #333; }
+  .registerBtn { background: #ededed; color: #171717; }
+  .registerBtn:hover:not(:disabled) { background: #ccc; }
+  .previousNotice { border-color: #333; color: #888; }
+  .skeletonBanner,
+  .skeletonLine {
+    background: #333;
+    background-image: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  }
+}

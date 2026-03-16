@@ -1,0 +1,120 @@
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.header {
+  margin-bottom: 36px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: var(--foreground);
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* ── Loading skeletons ───────────────────────────────────────────── */
+.skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Error state ─────────────────────────────────────────────────── */
+.errorState {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.errorMsg {
+  font-size: 1rem;
+  color: #c0392b;
+  margin: 0 0 16px;
+}
+
+.retryBtn {
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 2px solid #171717;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  color: var(--foreground);
+}
+
+.retryBtn:hover {
+  background: #171717;
+  color: #fff;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────── */
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin: 0 0 12px;
+}
+
+.emptyMsg {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 6px;
+}
+
+.emptyHint {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Sections ────────────────────────────────────────────────────── */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e0e0;
+  color: var(--foreground);
+}
+
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Dark mode ───────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .subtitle { color: #999; }
+  .sectionTitle { border-bottom-color: #333; }
+
+  .retryBtn { border-color: #ededed; }
+  .retryBtn:hover { background: #ededed; color: #171717; }
+}

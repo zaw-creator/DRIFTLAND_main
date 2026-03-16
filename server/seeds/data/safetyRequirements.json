@@ -1,0 +1,49 @@
+[
+  {
+    "_id": "69a22b5b2d70552fbcc8ceb7",
+    "category": "safety-wear",
+    "title": "Mandatory Safety Wear",
+    "lastUpdated": "2026-02-27T23:40:11.795Z",
+    "updatedBy": "system",
+    "items": [
+      { "_id": "69a22b5b2d70552fbcc8ceb8", "title": "Fire-Resistant Racing Suit", "description": "Full-body fire-resistant racing suit required", "required": true, "order": 1 },
+      { "_id": "69a22b5b2d70552fbcc8ceb9", "title": "Racing Helmet", "description": "Must cover the whole face", "required": true, "order": 2 },
+      { "_id": "69a22b5b2d70552fbcc8ceba", "title": "Racing Gloves", "description": "Must be closed-finger and long enough to cover the wrist (Minimum)", "required": true, "order": 3 },
+      { "_id": "69a22b5b2d70552fbcc8cebb", "title": "Racing Shoes", "description": "Must be closed-toe and long enough to cover the ankle (Minimum) (fire-resistant)", "required": true, "order": 4 }
+    ]
+  },
+  {
+    "_id": "69a22b5b2d70552fbcc8cebc",
+    "category": "car-components",
+    "title": "Must Include Car Components",
+    "lastUpdated": "2026-02-27T23:40:11.801Z",
+    "updatedBy": "system",
+    "items": [
+      { "_id": "69a22b5b2d70552fbcc8cebd", "title": "Safety Switch", "description": "Working safety switch required", "required": true, "order": 1 },
+      { "_id": "69a22b5b2d70552fbcc8cebe", "title": "Roll Cage (or) Full Mirror Sticker", "description": "Certified roll cage or full mirror sticker", "required": true, "order": 2 },
+      { "_id": "69a22b5b2d70552fbcc8cebf", "title": "Hood Pin Lock", "description": "Hood pin lock installed", "required": true, "order": 3 },
+      { "_id": "69a22b5b2d70552fbcc8cec0", "title": "Full Bucket Seat", "description": "Full bucket racing seat properly mounted", "required": true, "order": 4 },
+      { "_id": "69a22b5b2d70552fbcc8cec1", "title": "4 Point Racing Seat Belt", "description": "4-point or higher racing seat belt", "required": true, "order": 5 },
+      { "_id": "69a22b5b2d70552fbcc8cec2", "title": "Battery Terminal Covers", "description": "Battery terminals must be covered", "required": true, "order": 6 },
+      { "_id": "69a22b5b2d70552fbcc8cec3", "title": "Fire Extinguisher", "description": "Working fire extinguisher mounted and accessible", "required": true, "order": 7 },
+      { "_id": "69a22b5b2d70552fbcc8cec4", "title": "Tow Front and Rear", "description": "Tow hooks installed front and rear", "required": true, "order": 8 }
+    ]
+  },
+  {
+    "_id": "69a22b5b2d70552fbcc8cec5",
+    "category": "terms-conditions",
+    "title": "Terms and Conditions",
+    "lastUpdated": "2026-02-27T23:40:11.803Z",
+    "updatedBy": "system",
+    "items": [
+      { "_id": "69a22b5b2d70552fbcc8cec6", "title": "Liability Waiver", "description": "I acknowledge and accept full liability for any injuries or damages", "required": true, "order": 1 },
+      { "_id": "69a22b5b2d70552fbcc8cec7", "title": "Event Rules and Regulations", "description": "I agree to follow all event rules and regulations", "required": true, "order": 2 },
+      { "_id": "69a22b5b2d70552fbcc8cec8", "title": "Safety Briefing Attendance Requirement", "description": "I will attend the mandatory safety briefing before the event", "required": true, "order": 3 },
+      { "_id": "69a22b5b2d70552fbcc8cec9", "title": "Vehicle Inspection Agreement", "description": "I agree to have my vehicle inspected before participating", "required": true, "order": 4 },
+      { "_id": "69a22b5b2d70552fbcc8ceca", "title": "Media Release", "description": "I consent to photos and videos being taken and used for promotional purposes", "required": true, "order": 5 },
+      { "_id": "69a22b5b2d70552fbcc8cecb", "title": "Cancellation and Refund Policy", "description": "I understand and accept the cancellation and refund policy", "required": true, "order": 6 },
+      { "_id": "69a22b5b2d70552fbcc8cecc", "title": "Code of Conduct", "description": "I agree to maintain professional conduct and sportsmanship", "required": true, "order": 7 },
+      { "_id": "69a22b5b2d70552fbcc8cecd", "title": "Assumption of Risk", "description": "I understand motor sports involve inherent risks and participate at my own risk", "required": true, "order": 8 }
+    ]
+  }
+]

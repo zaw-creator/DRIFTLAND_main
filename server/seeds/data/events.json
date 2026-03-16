@@ -1,0 +1,80 @@
+[
+  {
+    "_id": { "$oid": "69a22c5a8cdec0249d541fe9" },
+    "name": "DriftLand Championship 2026 - Round 1",
+    "description": "Join us for the opening round of the DriftLand Championship 2026. Experience thrilling drift action and time attack competitions at Yangon International Circuit.",
+    "eventDate": { "$date": "2026-03-15T09:00:00.000Z" },
+    "location": "Yangon International Circuit, Myanmar",
+    "registrationDeadline": { "$date": "2026-03-12T23:59:59.000Z" },
+    "editDeadlineHours": 24,
+    "driveTypes": ["Drift", "Time Attack"],
+    "startTime": "09:00",
+    "endTime": "18:00",
+    "image": null,
+    "classes": [
+      { "driveType": "Drift",       "name": "Class A", "capacity": 20, "registeredCount": 2 },
+      { "driveType": "Drift",       "name": "Class B", "capacity": 40, "registeredCount": 0 },
+      { "driveType": "Drift",       "name": "Class C", "capacity": 40, "registeredCount": 0 },
+      { "driveType": "Time Attack", "name": "AWT",     "capacity": 40, "registeredCount": 0 },
+      { "driveType": "Time Attack", "name": "RWD",     "capacity": 40, "registeredCount": 0 },
+      { "driveType": "Time Attack", "name": "FWD",     "capacity": 40, "registeredCount": 0 }
+    ],
+    "participantCapacity": 50,
+    "participantRegisteredCount": 5,
+    "riderCapacity": 30,
+    "riderRegisteredCount": 0,
+    "waitlistCount": 0,
+    "createdAt": { "$date": "2026-02-27T23:44:26.636Z" },
+    "updatedAt": { "$date": "2026-02-28T21:27:28.422Z" }
+  },
+  {
+    "_id": { "$oid": "69a22c6a8cdec0249d541feb" },
+    "name": "Night Drift Showdown 2026",
+    "description": "Experience drift racing under the lights! Join our exclusive night drift event with professional judging and prizes for top performers.",
+    "eventDate": { "$date": "2026-04-20T18:00:00.000Z" },
+    "location": "Mandalay Racing Complex, Myanmar",
+    "registrationDeadline": { "$date": "2026-04-15T23:59:59.000Z" },
+    "editDeadlineHours": 24,
+    "driveTypes": ["Drift"],
+    "startTime": "18:00",
+    "endTime": "23:00",
+    "image": null,
+    "classes": [
+      { "driveType": "Drift", "name": "Class A", "capacity": 20, "registeredCount": 0 },
+      { "driveType": "Drift", "name": "Class B", "capacity": 40, "registeredCount": 0 },
+      { "driveType": "Drift", "name": "Class C", "capacity": 40, "registeredCount": 0 }
+    ],
+    "participantCapacity": 30,
+    "participantRegisteredCount": 0,
+    "riderCapacity": 20,
+    "riderRegisteredCount": 0,
+    "waitlistCount": 0,
+    "createdAt": { "$date": "2026-02-27T23:44:42.812Z" },
+    "updatedAt": { "$date": "2026-02-27T23:44:42.814Z" }
+  },
+  {
+    "_id": { "$oid": "69a22c7b8cdec0249d541fed" },
+    "name": "Time Attack Challenge - Speed Masters",
+    "description": "Pure speed competition! Set your fastest lap times and compete against Myanmar's best drivers. Professional timing equipment and safety marshals provided.",
+    "eventDate": { "$date": "2026-05-10T08:00:00.000Z" },
+    "location": "Bagan Speed Circuit, Myanmar",
+    "registrationDeadline": { "$date": "2026-05-05T23:59:59.000Z" },
+    "editDeadlineHours": 48,
+    "driveTypes": ["Time Attack"],
+    "startTime": "08:00",
+    "endTime": "17:00",
+    "image": null,
+    "classes": [
+      { "driveType": "Time Attack", "name": "AWT", "capacity": 40, "registeredCount": 1 },
+      { "driveType": "Time Attack", "name": "RWD", "capacity": 40, "registeredCount": 0 },
+      { "driveType": "Time Attack", "name": "FWD", "capacity": 40, "registeredCount": 0 }
+    ],
+    "participantCapacity": 40,
+    "participantRegisteredCount": 0,
+    "riderCapacity": 20,
+    "riderRegisteredCount": 0,
+    "waitlistCount": 0,
+    "createdAt": { "$date": "2026-02-27T23:44:59.303Z" },
+    "updatedAt": { "$date": "2026-02-28T00:37:45.803Z" }
+  }
+]

@@ -1,0 +1,66 @@
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.card {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.imageWrap {
+  flex: 0 0 30%;
+  min-height: 180px;
+  background-color: #e0e0e0;
+  animation: shimmer 1.4s infinite linear;
+  background-image: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 800px 100%;
+}
+
+.details {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.line {
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  animation: shimmer 1.4s infinite linear;
+  background-image: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 800px 100%;
+  height: 14px;
+}
+
+.badges { width: 120px; height: 22px; }
+.title  { width: 70%; height: 20px; }
+.meta   { width: 55%; }
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+.capacity { width: 80px; }
+.btn      { width: 100px; height: 34px; }
+
+@media (max-width: 768px) {
+  .card { flex-direction: column; }
+  .imageWrap { flex: none; width: 100%; min-height: 200px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .card { border-color: #333; }
+  .imageWrap,
+  .line {
+    background-color: #333;
+    background-image: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  }
+}

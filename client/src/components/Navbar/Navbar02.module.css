@@ -1,0 +1,220 @@
+/*
+ * Navbar02.module.css
+ *
+ * Styles for the scroll-aware Navbar02 component.
+ *
+ * State model
+ * -----------
+ *  Default  → full-width bar, logo left, links right.
+ *  .folded  → links hidden, hamburger button shown, lighter bg.
+ *
+ * CHANGE: removed .normal-section and .target-image — those were dummy
+ *   page-layout styles that do not belong inside a navbar stylesheet.
+ *
+ * CHANGE: renamed all kebab-case class names (e.g. .nav-links, .nav-more-btn)
+ *   to camelCase (e.g. .navLinks, .menuButton) to match CSS Modules
+ *   conventions and the class names used in the JSX.
+ *
+ * CHANGE: replaced the white / light colour scheme with the site's dark theme.
+ */
+
+/* ── Base bar ────────────────────────────────────────────────────────────── */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+
+  /* CHANGE: dark semi-transparent bg instead of solid white.
+     The original white clashed with the dark hero section behind it. */
+  background: rgba(10, 10, 10, 0.95);
+
+  /* Frosted-glass — reduced from blur(12px) to blur(6px) for GPU performance.
+     Full blur on a fixed full-width element is expensive on every scroll frame. */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+
+  /* CHANGE: replaced box-shadow with a subtle border — cleaner on dark bgs */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+  z-index: 1000;
+
+  /* CHANGE: scoped transition to specific properties instead of `all`
+     to avoid unintended animation on non-visual properties (e.g. z-index). */
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* ── Logo / brand ───────────────────────────────────────────────────────── */
+
+.logo {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  /* CHANGE: white text instead of the default inherited colour (#333) */
+  color: #fff;
+
+  flex-shrink: 0; /* prevent shrinking when links push available space */
+  text-decoration: none;
+}
+
+/* ── Full link list (visible in the default / unfolded state) ───────────── */
+
+/* CHANGE: renamed from .nav-links (kebab) to .navLinks (camelCase) */
+.navLinks {
+  display: flex;
+  /* CHANGE: reduced gap from 30px to 4px — individual links now have their
+     own padding, so a large gap creates too much dead space. */
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* CHANGE: replaced .nav-links a (element selector, hard to override) with
+   .navLink (explicit class applied in JSX) for proper CSS Module scoping. */
+.navLink {
+  display: block;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+
+  /* CHANGE: dimmed white instead of #333 — readable on dark background */
+  color: rgba(255, 255, 255, 0.65);
+
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+
+.navLink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Hamburger area ─────────────────────────────────────────────────────── */
+
+.moreMenu {
+  /* Positioning context for the absolute-positioned dropdown */
+  position: relative;
+}
+
+/* CHANGE: renamed from .nav-more-btn to .menuButton (matches JSX) */
+.menuButton {
+  /* Hidden by default; revealed only in .folded state (see below) */
+  display: none;
+
+  padding: 8px 12px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+
+  /* CHANGE: replaced the opaque dark-bg button with a ghost style —
+     less visually heavy and consistent with the dark nav palette. */
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.menuButton:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Dropdown menu ──────────────────────────────────────────────────────── */
+
+/* CHANGE: changed selector from .dropdown div to .dropdown directly.
+   The element is now a <ul> (semantic) instead of a <div>. */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px); /* 8 px gap below the button */
+  right: 0;
+
+  min-width: 180px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+
+  /* CHANGE: added elevation shadow — standard dropdown treatment */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+
+  /* CHANGE: added entry animation — the original had no transition at all */
+  animation: fadeDown 0.15s ease;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* CHANGE: renamed from .dropdown-links a to .dropdownLink.
+   The original .dropdown-links was a plain class string (not a CSS Module
+   reference), meaning it leaked globally. Now it is properly scoped. */
+.dropdownLink {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+
+.dropdownLink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Folded state ───────────────────────────────────────────────────────── */
+
+/* Hide the full link row when folded */
+.folded .navLinks {
+  display: none;
+}
+
+/* Show the hamburger button when folded */
+.folded .menuButton {
+  display: block;
+}
+
+/* CHANGE: kept the dark palette in the folded state instead of switching
+   to white (rgba(255,255,255,0.95)) — the hero background is dark, so
+   a white bar would create a jarring flash. */
+.folded {
+  background: rgba(10, 10, 10, 0.6);
+  border-bottom-color: transparent;
+}
+
+/* ── Mobile + tablet fallback (<1024px) ─────────────────────────────────── */
+/* Changed from 640px (phones only) to 1023px so tablets also use the
+   hamburger layout. "Laptop / computer or bigger" = ≥1024px gets full links. */
+@media (max-width: 1023px) {
+  .navLinks {
+    display: none;
+  }
+
+  .menuButton {
+    display: block;
+  }
+
+  .navbar {
+    padding: 0 20px;
+  }
+}

@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar/Navbar";
+import Navbar02 from "@/components/Navbar/Navbar02";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +21,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Navbar />
+        {/* targetId must match the sentinel <div id="nav-trigger"> in page.js */}
+        <Navbar02 targetId="nav-trigger" />
         {children}
       </body>
     </html>

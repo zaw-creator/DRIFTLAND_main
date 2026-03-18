@@ -1,9 +1,8 @@
 "use client";
 
 /**
- * Navbar02
  *
- * A scroll-aware navigation bar that "folds" (collapses its links into a
+ * This is a scroll-aware navigation bar that "folds" (collapses its links into a
  * hamburger dropdown) once a target element scrolls into view beneath it.
  *
  * Props
@@ -20,21 +19,16 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-// CHANGE: reordered imports — Next.js imports before local ones (convention)
+import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Navbar02.module.css";
 
 /**
  * Navigation link definitions — single source of truth.
- *
- * CHANGE: extracted hard-coded <li> repetitions into a data array.
- * Both the expanded bar and the dropdown now render from this list,
- * so adding/removing a link only requires editing one place.
- *
- * CHANGE: fixed the dropdown links — the original had mismatched
- * labels/hrefs (e.g. href="/events" labelled "About", href="/services"
- * which doesn't exist). Replaced with the same routes as the top bar.
+ * All the links in the navbar are stored in Array of Objects, ADD/REMOVE/EDIT links here to update Navbar and Dropdown Together.
  */
+
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/events", label: "Events" },
@@ -42,7 +36,44 @@ const NAV_LINKS = [
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];
+// ── Framer Motion Animation Variants ───────────────────────────────────────
+// The background overlay fade
+const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3, ease: "easeInOut" } },
+  exit: { opacity: 0, transition: { duration: 0.3, delay: 0.2 } },
+};
 
+// The container that staggers the children (links)
+const listVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08, // Time delay between each link animating in
+      delayChildren: 0.1, // Wait slightly before starting the cascade
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: { staggerChildren: 0.05, staggerDirection: -1 }, // Cascade out backwards
+  },
+};
+
+// The individual links (The "Bouncy" Spring effect)
+const itemVariants = {
+  hidden: { y: 40, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 250, // Higher = faster snap
+      damping: 20, // Lower = more bounce/wobble
+    },
+  },
+  exit: { y: 20, opacity: 0, transition: { duration: 0.2 } },
+};
 export default function Navbar02({ targetId }) {
   /**
    * isFolded — true while the sentinel element is intersecting the viewport.
@@ -50,13 +81,13 @@ export default function Navbar02({ targetId }) {
    */
   const [isFolded, setIsFolded] = useState(false);
 
-  /** isMenuOpen — controls the hamburger dropdown visibility. */
+  /** isMenuOpen — State Control the Dropdown menu*/
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   // ── Scroll / intersection observer ─────────────────────────────────────────
   useEffect(() => {
     if (!targetId) return;
-
     const target = document.getElementById(targetId);
     if (!target) return;
 
@@ -81,8 +112,8 @@ export default function Navbar02({ targetId }) {
         if (!entry.isIntersecting) setIsMenuOpen(false);
       },
       {
-        root: null,                      // observe against the browser viewport
-        threshold: 0,                    // fire as soon as any pixel enters/exits
+        root: null, // observe against the browser viewport
+        threshold: 0, // fire as soon as any pixel enters/exits
         rootMargin: "-80px 0px 0px 0px", // offset by navbar height
       },
     );
@@ -92,69 +123,104 @@ export default function Navbar02({ targetId }) {
     // Clean up when the component unmounts or targetId changes.
     return () => observer.disconnect();
   }, [targetId]);
-
+  // ── Body Scroll Lock ─────────────────────────────────────────────────────
+  // Prevents the website from scrolling behind the full-screen menu
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [isMenuOpen]);
   // Stable toggle handler — won't cause child button to re-render on every paint.
   const toggleMenu = useCallback(() => setIsMenuOpen((prev) => !prev), []);
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    // The `.folded` class is toggled via CSS — no inline style overrides needed.
-    <nav className={`${styles.navbar} ${isFolded ? styles.folded : ""}`}>
-      {/* Brand — CHANGE: changed <div> to <Link> so clicking the logo
-          navigates home, which is standard navbar behaviour. */}
-      <Link href="/" className={styles.logo}>
-        DRIFTLAND
-      </Link>
+    <>
+      <nav className={`${styles.navbar} ${isFolded ? styles.folded : ""}`}>
+        <Link href="/" className={styles.logo}>
+          DRIFTLAND
+        </Link>
 
-      {/* Full link list — hidden in CSS when .folded is active */}
-      <ul className={styles.navLinks}>
-        {/* CHANGE: replaced five identical <li> blocks with a .map() */}
-        {NAV_LINKS.map(({ href, label }) => (
-          <li key={href}>
-            <Link href={href} className={styles.navLink}>
-              {label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+        {/* Main navigation links: Desktop Nav Bar */}
+        <ul className={styles.navLinks}>
+          {NAV_LINKS.map(({ href, label }) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className={`${styles.navLink} ${pathname === href ? styles.active : ""}`}
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-      {/* Hamburger area — button + dropdown */}
-      <div className={styles.moreMenu}>
-        <button
-          className={styles.menuButton}
-          // CHANGE: added aria-label and aria-expanded for accessibility.
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isMenuOpen}
-          onClick={toggleMenu}
-        >
-          {/* CHANGE: replaced static ☰ (hamburger) with a toggle that shows
-              × when the menu is open — standard UX pattern. */}
-          {isMenuOpen ? "\u2715" : "\u2630"}
-        </button>
-
-        {/* Dropdown — rendered whenever menu is open.
-            The button is only visible via CSS when .folded is active, so
-            isMenuOpen can only be true when the user clicked the visible button. */}
+        {/* Hamburger area */}
+        <div className={styles.moreMenu}>
+          <button className={styles.menuButton} onClick={toggleMenu}>
+            {isMenuOpen ? (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            )}
+          </button>
+        </div>
+      </nav>
+      {/* Dropdown — Mobile Nav Bar*/}
+      <AnimatePresence>
         {isMenuOpen && (
-          // CHANGE: changed <div> wrapper to <ul> — semantically correct
-          // since the contents are a list of navigation links.
-          <ul className={styles.dropdown}>
-            {/* CHANGE: map from NAV_LINKS (same fix as the top bar) so
-                dropdown always matches the main nav — no drift in content. */}
-            {NAV_LINKS.map(({ href, label }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className={styles.dropdownLink}
-                  onClick={() => setIsMenuOpen(false)} // close after navigation
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <motion.div
+            className={styles.fullscreenOverlay}
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <motion.ul
+              className={styles.fullscreenLinks}
+              variants={listVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {NAV_LINKS.map(({ href, label }) => (
+                <motion.li key={href} variants={itemVariants}>
+                  <Link
+                    href={href}
+                    className={`${styles.giantLink} ${pathname === href ? styles.activeGiant : ""}`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </motion.div>
         )}
-      </div>
-    </nav>
+      </AnimatePresence>
+    </>
   );
 }

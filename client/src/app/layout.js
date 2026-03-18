@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {/* targetId must match the sentinel <div id="nav-trigger"> in page.js */}
-        <Navbar02 targetId="nav-trigger" />
+        <Navbar02 targetId="hero-end" />
         {children}
       </body>
     </html>

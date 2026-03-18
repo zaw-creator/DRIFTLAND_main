@@ -51,6 +51,7 @@
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
+
 /* ── Logo / brand ───────────────────────────────────────────────────────── */
 
 .logo {
@@ -191,17 +192,64 @@
 
 /* Show the hamburger button when folded */
 .folded .menuButton {
-  display: block;
+  display: flex; /* Flex ensures the SVG is perfectly centered */
+  align-items: center;
+  justify-content: center;
 }
 
 /* CHANGE: kept the dark palette in the folded state instead of switching
    to white (rgba(255,255,255,0.95)) — the hero background is dark, so
    a white bar would create a jarring flash. */
 .folded {
-  background: rgba(10, 10, 10, 0.6);
-  border-bottom-color: transparent;
+  /* Very transparent so the image/video shows through */
+  background: rgba(10, 10, 10, 0.25); 
+  
+  /* Heavy blur + slight grayscale to let content bleed through beautifully */
+  backdrop-filter: blur(16px) grayscale(30%);
+  -webkit-backdrop-filter: blur(16px) grayscale(30%);
+  
+  /* Subtle bottom border to define the edge */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* ── Fullscreen Overlay Menu ────────────────────────────────────────────── */
+
+.fullscreenOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #111; /* Sleek dark background */
+  z-index: 990; /* Just below the navbar's 1000 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.fullscreenLinks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; 
+}
+
+.giantLink {
+  /* Dynamic font size: huge on desktop, scales down nicely on mobile */
+  font-size: clamp(3rem, 6vw, 5rem); 
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.6); /* Dimmed by default */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.giantLink:hover,
+.activeGiant {
+  color: #fff; /* Bright white on hover or if it's the active page */
+}
 /* ── Mobile + tablet fallback (<1024px) ─────────────────────────────────── */
 /* Changed from 640px (phones only) to 1023px so tablets also use the
    hamburger layout. "Laptop / computer or bigger" = ≥1024px gets full links. */

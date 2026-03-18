@@ -8,7 +8,7 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <p className={styles.heroEyebrow}>Premier Drift Racing Events</p>
-          <h1 className={styles.heroTitle}>DRIFTLAND</h1>
+          <h1 className={styles.heroTitle}>DRIFTLAND s</h1>
           <p className={styles.heroSub}>
             Experience the thrill of professional drift racing. Find events,
             register your ride, and join the community.

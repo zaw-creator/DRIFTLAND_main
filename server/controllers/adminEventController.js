@@ -1,5 +1,6 @@
 import Event from '../models/Event.js';
 import { computeStatus } from '../utils/computeStatus.js';
+import { broadcast } from '../utils/sseManager.js';
 
 const ALLOWED_UPDATE_FIELDS = [
   'name', 'description', 'eventDate', 'location', 'registrationDeadline',
@@ -99,7 +100,29 @@ export async function updateEvent(req, res) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    res.json({ success: true, data: attachDerivedFields(event) });
+    const enriched = attachDerivedFields(event);
+
+    // Push live updates to connected SSE clients
+    broadcast(`event-${enriched._id}`, 'event-updated', {
+      classes:                    enriched.classes,
+      participantRegisteredCount: enriched.participantRegisteredCount,
+      riderRegisteredCount:       enriched.riderRegisteredCount,
+      waitlistCount:              enriched.waitlistCount,
+      isDriverFull:               enriched.isDriverFull,
+      isParticipantFull:          enriched.isParticipantFull,
+      isRiderFull:                enriched.isRiderFull,
+      enabledRoles:               enriched.enabledRoles,
+    });
+
+    broadcast('events-list', 'event-updated', {
+      _id:                          enriched._id,
+      driverTotalRegisteredCount:   enriched.driverTotalRegisteredCount,
+      driverTotalCapacity:          enriched.driverTotalCapacity,
+      isDriverFull:                 enriched.isDriverFull,
+      status:                       enriched.status,
+    });
+
+    res.json({ success: true, data: enriched });
   } catch (err) {
     console.error('updateEvent error:', err);
     if (err.name === 'CastError') {

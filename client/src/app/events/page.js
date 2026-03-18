@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import EventCard from "@/components/events/EventCard";
 import EventSkeleton from "@/components/events/EventSkeleton";
 import EventSegmentedBar from "@/components/events/EventSegmentedBar";
-
+import Leaderboard from "@/components/events/Leaderboard";
 import { getEvents } from "@/services/eventService";
 import styles from "./page.module.css";
 
@@ -37,6 +37,19 @@ export default function EventsPage() {
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
+
+  // SSE — live capacity + status updates for all event cards
+  useEffect(() => {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const es = new EventSource(`${API_URL}/api/events/stream`);
+    es.addEventListener("event-updated", (e) => {
+      const patch = JSON.parse(e.data);
+      setEvents((prev) =>
+        prev.map((ev) => (ev._id === patch._id ? { ...ev, ...patch } : ev)),
+      );
+    });
+    return () => es.close();
+  }, []);
 
   // Group events by status
   const grouped = SECTIONS.reduce((acc, { key }) => {
@@ -109,6 +122,7 @@ export default function EventsPage() {
               );
             })}
           </div>
+          <Leaderboard />
         </>
       )}
     </main>

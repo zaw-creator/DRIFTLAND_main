@@ -67,6 +67,18 @@ export default function EventDetailPage() {
     setSelectedRole(null);
   }, [id]);
 
+  // SSE — live capacity + role updates for this event
+  useEffect(() => {
+    if (!event?._id) return;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const es = new EventSource(`${API_URL}/api/events/${event._id}/stream`);
+    es.addEventListener('event-updated', (e) => {
+      const patch = JSON.parse(e.data);
+      setEvent((prev) => ({ ...prev, ...patch }));
+    });
+    return () => es.close();
+  }, [event?._id]);
+
   if (loading) {
     return (
       <main className={styles.page}>

@@ -1,0 +1,217 @@
+/* Core Container */
+.trackContainer {
+  background-color: #050505; /* Pitch black */
+  color: #ffffff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-transform: uppercase;
+}
+
+/* Aggressive F1-Style Header */
+.raceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 20px;
+}
+
+.titleBlock {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.redBar {
+  width: 8px;
+  height: 40px;
+  background-color: #e10600; /* Standard motorsport red */
+  transform: skewX(-15deg);
+}
+
+.titleBlock h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1.5px;
+}
+
+/* Skewed Session Buttons */
+.sessionControls {
+  display: flex;
+  gap: 10px;
+}
+
+.sessionBtn {
+  background: #111;
+  color: #888;
+  border: 1px solid #333;
+  padding: 10px 24px;
+  font-weight: 800;
+  font-style: italic;
+  transform: skewX(-15deg); /* The F1 slant */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sessionBtn:hover {
+  background: #222;
+  color: #fff;
+}
+
+.activeSession {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+/* Timing Screen Table */
+.telemetryWrapper {
+  background: #0a0a0c;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.timingTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.timingTable th {
+  background: #111;
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 12px 16px;
+  letter-spacing: 1px;
+}
+
+.driverRow {
+  border-bottom: 1px solid #1a1a1a;
+  transition: background 0.15s;
+}
+
+.driverRow:hover {
+  background: #141417;
+}
+
+/* Position Badges */
+.posCell {
+  width: 60px;
+  padding: 12px 16px;
+}
+
+.posBadge {
+  background: #222;
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+.pos1 {
+  background: #e10600; /* P1 gets the aggressive red */
+}
+
+/* Driver Formatting */
+.driverCell {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.lastName {
+  font-weight: 900;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.firstName {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 600;
+}
+
+/* Team & Car */
+.teamCell {
+  padding: 12px 16px;
+}
+
+.teamName {
+  display: block;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.carDetail {
+  display: block;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+/* Telemetry Data (Scores) */
+.scoreCol, .totalCol, .gapCol {
+  padding: 12px 16px;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace; /* Monospace for numbers */
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.scoreCol { color: #aaa; }
+.totalCol { color: #fff; font-weight: 900; font-size: 1.25rem; }
+
+.gapText { color: #ffeb3b; } /* Yellow for gaps */
+.leaderText { color: #aaa; font-size: 0.85rem; }
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .raceHeader { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .hideMobile { display: none; }
+  .scoreCol { font-size: 0.9rem; }
+}
+/* The flashing effect for updated scores */
+@keyframes flashUpdate {
+  0% {
+    background-color: transparent;
+  }
+  20% {
+    background-color: #e10600; /* Intense Red flash */
+    color: #ffffff;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.recentlyUpdated {
+  animation: flashUpdate 1.5s ease-out;
+}
+
+/* A blinking red dot to show the system is "LIVE" */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.liveIndicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #e10600;
+  border-radius: 50%;
+  margin-right: 10px;
+  animation: pulse 1.2s infinite ease-in-out;
+}

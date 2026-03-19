@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   reactCompiler: true,
+  turbopack: {
+    root: new URL('.', import.meta.url).pathname,
+  },
 };
 
 export default nextConfig;

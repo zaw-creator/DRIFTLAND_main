@@ -259,9 +259,92 @@
   margin-bottom: 8px;
 }
 
+/* ─── Section 5 — Stats ──────────────────────────────────── */
+.statsSection {
+  background: #111;
+  padding: 120px 24px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.statsInner {
+  max-width: 960px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  align-items: center;
+  text-align: center;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statNumber {
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Section 6 — Pull quote ─────────────────────────────── */
+.quoteSection {
+  background: #0a0a0a;
+  padding: 120px 24px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.quoteInner {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0;
+}
+
+.quoteText {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  font-style: italic;
+}
+
+.quoteAuthor {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+
 /* ─── Responsive ──────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .cards {
+  .cards,
+  .statsGrid {
     grid-template-columns: 1fr;
   }
 

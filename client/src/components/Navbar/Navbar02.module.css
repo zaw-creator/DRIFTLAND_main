@@ -1,0 +1,218 @@
+/*
+ * Navbar02.module.css
+ *
+ * Styles for the scroll-aware Navbar02 component.
+ *
+ * State model
+ * -----------
+ *  Default  → full-width bar, logo left, links right.
+ *  .folded  → links hidden, hamburger button shown, lighter bg.
+ *
+ * CHANGE: removed .normal-section and .target-image — those were dummy
+ *   page-layout styles that do not belong inside a navbar stylesheet.
+ *
+ * CHANGE: renamed all kebab-case class names (e.g. .nav-links, .nav-more-btn)
+ *   to camelCase (e.g. .navLinks, .menuButton) to match CSS Modules
+ *   conventions and the class names used in the JSX.
+ *
+ * CHANGE: replaced the white / light colour scheme with the site's dark theme.
+ */
+
+/* ── Base bar ────────────────────────────────────────────────────────────── */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid transparent;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  z-index: 1000;
+  transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
+  /* Frosted-glass — reduced from blur(12px) to blur(6px) for GPU performance.
+     Full blur on a fixed full-width element is expensive on every scroll frame. */
+  /* backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); */
+}
+
+
+/* ── Logo / brand ───────────────────────────────────────────────────────── */
+.logo {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FFD700;
+  flex-shrink: 0; 
+  text-decoration: none;
+  text-shadow: 0px 0px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* ── Navigation links ───────────── */
+.navLinks {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  position: relative; /* Crucial for the absolute underline to attach properly */
+  display: block;
+  padding: 8px 4px; 
+  margin: 0 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7); /* Slightly dimmed white by default */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.navLink:hover,
+.active {
+  color: #ffffff;
+}
+
+.active {
+  font-weight: 600;
+}
+/* ── The Expanding Underline ────────────────────────────────────────────── */
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%; /* Start exactly in the center */
+  transform: translateX(-50%); /* Pull it back to true center */
+  width: 0; /* Hidden by default */
+  height: 2px; /* Thickness of the underline */
+  background-color: #ffffff; 
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Premium easing */
+  border-radius: 2px;
+}
+
+.navLink:hover::after,
+.active::after {
+  width: 100%; /* Expands to full width */
+}
+/* ── Hamburger area ─────────────────────────────────────────────────────── */
+
+.moreMenu {
+  position: relative;
+}
+.menuButton {
+  display: none;
+  padding: 8px 12px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.menuButton:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Folded State(Glassmorphism) ──────────────────────────────────────────────────────── */
+.folded {
+  background: transparent; 
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none; /* Remove the border */
+}
+.folded .navLinks {
+  display: none;
+}
+
+.folded .menuButton {
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+}
+/* ── THE CONTEXT-AWARE COLOR SWAP ── */
+
+/* 2. Change the Logo color when folded */
+.folded .logo {
+  /* Change this to a dark color if your target section is light! */
+  color: #f90606; 
+  text-shadow: none; /* Remove the glow so it looks crisp on light backgrounds */
+}
+
+/* 3. Change the Hamburger SVG color when folded */
+.folded .menuButton {
+  /* Because your SVG uses stroke="currentColor", this turns the icon black */
+  color: #ff0000; 
+  border-color: rgba(0, 0, 0, 0.2); /* Darken the button border */
+}
+
+/* 4. Update the hover state for the dark button */
+.folded .menuButton:hover {
+  color: #ff0101;
+  border-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.05);
+}
+/* ── Fullscreen Overlay Menu ────────────────────────────────────────────── */
+
+.fullscreenOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #111; /* Sleek dark background */
+  z-index: 990; /* Just below the navbar's 1000 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreenLinks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; 
+}
+
+.giantLink {
+  font-size: clamp(3rem, 6vw, 5rem); 
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.6); /* Dimmed by default */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.giantLink:hover,
+.activeGiant {
+  color: #fff; 
+}
+
+/* ── Mobile + tablet fallback (<1024px) ─────────────────────────────────── */
+@media (max-width: 1023px) {
+  .navLinks {
+    display: none;
+  }
+  .menuButton {
+    display: block;
+  }
+  .navbar {
+    padding: 0 20px;
+  }
+}

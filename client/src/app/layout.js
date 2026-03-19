@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar/Navbar";
+import Navbar02 from "@/components/Navbar/Navbar02";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +21,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Navbar />
+        {/* Folds while any element with data-nav-fold is visible in the viewport */}
+        <Navbar02 foldSelector="[data-nav-fold]" />
         {children}
       </body>
     </html>

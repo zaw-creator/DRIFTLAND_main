@@ -21,8 +21,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {/* targetId must match the sentinel <div id="nav-trigger"> in page.js */}
-        <Navbar02 targetId="hero-end" />
+        {/* Folds while any element with data-nav-fold is visible in the viewport */}
+        <Navbar02 foldSelector="[data-nav-fold]" />
         {children}
       </body>
     </html>

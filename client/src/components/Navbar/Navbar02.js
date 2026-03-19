@@ -1,21 +1,25 @@
 "use client";
 
 /**
- *
- * This is a scroll-aware navigation bar that "folds" (collapses its links into a
- * hamburger dropdown) once a target element scrolls into view beneath it.
+ * Scroll-aware navigation bar that "folds" (collapses its links into a
+ * hamburger dropdown) while any matched element is visible in the viewport.
  *
  * Props
  * -----
- * @prop {string} targetId - The `id` of the DOM element that controls folding.
- *   While that element is visible in the viewport the navbar is folded.
- *   Typically a sentinel <div> placed at the bottom of the hero section.
+ * @prop {string} [foldSelector="[data-nav-fold]"]
+ *   A CSS selector that targets one or more DOM elements.
+ *   The navbar folds whenever ANY matched element is intersecting the viewport.
+ *   Because this uses a selector (not an id), you can mark as many elements
+ *   as you like with the same data attribute — no duplicate-id issues.
  *
  * Usage
  * -----
- *   <Navbar02 targetId="hero-end" />
- *   ...
- *   <div id="hero-end" />   ← place this at the bottom of your hero section
+ *   // layout.js — pass the selector (or omit to use the default)
+ *   <Navbar02 foldSelector="[data-nav-fold]" />
+ *
+ *   // any page — add the attribute to every section that should fold the nav
+ *   <section data-nav-fold>…hero content…</section>
+ *   <section data-nav-fold>…another full-screen section…</section>
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -74,55 +78,85 @@ const itemVariants = {
   },
   exit: { y: 20, opacity: 0, transition: { duration: 0.2 } },
 };
-export default function Navbar02({ targetId }) {
+/**
+ * DEFAULT_SELECTOR — the data attribute that marks any element as a fold zone.
+ * Any element with data-nav-fold will cause the navbar to fold while visible.
+ */
+const DEFAULT_SELECTOR = "[data-nav-fold]";
+
+export default function Navbar02({ foldSelector = DEFAULT_SELECTOR }) {
   /**
-   * isFolded — true while the sentinel element is intersecting the viewport.
-   * In the folded state the link list is hidden and the hamburger appears.
+   * isFolded — true while at least one matched element is intersecting the
+   * viewport. In the folded state the link list is hidden and the hamburger
+   * button appears instead.
    */
   const [isFolded, setIsFolded] = useState(false);
 
-  /** isMenuOpen — State Control the Dropdown menu*/
+  /** isMenuOpen — controls the fullscreen dropdown menu */
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 
   // ── Scroll / intersection observer ─────────────────────────────────────────
   useEffect(() => {
-    if (!targetId) return;
-    const target = document.getElementById(targetId);
-    if (!target) return;
+    // Find ALL elements that should trigger the fold behaviour.
+    // querySelectorAll works with any CSS selector, so you can use a data
+    // attribute on as many elements as you like without duplicate-id issues.
+    const targets = Array.from(document.querySelectorAll(foldSelector));
+    if (targets.length === 0) return;
 
-    // ── Immediate check ───────────────────────────────────────────────────
-    // IntersectionObserver fires asynchronously, so without this there is a
-    // visible flash where the full (unfolded) nav renders on the hero page
-    // before the observer's first callback corrects it.
-    // getBoundingClientRect() is synchronous — we read the sentinel's position
-    // right now and fold immediately if it is currently inside the viewport.
-    const { top, bottom } = target.getBoundingClientRect();
-    setIsFolded(top < window.innerHeight && bottom >= 0);
+    // ── Immediate sync check ──────────────────────────────────────────────
+    // IntersectionObserver fires asynchronously — without this the full
+    // (unfolded) nav flashes for a frame before the first observer callback.
+    // getBoundingClientRect() is synchronous so we can fold right away.
+    //
+    // FIX: call getBoundingClientRect() directly on the element (el.getBoundingClientRect()).
+    // Destructuring it as ({ getBoundingClientRect: getRect }) detaches the method
+    // from its DOM node, losing the required `this` binding and throwing
+    // "TypeError: Illegal invocation" at runtime.
+    const anyVisible = targets.some((el) => {
+      const { top, bottom } = el.getBoundingClientRect();
+      return top < window.innerHeight && bottom >= 0;
+    });
+    setIsFolded(anyVisible);
 
-    // ── Observer handles all subsequent scroll events ──────────────────────
+    // ── Track how many targets are currently intersecting ─────────────────
+    // We keep a Set of intersecting entries instead of a simple boolean so
+    // that the navbar stays folded if one element exits but another is still
+    // visible (e.g. two back-to-back full-screen sections).
+    const intersecting = new Set();
+
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        // Fold when the sentinel is visible (user is in the hero section).
-        // Unfold when it scrolls out of view (user has passed the hero).
-        setIsFolded(entry.isIntersecting);
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            intersecting.add(entry.target);
+          } else {
+            intersecting.delete(entry.target);
+          }
+        });
 
-        // Close the dropdown when the navbar unfolds — an open menu while
-        // folded is intentional, but leaving it open after unfold is not.
-        if (!entry.isIntersecting) setIsMenuOpen(false);
+        const shouldFold = intersecting.size > 0;
+        setIsFolded(shouldFold);
+
+        // Close the dropdown when the navbar unfolds — leaving a full-screen
+        // menu open while the nav bar is visible would look broken.
+        if (!shouldFold) setIsMenuOpen(false);
       },
       {
         root: null, // observe against the browser viewport
         threshold: 0, // fire as soon as any pixel enters/exits
-        rootMargin: "-80px 0px 0px 0px", // offset by navbar height
+        rootMargin: "-80px 0px 0px 0px", // compensate for the navbar height
       },
     );
 
-    observer.observe(target);
+    targets.forEach((el) => observer.observe(el));
 
-    // Clean up when the component unmounts or targetId changes.
+    // Clean up on unmount or when foldSelector/pathname changes.
     return () => observer.disconnect();
-  }, [targetId]);
+    // FIX: pathname is included so this effect re-runs on every client-side
+    // page navigation. Without it, querySelectorAll() only fires once on
+    // mount — data-nav-fold elements on subsequent pages are never observed.
+  }, [foldSelector, pathname]);
   // ── Body Scroll Lock ─────────────────────────────────────────────────────
   // Prevents the website from scrolling behind the full-screen menu
   useEffect(() => {

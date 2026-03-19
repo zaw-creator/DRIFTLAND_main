@@ -4,11 +4,15 @@ import styles from "./page.module.css";
 export default function Home() {
   return (
     <>
-      {/* Hero — full viewport, nav hidden while this is on screen */}
-      <section id="hero-end" className={styles.hero}>
-        <div id="hero-end" className={styles.heroContent}>
+      {/*
+       * Hero — full viewport.
+       * `data-nav-fold` tells Navbar02 to stay folded while this section
+       * is visible. No id needed — the data attribute works on any element.
+       */}
+      <section data-nav-fold className={styles.hero}>
+        <div className={styles.heroContent}>
           <p className={styles.heroEyebrow}>Premier Drift Racing Events</p>
-          <h1 className={styles.heroTitle}>DRIFTLAND s</h1>
+          <h1 className={styles.heroTitle}>DRIFTLAND</h1>
           <p className={styles.heroSub}>
             Experience the thrill of professional drift racing. Find events,
             register your ride, and join the community.
@@ -29,10 +33,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sentinel — OUTSIDE the overflow:hidden hero. Nav appears when this exits viewport. */}
-      <div id="nav-trigger" />
-
-      {/* Section 2 — What is Driftland */}
+      {/* ── Section 2 — What is Driftland ─────────────────────────────── */}
       <section className={styles.section}>
         <div className={styles.sectionInner}>
           <p className={styles.sectionEyebrow}>What We Do</p>
@@ -48,7 +49,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 3 — Feature cards */}
+      {/* ── Section 3 — Feature cards ──────────────────────────────────── */}
       <section className={styles.featuresSection}>
         <div className={styles.featuresInner}>
           <p className={styles.sectionEyebrow}>How It Works</p>
@@ -72,7 +73,7 @@ export default function Home() {
             </div>
             <div className={styles.card}>
               <div className={styles.cardIcon}>03</div>
-              <h3 className={styles.cardTitle}>Show Up & Drift</h3>
+              <h3 className={styles.cardTitle}>Show Up &amp; Drift</h3>
               <p className={styles.cardBody}>
                 Safety requirements handled upfront. Just bring your car and
                 your A-game.
@@ -82,7 +83,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 4 — CTA banner */}
+      {/* ── Section 4 — Stats ──────────────────────────────────────────── */}
+      <section data-nav-fold className={styles.statsSection}>
+        <div className={styles.statsInner}>
+          <p className={styles.sectionEyebrow}>By the Numbers</p>
+          <div className={styles.statsGrid}>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>120+</span>
+              <span className={styles.statLabel}>Events Run</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>3,400</span>
+              <span className={styles.statLabel}>Drivers Registered</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statNumber}>18</span>
+              <span className={styles.statLabel}>Partner Tracks</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 5 — Pull quote ─────────────────────────────────────── */}
+      <section className={styles.quoteSection}>
+        <figure className={styles.quoteInner}>
+          <blockquote className={styles.quoteText}>
+            &ldquo;Driftland made it dead simple to enter my first competitive
+            event. Registration, class selection, safety docs — all in one
+            place. I just showed up and drove.&rdquo;
+          </blockquote>
+          <figcaption className={styles.quoteAuthor}>
+            — Kai Nakamura, D1 Street Class Driver
+          </figcaption>
+        </figure>
+      </section>
+
+      {/* ── Section 6 — CTA banner ─────────────────────────────────────── */}
       <section className={styles.ctaBanner}>
         <h2 className={styles.ctaBannerTitle}>Ready to Hit the Track?</h2>
         <p className={styles.ctaBannerSub}>

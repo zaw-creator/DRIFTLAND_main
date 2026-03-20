@@ -7,7 +7,10 @@ const router = express.Router();
 
 // ─── SSE Routes (must be before /:id to avoid matching "stream" as an ID) ────
 router.get('/stream', (req, res) => {
+  // Set CORS headers for SSE
   res.set({
+    'Access-Control-Allow-Origin': req.get('origin') || '*',
+    'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
@@ -17,7 +20,10 @@ router.get('/stream', (req, res) => {
 });
 
 router.get('/:id/stream', (req, res) => {
+  // Set CORS headers for SSE
   res.set({
+    'Access-Control-Allow-Origin': req.get('origin') || '*',
+    'Access-Control-Allow-Credentials': 'true',
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',

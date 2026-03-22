@@ -8,6 +8,21 @@
   margin: 0 auto;
   text-transform: uppercase;
 }
+/* Eliminated driver row */
+.eliminated {
+  opacity: 0.4;
+}
+
+/* Loading / empty states */
+.loadingRow,
+.emptyRow {
+  padding: 40px 20px;
+  text-align: center;
+  color: #444;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
 
 /* Aggressive F1-Style Header */
 .raceHeader {

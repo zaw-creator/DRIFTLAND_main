@@ -5,24 +5,28 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 0.85rem;
 }
 
 .table th {
   text-align: left;
-  padding: 10px 14px;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-  font-weight: 600;
-  color: #374151;
+  padding: 0.75rem 1rem;
+  background: #0d0d0d;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #535653;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   white-space: nowrap;
 }
 
 .table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid #f3f4f6;
-  color: #111827;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #111;
+  color: #ffffff;
   vertical-align: middle;
+  background: #0d0d0d;  
 }
 
 .table tr:last-child td {
@@ -30,20 +34,24 @@
 }
 
 .table tr:hover td {
-  background: #f9fafb;
+  background: #141414; 
 }
 
 .nameCell {
-  font-weight: 500;
+  font-weight: 700;
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #ffffff;
+  letter-spacing: 0.03em;
 }
 
 .allRoles {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 0.75rem;
+  color: #535653;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .roles {
@@ -53,12 +61,15 @@
 }
 
 .roleBadge {
-  padding: 2px 8px;
-  background: #e0e7ff;
-  color: #4338ca;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  background: #1a1400;
+  color: #FFBB00;
+  border: 1px solid #3a3000;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .actions {
@@ -66,37 +77,66 @@
   gap: 8px;
 }
 
-.editBtn {
-  padding: 5px 14px;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 13px;
+.manageBtn {
+  padding: 0.4rem 0.9rem;
+  background: none;
+  border: 1px solid #FFBB00;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
   cursor: pointer;
-  color: #374151;
+  color: #FFBB00;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.manageBtn:hover {
+  background-color: #1a1400;
+}
+
+.editBtn {
+  padding: 0.4rem 0.9rem;
+  background: none;
+  border: 1px solid #1a1a1a;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #535653;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
 }
 
 .editBtn:hover {
-  background: #e5e7eb;
+  border-color: #ffffff;
+  color: #ffffff;
 }
 
 .deleteBtn {
-  padding: 5px 14px;
-  background: #fff;
-  border: 1px solid #fca5a5;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 0.4rem 0.9rem;
+  background: none;
+  border: 1px solid #3a0000;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
   cursor: pointer;
-  color: #ef4444;
+  color: #ff4444;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
 }
 
 .deleteBtn:hover {
-  background: #fee2e2;
+  background-color: #2a0000;
 }
 
 .empty {
-  color: #6b7280;
-  font-size: 14px;
-  padding: 24px 0;
+  color: #535653;
+  font-size: 0.85rem;
+  padding: 3rem 0;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }

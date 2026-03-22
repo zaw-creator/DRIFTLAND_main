@@ -19,3 +19,11 @@ export async function getEvents() {
 export async function getEventById(id) {
   return request(`/api/events/${id}`);
 }
+
+export async function getLeaderboard(id) {
+  return request(`/api/events/${id}/leaderboard`);
+}
+
+export async function getBracket(id) {
+  return request(`/api/events/${id}/bracket`);
+}

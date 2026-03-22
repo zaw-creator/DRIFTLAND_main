@@ -6,7 +6,9 @@ import Image from 'next/image';
 import StatusBadge from '@/components/events/StatusBadge';
 import DriveTypeBadge from '@/components/events/DriveTypeBadge';
 import RoleSelector from '@/components/events/RoleSelector';
-import { getEventById } from '@/services/eventService';
+import Leaderboard from '@/components/events/Leaderboard';           // updated
+import TournamentBracket from '@/components/events/TournamentBracket'; 
+import { getEventById, getLeaderboard } from '@/services/eventService';
 import styles from './page.module.css';
 
 function formatDateTime(dateStr) {
@@ -48,6 +50,7 @@ export default function EventDetailPage() {
   const { id } = params;
 
   const [event, setEvent] = useState(null);
+   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
@@ -61,7 +64,13 @@ export default function EventDetailPage() {
       .catch((err) => setError(err.message || 'Failed to load event'))
       .finally(() => setLoading(false));
   }, [id]);
-
+ // NEW — fetch leaderboard for bracket driver name lookups
+  useEffect(() => {
+    if (!id) return;
+    getLeaderboard(id)
+      .then((res) => setLeaderboard(res?.data ?? []))
+      .catch(() => {});
+  }, [id]);
   // Reset role selection when navigating to a different event
   useEffect(() => {
     setSelectedRole(null);
@@ -95,6 +104,14 @@ export default function EventDetailPage() {
       </main>
     );
   }
+    const showLeaderboard = event?.status === 'active' ||
+                          event?.status === 'ended'   ||
+                          event?.status === 'archived';
+
+  const showBracket = event?.bracketGenerated &&
+                      event?.driveTypes?.some(t =>
+                        t.toLowerCase().includes('drift')
+                      );
 
   if (error) {
     return (
@@ -105,6 +122,18 @@ export default function EventDetailPage() {
             ← Back to Events
           </button>
         </div>
+          {showLeaderboard && (
+        <div className={styles.section}>
+          <Leaderboard eventId={id} limit={5} />
+        </div>
+      )}
+
+      {/* ── NEW: Tournament bracket ──────────────────────────────── */}
+      {showBracket && (
+        <div className={styles.section}>
+          <TournamentBracket eventId={id} leaderboard={leaderboard} />
+        </div>
+      )}
       </main>
     );
   }

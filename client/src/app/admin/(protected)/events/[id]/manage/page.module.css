@@ -1,0 +1,361 @@
+.page {
+  padding: 2.5rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: #ffffff;
+  background-color: #000401;
+  min-height: 100vh;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  margin-bottom: 2rem;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: #535653;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+}
+
+.backBtn:hover {
+  color: #FFBB00;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.titleBlock {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.redBar {
+  width: 4px;
+  min-height: 48px;
+  background-color: #FFBB00;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 0.7rem;
+  color: #535653;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ── Header right ────────────────────────────────────────────────────────── */
+.headerRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+/* Status badges */
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.upcoming {
+  background-color: #2a2000;
+  color: #FFBB00;
+  border: 1px solid #3a3000;
+}
+
+.active {
+  background-color: #002a00;
+  color: #00cc44;
+  border: 1px solid #003a00;
+}
+
+.ended {
+  background-color: #2a0000;
+  color: #e10600;
+  border: 1px solid #3a0000;
+}
+
+.archived {
+  background-color: #111;
+  color: #535653;
+  border: 1px solid #1a1a1a;
+}
+
+/* Register event ID */
+.registerIdRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.registerIdLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #535653;
+}
+
+.registerIdField {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.registerIdInput {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  outline: none;
+  width: 220px;
+  transition: border-color 0.2s;
+}
+
+.registerIdInput:focus {
+  border-color: #FFBB00;
+}
+
+.registerIdBtn {
+  background: none;
+  color: #535653;
+  border: 1px solid #1a1a1a;
+  padding: 0.5rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.registerIdBtn:hover:not(:disabled) {
+  border-color: #FFBB00;
+  color: #FFBB00;
+}
+
+.registerIdBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.savedBtn {
+  background-color: #1a1400 !important;
+  color: #FFBB00 !important;
+  border-color: #FFBB00 !important;
+}
+
+/* Edit / End buttons */
+.editBtn {
+  background: none;
+  color: #535653;
+  border: 1px solid #1a1a1a;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editBtn:hover {
+  border-color: #FFBB00;
+  color: #FFBB00;
+}
+
+.endBtn {
+  background: none;
+  color: #e10600;
+  border: 1px solid #3a0000;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.endBtn:hover {
+  background-color: #2a0000;
+}
+
+.endedNote {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #00cc44;
+  text-transform: uppercase;
+}
+
+.endError {
+  color: #ff4444;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 12px;
+  text-align: right;
+}
+
+/* ── Tab bar ─────────────────────────────────────────────────────────────── */
+.tabBar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 0;
+}
+
+.tab {
+  background: transparent;
+  color: #535653;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  bottom: -1px;
+}
+
+.tab:hover {
+  color: #ffffff;
+}
+
+.activeTab {
+  color: #FFBB00;
+  border-bottom: 2px solid #FFBB00;
+}
+
+/* ── Tab content ─────────────────────────────────────────────────────────── */
+.tabContent {
+  padding-top: 2rem;
+}
+
+/* Notice banner */
+.notice {
+  background-color: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-left: 3px solid #FFBB00;
+  color: #535653;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+/* ── Loading skeleton ────────────────────────────────────────────────────── */
+.loadingState {
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeletonTitle {
+  height: 40px;
+  width: 360px;
+  background: #0d0d0d;
+  border-radius: 0.25rem;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonBar {
+  height: 44px;
+  width: 100%;
+  background: #0d0d0d;
+  border-radius: 0.25rem;
+  animation: shimmer 1.4s infinite 0.1s;
+}
+
+.skeletonContent {
+  height: 300px;
+  width: 100%;
+  background: #0d0d0d;
+  border-radius: 0.25rem;
+  animation: shimmer 1.4s infinite 0.2s;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Error state ─────────────────────────────────────────────────────────── */
+.errorState {
+  padding: 4rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.errorMsg {
+  color: #ff4444;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .page            { padding: 1.25rem 1rem; }
+  .title           { font-size: 1.2rem; }
+  .titleRow        { flex-direction: column; }
+  .headerRight     { align-items: flex-start; }
+  .tabBar          { overflow-x: auto; }
+  .tab             { padding: 0.75rem 1rem; white-space: nowrap; }
+  .registerIdInput { width: 160px; }
+}

@@ -3,10 +3,6 @@ import { computeStatus } from '../utils/computeStatus.js';
 
 const STATUS_ORDER = { ongoing: 0, nearby: 1, upcoming: 2, previous: 3 };
 
-/**
- * Computes and attaches derived fields that were defined as Mongoose virtuals.
- * We compute them here explicitly for lean() responses to ensure JSON serialization.
- */
 function attachDerivedFields(event) {
   const classes = event.classes || [];
 
@@ -31,7 +27,6 @@ function attachDerivedFields(event) {
 }
 
 // GET /api/events
-// Query: ?includeAll=true to include previous events
 export async function getEvents(req, res) {
   try {
     const events = await Event.find().lean().sort({ eventDate: 1 });
@@ -71,7 +66,7 @@ export async function getEventById(req, res) {
   }
 }
 
-// POST /api/events/:id/image  (Multer handles file, called after upload middleware)
+// POST /api/events/:id/image
 export async function uploadEventImage(req, res) {
   try {
     if (!req.file) {
@@ -94,5 +89,57 @@ export async function uploadEventImage(req, res) {
   } catch (err) {
     console.error('uploadEventImage error:', err);
     res.status(500).json({ success: false, message: 'Failed to upload image' });
+  }
+}
+
+// GET /api/events/:id/leaderboard
+export async function getLeaderboard(req, res) {
+  try {
+    const event = await Event.findById(req.params.id).select('registerEventId status top5');
+
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+
+    // Archived — serve stored top5 directly, no need to call register DB
+    if (event.status === 'archived') {
+      return res.json({ success: true, source: 'top5', data: event.top5 });
+    }
+
+    if (!event.registerEventId) {
+      return res.json({ success: true, source: 'none', data: [] });
+    }
+
+    // Live — proxy to register DB
+    const response = await fetch(
+      `${process.env.REGISTER_API_URL}/api/events/${event.registerEventId}/leaderboard`,
+      { headers: { 'x-api-key': process.env.REGISTER_API_KEY } }
+    );
+
+    if (!response.ok) {
+      return res.status(502).json({ success: false, message: 'Failed to fetch from register DB' });
+    }
+
+    const data = await response.json();
+    res.json({ success: true, source: 'register', data });
+  } catch (err) {
+    console.error('getLeaderboard error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch leaderboard' });
+  }
+}
+
+// GET /api/events/:id/bracket
+export async function getBracket(req, res) {
+  try {
+    const event = await Event.findById(req.params.id).select('bracket bracketGenerated');
+
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+
+    res.json({ success: true, bracket: event.bracket, generated: event.bracketGenerated });
+  } catch (err) {
+    console.error('getBracket error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch bracket' });
   }
 }

@@ -19,6 +19,23 @@ export async function getAdminEvents() {
 export async function getAdminEventById(id) {
   return request('GET', `/api/admin/events/${id}`);
 }
+// Add to your existing adminEventService.js
+export async function patchEvent(id, data) {
+  const token = localStorage.getItem('adminToken');
+  const res = await fetch(`${API_URL}/api/admin/events/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message || `Request failed: ${res.status}`);
+  }
+  return res.json();
+}
 
 export async function createEvent(data) {
   return request('POST', '/api/admin/events', data);

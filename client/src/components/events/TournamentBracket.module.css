@@ -1,0 +1,199 @@
+.bracketContainer {
+  background-color: #050505;
+  color: #ffffff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-transform: uppercase;
+}
+
+.bracketHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 20px;
+}
+
+.bracketHeader h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1.5px;
+}
+
+.redBar {
+  width: 8px;
+  height: 40px;
+  background-color: #e10600;
+  transform: skewX(-15deg);
+  flex-shrink: 0;
+}
+
+/* Scroll wrapper for wide brackets */
+.bracketScroll {
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.bracketGrid {
+  display: flex;
+  gap: 24px;
+  min-width: max-content;
+  align-items: flex-start;
+}
+
+/* Each round column */
+.roundCol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 200px;
+}
+
+.roundLabel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-style: italic;
+  color: #666;
+  letter-spacing: 1.5px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Individual match card */
+.matchList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.matchCard {
+  background: #0a0a0c;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.matchCard.completed {
+  border-color: #1a1a1a;
+}
+
+.matchId {
+  background: #111;
+  color: #444;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 4px 10px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Driver slot (public read-only) */
+.driverSlot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  transition: background 0.15s;
+}
+
+.driverSlot.winner {
+  background: #0f1a0f;
+  border-left: 3px solid #e10600;
+}
+
+.driverSlot.loser {
+  opacity: 0.35;
+}
+
+.slotName {
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.winBadge {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #e10600;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* VS divider */
+.vsDivider {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #333;
+  padding: 4px 0;
+  border-top: 1px solid #111;
+  border-bottom: 1px solid #111;
+  letter-spacing: 2px;
+}
+
+/* Pending / empty state */
+.pendingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px 20px;
+  border: 1px dashed #1a1a1a;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.pendingIcon {
+  font-size: 2rem;
+}
+
+.pendingState p {
+  color: #444;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+.classSection {
+  margin-bottom: 48px;
+}
+
+.classHeading {
+  font-size: 0.8rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  background: #e10600;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  border-radius: 2px;
+}
+
+.loadingRow {
+  padding: 40px 20px;
+  text-align: center;
+  color: #444;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .bracketHeader h2 { font-size: 1.4rem; }
+  .roundCol { min-width: 160px; }
+  .slotName { max-width: 100px; font-size: 0.75rem; }
+}

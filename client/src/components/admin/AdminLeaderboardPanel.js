@@ -39,20 +39,41 @@ export default function AdminLeaderboardPanel({ eventId }) {
   const [error, setError]       = useState(null);
 
   // Pull approved drivers from register DB via main backend
-  useEffect(() => {
-    if (!eventId) return;
-    setLoading(true);
-   authRequest(`/api/admin/events/${eventId}/drivers`)
-  .then((data) => {
-    setDrivers(Array.isArray(data) ? data : []);
-        // Pre-fill scores if already entered
-        const initial = {};
-        data.forEach((d) => { initial[d.driverId] = d.qualifyScore ?? ''; });
-        setScores(initial);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [eventId]);
+useEffect(() => {
+  if (!eventId) return;
+  setLoading(true);
+
+  // Fetch both drivers and current leaderboard scores in parallel
+  Promise.all([
+    authRequest(`/api/admin/events/${eventId}/drivers`),
+    authRequest(`/api/events/${eventId}/leaderboard`).catch(() => ({ data: [] })),
+  ])
+    .then(([driversData, lbData]) => {
+      const drivers   = Array.isArray(driversData) ? driversData : [];
+      const lbEntries = lbData?.data ?? [];
+
+      // Pre-fill scores from main DB leaderboard
+      const merged = drivers.map((d) => {
+        const entry = lbEntries.find((e) => e.driverId === d.driverId);
+        return {
+          ...d,
+          qualifyScore: entry?.qualifyScore ?? 0,
+          qualifyRank:  entry?.qualifyRank  ?? 0,
+        };
+      });
+
+      setDrivers(merged);
+
+      // Pre-fill score inputs
+      const initial = {};
+      merged.forEach((d) => {
+        initial[d.driverId] = d.qualifyScore || '';
+      });
+      setScores(initial);
+    })
+    .catch((err) => setError(err.message))
+    .finally(() => setLoading(false));
+}, [eventId]);
 
   async function saveScore(driver) {
     const score = parseFloat(scores[driver.driverId]);

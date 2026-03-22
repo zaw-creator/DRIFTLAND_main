@@ -4,7 +4,7 @@ import { broadcast } from '../utils/sseManager.js';
 import { endEvent } from '../utils/eventLifecycle.js';
 
 const ALLOWED_UPDATE_FIELDS = [
-  'name', 'description', 'eventDate', 'location', 'registrationDeadline',
+  'name', 'description', 'eventDate','eventEndDate', 'location', 'registrationDeadline',
   'editDeadlineHours', 'driveTypes', 'classes', 'participantCapacity',
   'participantRegisteredCount', 'riderCapacity', 'riderRegisteredCount',
   'waitlistCount', 'image', 'startTime', 'endTime', 'enabledRoles',
@@ -274,12 +274,12 @@ export async function generateBracket(req, res) {
 
     DRIFT_CLASSES.forEach((cls) => {
       // Match driveType case-insensitively and match class
-      const classDrivers = event.leaderboard
-        .filter((d) =>
-          d.driveType?.toLowerCase() === 'drift' &&
-          d.class === cls &&
-          !d.eliminated
-        )
+    const classDrivers = event.leaderboard
+  .filter((d) =>
+    (d.driveType === 'Drift' || d.driveType === 'drift') &&
+    d.class === cls &&
+    !d.eliminated
+  )
         .sort((a, b) => a.qualifyRank - b.qualifyRank);
 
       // Skip this class if fewer than 2 drivers
@@ -310,12 +310,13 @@ export async function generateBracket(req, res) {
       }
     });
 
-    if (!hasAtLeastOneClass) {
-      return res.status(400).json({
-        success: false,
-        message: 'Need at least 2 drift drivers in at least one class to generate a bracket',
-      });
-    }
+// Find:
+if (!hasAtLeastOneClass) {
+  return res.status(400).json({
+    success: false,
+    message: 'Need at least 2 drift drivers in at least one class to generate a bracket',
+  });
+}
 
     event.bracket          = matches;
     event.bracketGenerated = true;

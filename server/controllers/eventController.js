@@ -95,39 +95,59 @@ export async function uploadEventImage(req, res) {
 // GET /api/events/:id/leaderboard
 export async function getLeaderboard(req, res) {
   try {
-    const event = await Event.findById(req.params.id).select('registerEventId status top5');
+    const event = await Event.findById(req.params.id)
+      .select('registerEventId status top5 leaderboard');
 
     if (!event) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    // Archived — serve stored top5 directly, no need to call register DB
+    // Archived — serve stored top5 directly
     if (event.status === 'archived') {
       return res.json({ success: true, source: 'top5', data: event.top5 });
     }
 
+    // No register event linked — return main DB leaderboard as-is
     if (!event.registerEventId) {
-      return res.json({ success: true, source: 'none', data: [] });
+      return res.json({ success: true, source: 'main', data: event.leaderboard });
     }
 
-    // Live — proxy to register DB
+    // Fetch driver list from register DB
     const response = await fetch(
       `${process.env.REGISTER_API_URL}/api/events/${event.registerEventId}/leaderboard`,
       { headers: { 'x-api-key': process.env.REGISTER_API_KEY } }
     );
 
     if (!response.ok) {
-      return res.status(502).json({ success: false, message: 'Failed to fetch from register DB' });
+      // Fallback to main DB if register DB is unreachable
+      return res.json({ success: true, source: 'main', data: event.leaderboard });
     }
 
-    const data = await response.json();
-    res.json({ success: true, source: 'register', data });
+    const json = await response.json();
+    const registerDrivers = json.data ?? [];
+
+    // Merge register DB driver list with main DB scores
+    const merged = registerDrivers.map((driver) => {
+      const mainEntry = event.leaderboard.find(
+        (d) => d.driverId === driver.driverId.toString()
+      );
+      return {
+        ...driver,
+        qualifyScore: mainEntry?.qualifyScore ?? 0,
+        qualifyRank:  mainEntry?.qualifyRank  ?? 0,
+        wins:         mainEntry?.wins         ?? 0,
+        losses:       mainEntry?.losses       ?? 0,
+        eliminated:   mainEntry?.eliminated   ?? false,
+        class:        mainEntry?.class        ?? driver.class,
+      };
+    });
+
+    res.json({ success: true, source: 'register', data: merged });
   } catch (err) {
     console.error('getLeaderboard error:', err);
     res.status(500).json({ success: false, message: 'Failed to fetch leaderboard' });
   }
 }
-
 // GET /api/events/:id/bracket
 export async function getBracket(req, res) {
   try {

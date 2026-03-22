@@ -25,7 +25,8 @@ const leaderboardEntrySchema = new mongoose.Schema(
   {
     driverId:     { type: String, required: true }, // from register DB
     driverName:   { type: String, required: true },
-    driveType:    { type: String, enum: ['drift', 'timeattack'] },
+    driveType: { type: String, enum: ['Drift', 'Time Attack', 'Both'] },
+class:     { type: String, default: null },
     qualifyScore: { type: Number, default: 0 },
     qualifyRank:  { type: Number, default: 0 },
     wins:         { type: Number, default: 0 },
@@ -60,6 +61,8 @@ const eventSchema = new mongoose.Schema(
     name:                       { type: String, required: true, trim: true },
     description:                { type: String, default: '' },
     eventDate:                  { type: Date, required: true },
+    // Add to eventSchema after eventDate
+eventEndDate: { type: Date, default: null },
     location:                   { type: String, required: true },
     registrationDeadline:       { type: Date },
     editDeadlineHours:          { type: Number, default: 24 },

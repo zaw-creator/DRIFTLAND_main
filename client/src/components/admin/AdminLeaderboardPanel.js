@@ -1,9 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './AdminLeaderboardPanel.module.css';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+
+// Move these OUTSIDE the component so they never change reference
+const normalizeClass = (cls) => cls?.trim().toLowerCase() || '';
+const scoreKey = (driverId, cls) => `${driverId}__${cls || 'none'}`;
+const cutoffKey = (driveType, cls) => `${driveType}__${cls}`;
+
+const DRIVE_TYPE_ORDER = ['Drift', 'Time Attack'];
+const CLASS_ORDER = {
+  'Drift':       ['Class A', 'Class B', 'Class C'],
+  'Time Attack': ['Class AWD', 'Class RWD', 'Class FWD'],
+};
 
 function getCookie(name) {
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -14,10 +25,10 @@ async function authRequest(path, options = {}) {
   const token = getCookie('adminToken');
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
-    credentials: 'include',           // send cookies with every request
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      Authorization:  `Bearer ${token}`,
       ...options.headers,
     },
   });
@@ -26,169 +37,303 @@ async function authRequest(path, options = {}) {
     throw new Error(body.message || body.error || `Request failed: ${res.status}`);
   }
   const json = await res.json();
-  // handle both { data: ... } and { success, data: ... } shapes
   return json.data ?? json;
 }
 
-export default function AdminLeaderboardPanel({ eventId }) {
-  const [drivers, setDrivers]   = useState([]);
-  const [scores, setScores]     = useState({});   // { driverId: scoreValue }
-  const [saving, setSaving]     = useState({});   // { driverId: bool }
-  const [saved, setSaved]       = useState({});   // { driverId: bool } flash
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+export default function AdminLeaderboardPanel({ eventId, disabled = false }) {
+  const [drivers, setDrivers]           = useState([]);
+  const [scores, setScores]             = useState({});
+  const [cutoffs, setCutoffs]           = useState({});
+  const [savingAll, setSavingAll]       = useState(false);
+  const [saved, setSaved]               = useState(false);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
+  const [savingCutoff, setSavingCutoff] = useState({});
 
-  // Pull approved drivers from register DB via main backend
-useEffect(() => {
-  if (!eventId) return;
-  setLoading(true);
+  // Stable fetch function — won't change on re-render
+const fetchData = useCallback(async () => {
+    if (!eventId) return;
+    setLoading(true);
+    setError(null);
 
-  // Fetch both drivers and current leaderboard scores in parallel
-  Promise.all([
-    authRequest(`/api/admin/events/${eventId}/drivers`),
-    authRequest(`/api/events/${eventId}/leaderboard`).catch(() => ({ data: [] })),
-  ])
-    .then(([driversData, lbData]) => {
-      const drivers   = Array.isArray(driversData) ? driversData : [];
-      const lbEntries = lbData?.data ?? [];
+    try {
+      const [driversData, scoresData, eventData] = await Promise.all([
+        authRequest(`/api/admin/events/${eventId}/drivers`),
+        authRequest(`/api/admin/events/${eventId}/scores`).catch(() => ({ data: [], cutoffs: {} })),
+        authRequest(`/api/admin/events/${eventId}`).catch(() => null),
+      ]);
 
-      // Pre-fill scores from main DB leaderboard
-      const merged = drivers.map((d) => {
-        const entry = lbEntries.find((e) => e.driverId === d.driverId);
+      const driverList = Array.isArray(driversData)      ? driversData     : [];
+      const lbEntries  = Array.isArray(scoresData?.data) ? scoresData.data
+                       : Array.isArray(scoresData)        ? scoresData      : [];
+
+      // Load cutoffs — try event data first, fall back to scores response
+      const savedCutoffs = eventData?.qualifyingCutoffs || scoresData?.cutoffs || {};
+      if (Object.keys(savedCutoffs).length > 0) {
+        const cutoffState = {};
+        Object.entries(savedCutoffs).forEach(([key, val]) => {
+          cutoffState[key] = String(val);
+        });
+        setCutoffs(cutoffState);
+      }
+
+      // Merge eliminated + rank from main DB scores into driver list
+      const mergedDrivers = driverList.map(d => {
+        const entry = lbEntries.find(
+          (e) => String(e.driverId) === String(d.driverId) &&
+                 normalizeClass(e.class) === normalizeClass(d.class)
+        );
         return {
           ...d,
-          qualifyScore: entry?.qualifyScore ?? 0,
-          qualifyRank:  entry?.qualifyRank  ?? 0,
+          qualifyRank: entry?.qualifyRank  ?? d.qualifyRank  ?? 0,
+          eliminated:  entry?.eliminated   ?? d.eliminated   ?? false,
         };
       });
 
-      setDrivers(merged);
+      setDrivers(mergedDrivers);
 
-      // Pre-fill score inputs
       const initial = {};
-      merged.forEach((d) => {
-        initial[d.driverId] = d.qualifyScore || '';
+      mergedDrivers.forEach((d) => {
+        const entry = lbEntries.find(
+          (e) => String(e.driverId) === String(d.driverId) &&
+                 normalizeClass(e.class) === normalizeClass(d.class)
+        );
+        initial[scoreKey(d.driverId, d.class)] = entry?.qualifyScore
+          ? String(entry.qualifyScore)
+          : '';
       });
       setScores(initial);
-    })
-    .catch((err) => setError(err.message))
-    .finally(() => setLoading(false));
-}, [eventId]);
 
-  async function saveScore(driver) {
-    const score = parseFloat(scores[driver.driverId]);
-    if (isNaN(score)) return;
-
-    setSaving((prev) => ({ ...prev, [driver.driverId]: true }));
-    try {
-      await authRequest(`/api/admin/events/${eventId}/leaderboard/${driver.driverId}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          score,
-          driverName: driver.driverName,
-          driveType:  driver.driveType,
-        }),
-      });
-      setSaved((prev) => ({ ...prev, [driver.driverId]: true }));
-      setTimeout(() => setSaved((prev) => ({ ...prev, [driver.driverId]: false })), 2000);
     } catch (err) {
-      alert(`Failed to save score: ${err.message}`);
+      setError(err.message);
     } finally {
-      setSaving((prev) => ({ ...prev, [driver.driverId]: false }));
+      setLoading(false);
+    }
+  }, [eventId]);
+
+  // Run once on mount / eventId change only
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  async function handleSaveAll() {
+    setSavingAll(true);
+    try {
+      const scoresToSave = drivers
+        .filter((d) => {
+          const val = scores[scoreKey(d.driverId, d.class)];
+          return val !== '' && val !== undefined && !isNaN(parseFloat(val));
+        })
+        .map((d) => ({
+          driverId:   d.driverId,
+          driverName: d.driverName,
+          driveType:  d.driveType,
+          class:      d.class,
+          score:      parseFloat(scores[scoreKey(d.driverId, d.class)]),
+        }));
+
+      if (!scoresToSave.length) {
+        alert('No scores entered yet.');
+        return;
+      }
+
+      await authRequest(
+        `/api/admin/events/${eventId}/leaderboard/bulk`,
+        { method: 'POST', body: JSON.stringify({ scores: scoresToSave }) }
+      );
+
+      // Refresh scores after save — but don't trigger useEffect loop
+      const scoresData = await authRequest(
+        `/api/admin/events/${eventId}/scores`
+      ).catch(() => []);
+
+      const lbEntries = Array.isArray(scoresData) ? scoresData : [];
+
+      // Update ranks without re-fetching drivers
+      setDrivers(prev => prev.map(d => {
+        const updated = lbEntries.find(
+          e => String(e.driverId) === String(d.driverId) &&
+               normalizeClass(e.class) === normalizeClass(d.class)
+        );
+        return updated ? { ...d, qualifyRank: updated.qualifyRank, eliminated: updated.eliminated } : d;
+      }));
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      alert(`Failed to save scores: ${err.message}`);
+    } finally {
+      setSavingAll(false);
     }
   }
 
-  // Group drivers by driveType
-// Replace the existing groups logic in AdminLeaderboardPanel.js
+  async function handleSetCutoff(driveType, cls) {
+    const key    = cutoffKey(driveType, cls);
+    const cutoff = parseInt(cutoffs[key]);
 
-// First group by driveType, then by class within each driveType
-const groups = drivers.reduce((acc, d) => {
-  const driveType = d.driveType || 'Unknown';
+    if (!cutoff || cutoff < 2) {
+      alert('Enter a cutoff number (minimum 2)');
+      return;
+    }
+    if (cutoff % 2 !== 0) {
+      alert('Cutoff must be an even number (2, 4, 6, 8...)');
+      return;
+    }
 
-  // Handle comma-separated classes e.g. "Class A, Class B"
-  const classes = d.class
-    ? d.class.split(',').map(c => c.trim())
-    : ['Unassigned'];
+    setSavingCutoff(prev => ({ ...prev, [key]: true }));
+    try {
+      await authRequest(`/api/admin/events/${eventId}/cutoff`, {
+        method: 'POST',
+        body:   JSON.stringify({ driveType, class: cls, cutoff }),
+      });
 
-  classes.forEach(cls => {
+      const scoresData = await authRequest(
+        `/api/admin/events/${eventId}/scores`
+      ).catch(() => []);
+      const lbEntries = Array.isArray(scoresData) ? scoresData : [];
+
+      setDrivers(prev => prev.map(d => {
+        const updated = lbEntries.find(
+          e => String(e.driverId) === String(d.driverId) &&
+               normalizeClass(e.class) === normalizeClass(d.class)
+        );
+        return updated ? { ...d, eliminated: updated.eliminated } : d;
+      }));
+
+      alert(`Cutoff set — top ${cutoff} drivers advance to bracket.`);
+    } catch (err) {
+      alert(`Failed to set cutoff: ${err.message}`);
+    } finally {
+      setSavingCutoff(prev => ({ ...prev, [key]: false }));
+    }
+  }
+
+  // Group by driveType then class
+  const groups = drivers.reduce((acc, d) => {
+    const driveType = d.driveType || 'Unknown';
+    const cls       = d.class && d.class !== 'pending' ? d.class : 'Unassigned';
+
     if (!acc[driveType])      acc[driveType] = {};
     if (!acc[driveType][cls]) acc[driveType][cls] = [];
 
-    // Avoid duplicating driver if they appear in multiple classes
-    const already = acc[driveType][cls].find(x => x.driverId === d.driverId);
-    if (!already) acc[driveType][cls].push(d);
-  });
+    const already = acc[driveType][cls].find(
+      x => x.driverId === d.driverId && x.class === cls
+    );
+    if (!already) acc[driveType][cls].push({ ...d, class: cls });
 
-  return acc;
-}, {});
-
-// Defined display order
-const DRIVE_TYPE_ORDER = ['Drift', 'Time Attack'];
-const CLASS_ORDER = {
-  'Drift':       ['Class A', 'Class B', 'Class C'],
-  'Time Attack': ['Class AWD', 'Class RWD', 'Class FWD'],  
-};
+    return acc;
+  }, {});
 
   if (loading) return <div className={styles.panel}><p className={styles.state}>Loading drivers...</p></div>;
   if (error)   return <div className={styles.panel}><p className={styles.error}>{error}</p></div>;
   if (!drivers.length) return (
     <div className={styles.panel}>
-      <p className={styles.state}>No approved drivers found for this event.</p>
+      <p className={styles.state}>No approved drivers found. Link a register event first.</p>
     </div>
   );
 
   return (
-  <div className={styles.panel}>
-    <div className={styles.panelHeader}>
-      <div className={styles.redBar} />
-      <h2>Qualifying scores</h2>
-    </div>
+    <div className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <div className={styles.redBar} />
+        <h2>Qualifying scores</h2>
+        <button
+          className={`${styles.saveAllBtn} ${saved ? styles.savedBtn : ''}`}
+          disabled={savingAll || disabled}
+          onClick={handleSaveAll}
+        >
+          {savingAll ? 'Saving...' : saved ? 'Saved!' : 'Save all scores'}
+        </button>
+      </div>
 
-    {DRIVE_TYPE_ORDER.map((driveType) => {
-      const classGroups = groups[driveType];
-      if (!classGroups) return null;
+      {DRIVE_TYPE_ORDER.map((driveType) => {
+        const classGroups = groups[driveType];
+        if (!classGroups) return null;
 
-      return (
-        <div key={driveType} className={styles.driveTypeSection}>
+        const knownClasses   = CLASS_ORDER[driveType] || [];
+        const unknownClasses = Object.keys(classGroups).filter(c => !knownClasses.includes(c));
+        const allClasses     = [...knownClasses, ...unknownClasses];
 
-          {/* Drive type heading */}
-          <div className={styles.driveTypeHeading}>
-            <span>{driveType}</span>
-          </div>
+        return (
+          <div key={driveType} className={styles.driveTypeSection}>
+            <div className={styles.driveTypeHeading}>
+              <span>{driveType}</span>
+              {driveType === 'Time Attack' && (
+                <span className={styles.taNote}>leaderboard only — no bracket</span>
+              )}
+            </div>
 
-          {/* Classes within this drive type */}
-          {(CLASS_ORDER[driveType] || Object.keys(classGroups)).map((cls) => {
-            const list = classGroups[cls];
-            if (!list?.length) return null;
+            {allClasses.map((cls) => {
+              const list = classGroups[cls];
+              if (!list?.length) return null;
 
-            return (
-              <div key={cls} className={styles.group}>
-                <h3 className={styles.groupHeading}>{cls}</h3>
+              const sorted = [...list].sort((a, b) => {
+                if (!a.qualifyRank && !b.qualifyRank) return 0;
+                if (!a.qualifyRank) return 1;
+                if (!b.qualifyRank) return -1;
+                return a.qualifyRank - b.qualifyRank;
+              });
 
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Rank</th>
-                      <th>Driver</th>
-                      <th>Sticker</th>
-                      <th className={styles.hideMobile}>Car</th>
-                      <th>Score</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {list
-                      .sort((a, b) => (a.qualifyRank || 999) - (b.qualifyRank || 999))
-                      .map((driver) => (
-                        <tr key={driver.driverId} className={styles.row}>
-                          <td className={styles.rank}>
-                            {driver.qualifyRank || '—'}
-                          </td>
+              const key         = cutoffKey(driveType, cls);
+              const cutoffVal   = cutoffs[key] || '';
+              const isSaving    = savingCutoff[key];
+              const driverCount = list.length;
+
+              return (
+                <div key={cls} className={styles.group}>
+                  <div className={styles.groupHeader}>
+                    <h3 className={styles.groupHeading}>
+                      {cls === 'Unassigned' ? 'Unassigned — awaiting class' : cls}
+                      <span className={styles.driverCount}>{driverCount} drivers</span>
+                    </h3>
+
+                    {driveType === 'Drift' && (
+                      <div className={styles.cutoffRow}>
+                        <span className={styles.cutoffLabel}>Advance to bracket</span>
+                        <input
+                          type="number"
+                          min="2"
+                          step="2"
+                          className={styles.cutoffInput}
+                          placeholder="e.g. 8"
+                          value={cutoffVal}
+                          onChange={(e) =>
+                            setCutoffs(prev => ({ ...prev, [key]: e.target.value }))
+                          }
+                        />
+                        <span className={styles.cutoffNote}>must be even</span>
+                        <button
+                          className={styles.cutoffBtn}
+                          disabled={isSaving || disabled}
+                          onClick={() => handleSetCutoff(driveType, cls)}
+                        >
+                          {isSaving ? 'Saving...' : 'Set cutoff'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <table className={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Rank</th>
+                        <th>Driver</th>
+                        <th>Sticker</th>
+                        <th className={styles.hideMobile}>Car</th>
+                        <th>Score</th>
+                        {driveType === 'Drift' && <th>Status</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sorted.map((driver) => (
+                        <tr
+                          key={`${driver.driverId}-${cls}`}
+                          className={`${styles.row} ${driver.eliminated ? styles.eliminatedRow : ''}`}
+                        >
+                          <td className={styles.rank}>{driver.qualifyRank || '—'}</td>
                           <td className={styles.name}>{driver.driverName}</td>
                           <td className={styles.cls}>{driver.stickerNumber || '—'}</td>
-                          <td className={`${styles.cls} ${styles.hideMobile}`}>
-                            {driver.car || '—'}
-                          </td>
+                          <td className={`${styles.cls} ${styles.hideMobile}`}>{driver.car || '—'}</td>
                           <td className={styles.scoreCell}>
                             <input
                               type="number"
@@ -196,39 +341,35 @@ const CLASS_ORDER = {
                               max="100"
                               step="0.1"
                               className={styles.scoreInput}
-                              value={scores[driver.driverId] ?? ''}
+                              disabled={disabled}
+                              value={scores[scoreKey(driver.driverId, cls)] ?? ''}
                               onChange={(e) =>
                                 setScores((prev) => ({
                                   ...prev,
-                                  [driver.driverId]: e.target.value,
+                                  [scoreKey(driver.driverId, cls)]: e.target.value,
                                 }))
                               }
-                              onKeyDown={(e) => e.key === 'Enter' && saveScore(driver)}
                             />
                           </td>
-                          <td>
-                            <button
-                              className={`${styles.saveBtn} ${saved[driver.driverId] ? styles.savedBtn : ''}`}
-                              disabled={saving[driver.driverId]}
-                              onClick={() => saveScore(driver)}
-                            >
-                              {saving[driver.driverId]
-                                ? 'Saving...'
-                                : saved[driver.driverId]
-                                ? 'Saved!'
-                                : 'Save'}
-                            </button>
-                          </td>
+                          {driveType === 'Drift' && (
+                            <td className={styles.statusCell}>
+                              {driver.eliminated
+                                ? <span className={styles.eliminatedBadge}>Eliminated</span>
+                                : driver.qualifyRank
+                                ? <span className={styles.advancesBadge}>Advances</span>
+                                : null}
+                            </td>
+                          )}
                         </tr>
                       ))}
-                  </tbody>
-                </table>
-              </div>
-            );
-          })}
-        </div>
-      );
-    })}
-  </div>
-);
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
 }

@@ -17,6 +17,45 @@
   padding-bottom: 20px;
 }
 
+.saveAllBtn {
+  background: none;
+  border: 1px solid #FFBB00;
+  color: #FFBB00;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.saveAllBtn:hover:not(:disabled) {
+  background-color: #1a1400;
+}
+
+.saveAllBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.savedBtn {
+  background-color: #1a1400 !important;
+  color: #FFBB00 !important;
+  border-color: #FFBB00 !important;
+}
+
+.taNote {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #535653;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-left: 0.75rem;
+}
+
 .panelHeader h2 {
   margin: 0;
   font-size: 2rem;
@@ -24,6 +63,128 @@
   font-style: italic;
   letter-spacing: 1.5px;
   flex: 1;
+}
+.groupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.driverCount {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #535653;
+  margin-left: 8px;
+  letter-spacing: 0.05em;
+}
+
+/* Cutoff row */
+.cutoffRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cutoffLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #535653;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.cutoffInput {
+  width: 70px;
+  padding: 0.4rem 0.6rem;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  color: #ffffff;
+  outline: none;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.cutoffInput:focus {
+  border-color: #FFBB00;
+}
+
+.cutoffInput::-webkit-outer-spin-button,
+.cutoffInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.cutoffNote {
+  font-size: 0.65rem;
+  color: #535653;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cutoffBtn {
+  padding: 0.4rem 0.9rem;
+  background: none;
+  border: 1px solid #FFBB00;
+  color: #FFBB00;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cutoffBtn:hover:not(:disabled) {
+  background-color: #1a1400;
+}
+
+.cutoffBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Eliminated row */
+.eliminatedRow {
+  opacity: 0.4;
+}
+
+/* Status badges */
+.statusCell {
+  padding: 8px 16px;
+}
+
+.advancesBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #00cc44;
+  border: 1px solid #003a00;
+  background: #002a00;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.eliminatedBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ff4444;
+  border: 1px solid #3a0000;
+  background: #2a0000;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .redBar {

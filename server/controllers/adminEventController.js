@@ -51,6 +51,12 @@ export async function getAdminEventById(req, res) {
     if (!event) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
+
+    // Convert Map to plain object for JSON serialization
+    if (event.qualifyingCutoffs instanceof Map) {
+      event.qualifyingCutoffs = Object.fromEntries(event.qualifyingCutoffs);
+    }
+
     res.json({ success: true, data: attachDerivedFields(event) });
   } catch (err) {
     console.error('getAdminEventById error:', err);
@@ -211,56 +217,153 @@ export async function getApprovedDrivers(req, res) {
 export async function updateDriverScore(req, res) {
   try {
     const { id, driverId } = req.params;
-    const { score, driverName, driveType } = req.body;
+    const { score, driverName, driveType, class: driverClass } = req.body;
 
     const event = await Event.findById(id);
     if (!event) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    const entry = event.leaderboard.find((d) => d.driverId === driverId);
+    // Match by driverId + class combo — one driver can race in multiple classes
+    const entry = event.leaderboard.find(
+      (d) => d.driverId === driverId && d.class === (driverClass || null)
+    );
+
     if (entry) {
       entry.qualifyScore = score;
     } else {
-      event.leaderboard.push({ driverId, driverName, driveType, qualifyScore: score });
+      event.leaderboard.push({
+        driverId,
+        driverName,
+        driveType,
+        class:        driverClass || null,
+        qualifyScore: score,
+        qualifyRank:  0,
+        wins:         0,
+        losses:       0,
+        eliminated:   false,
+      });
     }
 
-    // Recompute ranks per driveType — sorted descending by score
-    // ['drift', 'timeattack'].forEach((type) => {
-    //   const group = event.leaderboard
-    //     .filter((d) => d.driveType === type)
-    //     .sort((a, b) => b.qualifyScore - a.qualifyScore);
-    //   group.forEach((d, i) => { d.qualifyRank = i + 1; });
-    // });
-const driveTypes  = ['Drift', 'Time Attack'];
-const classMap    = {
-  'Drift':       ['Class A', 'Class B', 'Class C'],
-  'Time Attack': ['AWD', 'RWD', 'FWD'],
-};
+    // Recompute ranks per driveType + class separately
+    const driveTypes = ['Drift', 'Time Attack'];
+    const classMap   = {
+      'Drift':       ['Class A', 'Class B', 'Class C'],
+      'Time Attack': ['Class AWD', 'Class RWD', 'Class FWD'],
+    };
 
-driveTypes.forEach((driveType) => {
-  (classMap[driveType] || []).forEach((cls) => {
-    const group = event.leaderboard
-      .filter((d) => d.driveType === driveType && d.class === cls)
-      .sort((a, b) => b.qualifyScore - a.qualifyScore);
-    group.forEach((d, i) => { d.qualifyRank = i + 1; });
-  });
-});
+    driveTypes.forEach((type) => {
+      (classMap[type] || []).forEach((cls) => {
+        const group = event.leaderboard
+          .filter((d) => d.driveType === type && d.class === cls)
+          .sort((a, b) => b.qualifyScore - a.qualifyScore);
+        group.forEach((d, i) => { d.qualifyRank = i + 1; });
+      });
+
+      // Handle unassigned class
+      const unassigned = event.leaderboard
+        .filter((d) => d.driveType === type && (!d.class || d.class === 'pending'))
+        .sort((a, b) => b.qualifyScore - a.qualifyScore);
+      unassigned.forEach((d, i) => { d.qualifyRank = i + 1; });
+    });
+
     await event.save();
 
     broadcast(`event-${id}`, 'event-updated', {
-      type: 'LEADERBOARD_UPDATE',
+      type:        'LEADERBOARD_UPDATE',
       leaderboard: event.leaderboard,
     });
 
     res.json({ success: true, data: event.leaderboard });
   } catch (err) {
-    console.error('updateDriverScore error:', err);
+    console.error('updateDriverScore error:', err.message);
     res.status(500).json({ success: false, message: 'Failed to update score' });
   }
 }
 
-// POST /api/admin/events/:id/bracket/generate
+// POST /api/admin/events/:id/leaderboard/bulk
+export async function saveAllScores(req, res) {
+  try {
+    const { id } = req.params;
+    const { scores } = req.body;
+
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+
+    for (const item of scores) {
+      const normalizeClass = (cls) => cls?.trim().toLowerCase() || '';
+
+      const entry = event.leaderboard.find(
+        (d) => String(d.driverId) === String(item.driverId) &&
+               normalizeClass(d.class) === normalizeClass(item.class)
+      );
+
+      if (entry) {
+        entry.qualifyScore = Number(item.score);
+        entry.driverName   = item.driverName;
+        entry.driveType    = item.driveType;
+        entry.class        = item.class || null;
+      } else {
+        event.leaderboard.push({
+          driverId:     String(item.driverId),
+          driverName:   item.driverName,
+          driveType:    item.driveType,
+          class:        item.class || null,
+          qualifyScore: Number(item.score),
+          qualifyRank:  0,
+          wins:         0,
+          losses:       0,
+          eliminated:   false,
+        });
+      }
+    }
+
+    // Recompute ranks — separate per driveType + class
+    const driveTypes = ['Drift', 'Time Attack'];
+    const classMap   = {
+      'Drift':       ['Class A', 'Class B', 'Class C'],
+      'Time Attack': ['Class AWD', 'Class RWD', 'Class FWD'],
+    };
+
+    driveTypes.forEach((type) => {
+      (classMap[type] || []).forEach((cls) => {
+        const group = event.leaderboard
+          .filter((d) =>
+            d.driveType === type &&
+            d.class?.trim().toLowerCase() === cls.toLowerCase()
+          )
+          .sort((a, b) => b.qualifyScore - a.qualifyScore);
+        group.forEach((d, i) => { d.qualifyRank = i + 1; });
+      });
+
+      // Handle unassigned
+      const unassigned = event.leaderboard
+        .filter((d) =>
+          d.driveType === type &&
+          (!d.class || d.class === 'pending' || d.class === 'Unassigned')
+        )
+        .sort((a, b) => b.qualifyScore - a.qualifyScore);
+      unassigned.forEach((d, i) => { d.qualifyRank = i + 1; });
+    });
+
+    // Tell Mongoose the leaderboard array was modified
+    event.markModified('leaderboard');
+    await event.save();
+
+    broadcast(`event-${id}`, 'event-updated', {
+      type:        'LEADERBOARD_UPDATE',
+      leaderboard: event.leaderboard,
+    });
+
+    res.json({ success: true, data: event.leaderboard });
+  } catch (err) {
+    console.error('saveAllScores error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to save scores' });
+  }
+}
+
 export async function generateBracket(req, res) {
   try {
     const event = await Event.findById(req.params.id);
@@ -268,32 +371,32 @@ export async function generateBracket(req, res) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
+    // Check if regenerating — if bracket exists, clear it first
+    const isRegenerate = event.bracketGenerated;
+
     const DRIFT_CLASSES = ['Class A', 'Class B', 'Class C'];
     const matches = [];
     let hasAtLeastOneClass = false;
 
     DRIFT_CLASSES.forEach((cls) => {
-      // Match driveType case-insensitively and match class
-    const classDrivers = event.leaderboard
-  .filter((d) =>
-    (d.driveType === 'Drift' || d.driveType === 'drift') &&
-    d.class === cls &&
-    !d.eliminated
-  )
+      const classDrivers = event.leaderboard
+        .filter((d) =>
+          (d.driveType === 'Drift' || d.driveType === 'drift') &&
+          d.class?.trim().toLowerCase() === cls.toLowerCase() &&
+          !d.eliminated &&
+          d.qualifyScore > 0
+        )
         .sort((a, b) => a.qualifyRank - b.qualifyRank);
 
-      // Skip this class if fewer than 2 drivers
       if (classDrivers.length < 2) return;
 
       hasAtLeastOneClass = true;
 
-      // Pad to nearest power of 2 for bye slots
       const padded = [...classDrivers];
       const n = Math.pow(2, Math.ceil(Math.log2(padded.length)));
       while (padded.length < n) padded.push(null);
 
-      // Seed: #1 vs last, #2 vs 2nd last, etc.
-      const classPrefix = cls.replace(' ', ''); // 'ClassA', 'ClassB', 'ClassC'
+      const classPrefix = cls.replace(' ', '');
       for (let i = 0; i < n / 2; i++) {
         const top    = padded[i];
         const bottom = padded[n - 1 - i];
@@ -310,30 +413,59 @@ export async function generateBracket(req, res) {
       }
     });
 
-// Find:
-if (!hasAtLeastOneClass) {
-  return res.status(400).json({
-    success: false,
-    message: 'Need at least 2 drift drivers in at least one class to generate a bracket',
-  });
-}
+    if (!hasAtLeastOneClass) {
+      return res.status(400).json({
+        success: false,
+        message: 'No drift class has 2 or more drivers with scores. Enter qualifying scores first.',
+      });
+    }
 
+    // Clear existing bracket and regenerate from scratch
     event.bracket          = matches;
     event.bracketGenerated = true;
     await event.save();
 
     broadcast(`event-${req.params.id}`, 'event-updated', {
-      type:    'BRACKET_GENERATED',
-      bracket: event.bracket,
+      type:        isRegenerate ? 'BRACKET_REGENERATED' : 'BRACKET_GENERATED',
+      bracket:     event.bracket,
+      regenerated: isRegenerate,
     });
 
-    res.json({ success: true, data: event.bracket });
+    res.json({
+      success:    true,
+      data:       event.bracket,
+      regenerated: isRegenerate,
+    });
   } catch (err) {
-    console.error('generateBracket error:', err);
+    console.error('generateBracket error:', err.message);
     res.status(500).json({ success: false, message: 'Failed to generate bracket' });
   }
 }
 
+// GET /api/admin/events/:id/scores
+export async function getEventScores(req, res) {
+  try {
+    const event = await Event.findById(req.params.id)
+      .select('leaderboard qualifyingCutoffs');
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+
+    // Convert Map to plain object
+    const cutoffs = event.qualifyingCutoffs instanceof Map
+      ? Object.fromEntries(event.qualifyingCutoffs)
+      : event.qualifyingCutoffs || {};
+
+    res.json({
+      success:  true,
+      data:     event.leaderboard,
+      cutoffs,              // include cutoffs in scores response too
+    });
+  } catch (err) {
+    console.error('getEventScores error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch scores' });
+  }
+}
 // PUT /api/admin/events/:id/bracket/:matchId/winner
 export async function setMatchWinner(req, res) {
   try {
@@ -353,39 +485,64 @@ export async function setMatchWinner(req, res) {
       return res.status(400).json({ success: false, message: 'Match already completed' });
     }
 
-    const loserId = match.driver1Id === winnerId ? match.driver2Id : match.driver1Id;
-    match.winnerId = winnerId;
-    match.status   = 'completed';
+    const loserId      = match.driver1Id === winnerId ? match.driver2Id : match.driver1Id;
+    match.winnerId     = winnerId;
+    match.status       = 'completed';
+    const matchClass   = match.class;
 
+    // Update wins/losses on leaderboard
     const winner = event.leaderboard.find((d) => d.driverId === winnerId);
     const loser  = event.leaderboard.find((d) => d.driverId === loserId);
-    if (winner) winner.wins += 1;
+    if (winner) winner.wins   += 1;
     if (loser)  { loser.losses += 1; loser.eliminated = true; }
 
-    // Auto-generate next round if all matches in current round are done
-    const currentRound = match.roundNum;
-    const roundMatches = event.bracket.filter((m) => m.roundNum === currentRound);
-    const allDone      = roundMatches.every((m) => m.status === 'completed');
+    // Check if all matches in this class + round are done
+    const currentRound  = match.roundNum;
+    const roundMatches  = event.bracket.filter(
+      (m) => m.roundNum === currentRound && m.class === matchClass
+    );
+    const allDone = roundMatches.every((m) => m.status === 'completed');
 
     if (allDone) {
-      const winners = roundMatches.map((m) => m.winnerId).filter(Boolean);
-      if (winners.length > 1) {
-        const nextRound = currentRound + 1;
-        const roundName = winners.length === 2 ? 'final' : `round${nextRound}`;
-        for (let i = 0; i < winners.length; i += 2) {
+      // Collect winners from this round for this class
+      const roundWinners = roundMatches
+        .map((m) => m.winnerId)
+        .filter(Boolean);
+
+      if (roundWinners.length > 1) {
+        // Generate next round matches for this class
+        const nextRound  = currentRound + 1;
+        const totalLeft  = roundWinners.length;
+        let roundName;
+
+        if (totalLeft === 2)  roundName = 'final';
+        else if (totalLeft === 4) roundName = 'semifinal';
+        else roundName = `round${nextRound}`;
+
+        const classPrefix = matchClass.replace(' ', '');
+
+        for (let i = 0; i < roundWinners.length; i += 2) {
+          const d1 = roundWinners[i];
+          const d2 = roundWinners[i + 1] || null;
           event.bracket.push({
-            matchId:   `R${nextRound}-M${Math.floor(i / 2) + 1}`,
+            matchId:   `${classPrefix}-R${nextRound}-M${Math.floor(i / 2) + 1}`,
             round:     roundName,
             roundNum:  nextRound,
-            driver1Id: winners[i],
-            driver2Id: winners[i + 1] || null,
-            winnerId:  winners[i + 1] ? null : winners[i],
-            status:    winners[i + 1] ? 'pending' : 'completed',
+            class:     matchClass,
+            driver1Id: d1,
+            driver2Id: d2,
+            winnerId:  d2 ? null : d1,
+            status:    d2 ? 'pending' : 'completed',
           });
         }
+      } else if (roundWinners.length === 1) {
+        // This class has a champion
+        console.log(`Champion for ${matchClass}: ${roundWinners[0]}`);
       }
     }
 
+    event.markModified('bracket');
+    event.markModified('leaderboard');
     await event.save();
 
     broadcast(`event-${id}`, 'event-updated', {
@@ -396,8 +553,53 @@ export async function setMatchWinner(req, res) {
 
     res.json({ success: true, data: { bracket: event.bracket, leaderboard: event.leaderboard } });
   } catch (err) {
-    console.error('setMatchWinner error:', err);
+    console.error('setMatchWinner error:', err.message);
     res.status(500).json({ success: false, message: 'Failed to set match winner' });
+  }
+}
+
+// POST /api/admin/events/:id/cutoff
+export async function setCutoff(req, res) {
+  try {
+    const { id } = req.params;
+    const { driveType, class: cls, cutoff } = req.body;
+
+    // Cutoff must be even and at least 2
+    if (cutoff % 2 !== 0 || cutoff < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cutoff must be an even number (2, 4, 6, 8...)',
+      });
+    }
+
+    const key   = `${driveType}__${cls}`;
+    const event = await Event.findById(id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+
+    event.qualifyingCutoffs.set(key, cutoff);
+
+    // Apply cutoff — mark drivers outside cutoff as eliminated
+    const group = event.leaderboard
+      .filter((d) =>
+        d.driveType === driveType &&
+        d.class?.trim().toLowerCase() === cls.trim().toLowerCase()
+      )
+      .sort((a, b) => a.qualifyRank - b.qualifyRank);
+
+    group.forEach((d, i) => {
+      d.eliminated = i >= cutoff;
+    });
+
+    event.markModified('leaderboard');
+    event.markModified('qualifyingCutoffs');
+    await event.save();
+
+    res.json({ success: true, data: event.leaderboard });
+  } catch (err) {
+    console.error('setCutoff error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to set cutoff' });
   }
 }
 

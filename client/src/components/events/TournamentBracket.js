@@ -5,6 +5,13 @@ import { getBracket } from '@/services/eventService';
 import styles from './TournamentBracket.module.css';
 
 export default function TournamentBracket({ eventId, leaderboard = [] }) {
+
+    useEffect(() => {
+    if (!bracketUpdate) return;
+    setBracket(bracketUpdate.bracket ?? []);
+    setGenerated(true);
+  }, [bracketUpdate]);
+
   const [bracket, setBracket]       = useState([]);
   const [generated, setGenerated]   = useState(false);
   const [loading, setLoading]       = useState(true);
@@ -22,22 +29,24 @@ export default function TournamentBracket({ eventId, leaderboard = [] }) {
       .finally(() => setLoading(false));
   }, [eventId]);
 
-  // SSE — live bracket updates
-  useEffect(() => {
-    if (!eventId) return;
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    const es = new EventSource(`${API_URL}/api/events/${eventId}/stream`);
+  // // SSE — live bracket updates
+  // useEffect(() => {
+  //   if (!eventId) return;
+  //   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  //   const es = new EventSource(`${API_URL}/api/events/${eventId}/stream`);
 
-    es.addEventListener('event-updated', (e) => {
-      const patch = JSON.parse(e.data);
-      if (patch.type === 'BRACKET_UPDATE' || patch.type === 'BRACKET_GENERATED') {
-        setBracket(patch.bracket ?? []);
-        setGenerated(true);
-      }
-    });
+  //   es.addEventListener('event-updated', (e) => {
+  //     const patch = JSON.parse(e.data);
+  //     if (patch.type === 'BRACKET_UPDATE' || patch.type === 'BRACKET_GENERATED') {
+  //       setBracket(patch.bracket ?? []);
+  //       setGenerated(true);
+  //     }
+  //   });
 
-    return () => es.close();
-  }, [eventId]);
+  //   return () => es.close();
+  // }, [eventId]);
+  
+    
 
   // Helper — get driver name from leaderboard by id
   function getDriverName(driverId) {

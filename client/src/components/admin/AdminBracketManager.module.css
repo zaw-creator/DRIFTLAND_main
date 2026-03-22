@@ -17,6 +17,16 @@
   padding-bottom: 20px;
 }
 
+.regenerateBtn {
+  background: none;
+  border: 1px solid #FFBB00;
+  color: #FFBB00;
+}
+
+.regenerateBtn:hover:not(:disabled) {
+  background-color: #1a1400;
+}
+
 .panelHeader h2 {
   margin: 0;
   font-size: 2rem;

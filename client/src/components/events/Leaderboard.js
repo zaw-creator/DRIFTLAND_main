@@ -5,6 +5,13 @@ import { getLeaderboard } from '@/services/eventService';
 import styles from './Leaderboard.module.css';
 
 export default function Leaderboard({ eventId, limit = null }) {
+
+    useEffect(() => {
+    if (!bracketUpdate) return;
+    setBracket(bracketUpdate.bracket ?? []);
+    setGenerated(true);
+  }, [bracketUpdate]);
+
   const [drivers, setDrivers]   = useState([]);
   const [loading, setLoading]   = useState(true);
   const [session, setSession]   = useState('qualifying');
@@ -21,29 +28,29 @@ export default function Leaderboard({ eventId, limit = null }) {
   }, [eventId]);
 
   // SSE — live leaderboard updates
-  useEffect(() => {
-    if (!eventId) return;
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    const es = new EventSource(`${API_URL}/api/events/${eventId}/stream`);
+  // useEffect(() => {
+  //   if (!eventId) return;
+  //   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  //   const es = new EventSource(`${API_URL}/api/events/${eventId}/stream`);
 
-    es.addEventListener('event-updated', (e) => {
-      const patch = JSON.parse(e.data);
-      if (patch.type === 'LEADERBOARD_UPDATE' && patch.leaderboard) {
-        setDrivers(patch.leaderboard);
-        // Flash updated rows
-        patch.leaderboard.forEach((d) => {
-          setUpdatedId(d.driverId);
-          setTimeout(() => setUpdatedId(null), 1500);
-        });
-      }
-      if (patch.type === 'EVENT_ENDED') {
-        // Re-fetch final state
-        getLeaderboard(eventId).then((res) => setDrivers(res?.data ?? []));
-      }
-    });
+  //   es.addEventListener('event-updated', (e) => {
+  //     const patch = JSON.parse(e.data);
+  //     if (patch.type === 'LEADERBOARD_UPDATE' && patch.leaderboard) {
+  //       setDrivers(patch.leaderboard);
+  //       // Flash updated rows
+  //       patch.leaderboard.forEach((d) => {
+  //         setUpdatedId(d.driverId);
+  //         setTimeout(() => setUpdatedId(null), 1500);
+  //       });
+  //     }
+  //     if (patch.type === 'EVENT_ENDED') {
+  //       // Re-fetch final state
+  //       getLeaderboard(eventId).then((res) => setDrivers(res?.data ?? []));
+  //     }
+  //   });
 
-    return () => es.close();
-  }, [eventId]);
+  //   return () => es.close();
+  // }, [eventId]);
 
   // Filter by session tab, then apply limit for top-5 mode
   const filtered = drivers

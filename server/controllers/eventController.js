@@ -148,16 +148,21 @@ export async function getLeaderboard(req, res) {
     res.status(500).json({ success: false, message: 'Failed to fetch leaderboard' });
   }
 }
-// GET /api/events/:id/bracket
 export async function getBracket(req, res) {
   try {
-    const event = await Event.findById(req.params.id).select('bracket bracketGenerated');
+    const event = await Event.findById(req.params.id)
+      .select('bracket bracketGenerated');
 
     if (!event) {
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    res.json({ success: true, bracket: event.bracket, generated: event.bracketGenerated });
+    // Return bracket and generated flag directly — not nested under data
+    res.json({
+      success:   true,
+      bracket:   event.bracket    ?? [],
+      generated: event.bracketGenerated ?? false,
+    });
   } catch (err) {
     console.error('getBracket error:', err);
     res.status(500).json({ success: false, message: 'Failed to fetch bracket' });

@@ -1,6 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { createRequire } from 'module';
 import multer from 'multer';
+
+const require = createRequire(import.meta.url);
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,13 +11,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Main site events folder — completely separate from register site
 const eventImageStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder:         'driftland-main/events',  // ← stored here in Cloudinary
+    folder:          'driftland-main/events',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [
+    transformation:  [
       { width: 1200, height: 600, crop: 'fill', quality: 'auto' }
     ],
   },

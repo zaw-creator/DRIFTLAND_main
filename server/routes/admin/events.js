@@ -18,6 +18,10 @@ import {
   forceEndEvent,
   patchEvent,
   getRegisterSiteEvents,
+  saveAllScores,
+  getEventScores,
+  setCutoff,
+ 
 } from '../../controllers/adminEventController.js';
 
 const router = express.Router();
@@ -43,5 +47,7 @@ router.get('/:id/drivers',                     getApprovedDrivers);
 router.put('/:id/leaderboard/:driverId',       updateDriverScore);
 router.post('/:id/bracket/generate',           generateBracket);
 router.put('/:id/bracket/:matchId/winner',     setMatchWinner);
-
+router.post('/:id/leaderboard/bulk', saveAllScores);
+router.get('/:id/scores', getEventScores);
+router.post('/:id/cutoff', setCutoff);
 export default router;

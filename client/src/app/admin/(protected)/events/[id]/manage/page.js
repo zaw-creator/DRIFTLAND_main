@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import AdminLeaderboardPanel from '@/components/admin/AdminLeaderboardPanel';
 import AdminBracketManager from '@/components/admin/AdminBracketManager';
@@ -8,7 +8,7 @@ import AdminSafetyRulesEditor from '@/components/admin/AdminSafetyRulesEditor';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
 import styles from './page.module.css';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
 function getCookie(name) {
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -19,7 +19,7 @@ async function authRequest(path, options = {}) {
   const token = getCookie('adminToken');
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
-    credentials: 'include',           // send cookies with every request
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
@@ -31,7 +31,6 @@ async function authRequest(path, options = {}) {
     throw new Error(body.message || body.error || `Request failed: ${res.status}`);
   }
   const json = await res.json();
-  // handle both { data: ... } and { success, data: ... } shapes
   return json.data ?? json;
 }
 
@@ -41,51 +40,72 @@ export default function ManageEventPage() {
   const router = useRouter();
   const { id } = useParams();
 
-  const [event, setEvent]           = useState(null);
+  const [event, setEvent]             = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState(null);
-  const [activeTab, setActiveTab]   = useState('Safety Rules');
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState(null);
+  const [activeTab, setActiveTab]     = useState('Safety Rules');
+  const [endDialog, setEndDialog]     = useState(false);
+  const [ending, setEnding]           = useState(false);
+  const [endError, setEndError]       = useState(null);
+  const [bracketUpdate, setBracketUpdate]           = useState(null);
+  const [leaderboardUpdate, setLeaderboardUpdate]   = useState(null);
 
-  // End event confirm dialog
-  const [endDialog, setEndDialog]   = useState(false);
-  const [ending, setEnding]         = useState(false);
-  const [endError, setEndError]     = useState(null);
-
-  // Fetch event + leaderboard
-  useEffect(() => {
+  // ── Fetch event data ────────────────────────────────────────────────────
+  const fetchData = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     setError(null);
-
-    Promise.all([
-      authRequest(`/api/admin/events/${id}`),
-      authRequest(`/api/events/${id}/leaderboard`).catch(() => ({ data: [] })),
-    ])
-      .then(([eventData, lbData]) => {
-        setEvent(eventData);
-        setLeaderboard(lbData?.data ?? []);
-      })
-      .catch((err) => setError(err.message || 'Failed to load event'))
-      .finally(() => setLoading(false));
+    try {
+      const [eventData, scoresData] = await Promise.all([
+        authRequest(`/api/admin/events/${id}`),
+        authRequest(`/api/admin/events/${id}/scores`).catch(() => []),
+      ]);
+      setEvent(eventData);
+      setLeaderboard(Array.isArray(scoresData) ? scoresData : []);
+    } catch (err) {
+      setError(err.message || 'Failed to load event');
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  // SSE — update event status live (e.g. auto-ended)
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // ── SSE ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!id) return;
     const es = new EventSource(`${API_URL}/api/events/${id}/stream`);
+
     es.addEventListener('event-updated', (e) => {
-      const patch = JSON.parse(e.data);
-      if (patch.type === 'EVENT_ENDED') {
-        setEvent((prev) => ({ ...prev, status: 'ended' }));
-      }
-      if (patch.type === 'LEADERBOARD_UPDATE') {
-        setLeaderboard(patch.leaderboard ?? []);
+      try {
+        const patch = JSON.parse(e.data);
+        if (patch.type === 'EVENT_ENDED') {
+          setEvent((prev) => ({ ...prev, status: 'ended' }));
+        }
+        if (patch.type === 'LEADERBOARD_UPDATE') {
+          setLeaderboard(patch.leaderboard ?? []);
+          setLeaderboardUpdate(patch.leaderboard ?? []);
+        }
+        if (
+          patch.type === 'BRACKET_UPDATE' ||
+          patch.type === 'BRACKET_GENERATED' ||
+          patch.type === 'BRACKET_REGENERATED'
+        ) {
+          setBracketUpdate({ bracket: patch.bracket ?? [] });
+        }
+      } catch (err) {
+        console.error('SSE parse error:', err);
       }
     });
+
+    es.onerror = () => es.close();
     return () => es.close();
   }, [id]);
 
+  // ── Force end ───────────────────────────────────────────────────────────
   async function handleForceEnd() {
     setEnding(true);
     setEndError(null);
@@ -100,7 +120,7 @@ export default function ManageEventPage() {
     }
   }
 
-  // ── Loading state ────────────────────────────────────────────────────────
+  // ── Loading / error states ───────────────────────────────────────────────
   if (loading) {
     return (
       <div className={styles.page}>
@@ -128,13 +148,14 @@ export default function ManageEventPage() {
 
   if (!event) return null;
 
+  // ── Derived state — MUST be after null checks ────────────────────────────
   const isEnded    = event.status === 'ended' || event.status === 'archived';
   const isUpcoming = event.status === 'upcoming';
 
   return (
     <div className={styles.page}>
 
-      {/* ── Header ──────────────────────────────────────────────────────── */}
+      {/* ── Header ────────────────────────────────────────────────────── */}
       <div className={styles.header}>
         <button
           className={styles.backBtn}
@@ -153,12 +174,10 @@ export default function ManageEventPage() {
           </div>
 
           <div className={styles.headerRight}>
-            {/* Status badge */}
             <span className={`${styles.statusBadge} ${styles[event.status]}`}>
               {event.status.toUpperCase()}
             </span>
 
-            {/* Register event ID field */}
             <div className={styles.registerIdRow}>
               <span className={styles.registerIdLabel}>Register Event ID</span>
               <RegisterEventIdField
@@ -168,7 +187,6 @@ export default function ManageEventPage() {
               />
             </div>
 
-            {/* Edit event button */}
             <button
               className={styles.editBtn}
               onClick={() => router.push(`/admin/events/${id}/edit`)}
@@ -176,7 +194,6 @@ export default function ManageEventPage() {
               Edit details
             </button>
 
-            {/* Force end button — only show if not already ended */}
             {!isEnded && (
               <button
                 className={styles.endBtn}
@@ -197,7 +214,7 @@ export default function ManageEventPage() {
         </div>
       </div>
 
-      {/* ── Tab bar ─────────────────────────────────────────────────────── */}
+      {/* ── Tab bar ───────────────────────────────────────────────────── */}
       <div className={styles.tabBar}>
         {TABS.map((tab) => (
           <button
@@ -210,7 +227,7 @@ export default function ManageEventPage() {
         ))}
       </div>
 
-      {/* ── Tab content ─────────────────────────────────────────────────── */}
+      {/* ── Tab content ───────────────────────────────────────────────── */}
       <div className={styles.tabContent}>
 
         {activeTab === 'Safety Rules' && (
@@ -252,12 +269,13 @@ export default function ManageEventPage() {
               eventId={id}
               leaderboard={leaderboard}
               disabled={isEnded}
+              bracketUpdate={bracketUpdate}
             />
           </>
         )}
       </div>
 
-      {/* ── Force end confirm dialog ────────────────────────────────────── */}
+      {/* ── Confirm dialog ────────────────────────────────────────────── */}
       <ConfirmDialog
         open={endDialog}
         title="End Event"
@@ -274,10 +292,9 @@ export default function ManageEventPage() {
   );
 }
 
-// ── Inline sub-component: register event ID field ─────────────────────────────
-// Small self-contained field — not worth a separate file
+// ── Register event ID field ───────────────────────────────────────────────────
 function RegisterEventIdField({ eventId, initialValue, onSaved }) {
-  const [value, setValue]   = useState(initialValue);
+  const [value, setValue] = useState(initialValue);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved]   = useState(false);
 

@@ -23,10 +23,10 @@ const safetyRuleSchema = new mongoose.Schema(
 // ── NEW: Leaderboard entry (temp — cleared after 7 days) ──────────────────────
 const leaderboardEntrySchema = new mongoose.Schema(
   {
-    driverId:     { type: String, required: true }, // from register DB
+    driverId:     { type: String, required: true },
     driverName:   { type: String, required: true },
-    driveType: { type: String, enum: ['Drift', 'Time Attack', 'Both'] },
-class:     { type: String, default: null },
+    driveType:    { type: String },
+    class:        { type: String, default: null },
     qualifyScore: { type: Number, default: 0 },
     qualifyRank:  { type: Number, default: 0 },
     wins:         { type: Number, default: 0 },
@@ -76,6 +76,12 @@ eventEndDate: { type: Date, default: null },
     image:                      { type: String, default: null },
     startTime:                  { type: String, default: null },
     endTime:                    { type: String, default: null },
+    // Add to eventSchema
+qualifyingCutoffs: {
+  type: Map,
+  of:   Number,
+  default: {},
+},
     enabledRoles: {
       driver:      { type: Boolean, default: true },
       participant: { type: Boolean, default: true },

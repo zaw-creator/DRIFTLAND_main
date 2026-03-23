@@ -4,17 +4,12 @@ import { useState, useEffect } from 'react';
 import { getLeaderboard } from '@/services/eventService';
 import styles from './Leaderboard.module.css';
 
-export default function Leaderboard({ eventId, limit = null }) {
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
-    useEffect(() => {
-    if (!bracketUpdate) return;
-    setBracket(bracketUpdate.bracket ?? []);
-    setGenerated(true);
-  }, [bracketUpdate]);
-
-  const [drivers, setDrivers]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [session, setSession]   = useState('qualifying');
+export default function Leaderboard({ eventId, limit = null, leaderboardUpdate = null }) {
+  const [drivers, setDrivers]     = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [session, setSession]     = useState('qualifying');
   const [updatedId, setUpdatedId] = useState(null);
 
   // Initial fetch
@@ -27,39 +22,18 @@ export default function Leaderboard({ eventId, limit = null }) {
       .finally(() => setLoading(false));
   }, [eventId]);
 
-  // SSE — live leaderboard updates
-  // useEffect(() => {
-  //   if (!eventId) return;
-  //   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  //   const es = new EventSource(`${API_URL}/api/events/${eventId}/stream`);
+  // Receive live updates from parent SSE
+  useEffect(() => {
+    if (!leaderboardUpdate) return;
+    setDrivers(leaderboardUpdate);
+  }, [leaderboardUpdate]);
 
-  //   es.addEventListener('event-updated', (e) => {
-  //     const patch = JSON.parse(e.data);
-  //     if (patch.type === 'LEADERBOARD_UPDATE' && patch.leaderboard) {
-  //       setDrivers(patch.leaderboard);
-  //       // Flash updated rows
-  //       patch.leaderboard.forEach((d) => {
-  //         setUpdatedId(d.driverId);
-  //         setTimeout(() => setUpdatedId(null), 1500);
-  //       });
-  //     }
-  //     if (patch.type === 'EVENT_ENDED') {
-  //       // Re-fetch final state
-  //       getLeaderboard(eventId).then((res) => setDrivers(res?.data ?? []));
-  //     }
-  //   });
-
-  //   return () => es.close();
-  // }, [eventId]);
-
-  // Filter by session tab, then apply limit for top-5 mode
   const filtered = drivers
     .filter((d) => session === 'qualifying' || !d.eliminated)
     .sort((a, b) => a.qualifyRank - b.qualifyRank);
 
   const displayed = limit ? filtered.slice(0, limit) : filtered;
 
-  // Gap calculation vs leader
   const leaderScore = displayed[0]?.qualifyScore ?? 0;
 
   if (loading) {
@@ -89,7 +63,6 @@ export default function Leaderboard({ eventId, limit = null }) {
           </h1>
         </div>
 
-        {/* Session tabs — only show on full leaderboard */}
         {!limit && (
           <div className={styles.sessionControls}>
             <button
@@ -131,7 +104,11 @@ export default function Leaderboard({ eventId, limit = null }) {
               return (
                 <tr
                   key={item.driverId}
-                  className={`${styles.driverRow} ${isUpdated ? styles.recentlyUpdated : ''} ${item.eliminated ? styles.eliminated : ''}`}
+                  className={`
+                    ${styles.driverRow}
+                    ${isUpdated ? styles.recentlyUpdated : ''}
+                    ${item.eliminated ? styles.eliminated : ''}
+                  `}
                 >
                   <td className={styles.posCell}>
                     <div className={`${styles.posBadge} ${item.qualifyRank === 1 ? styles.pos1 : ''}`}>
@@ -140,10 +117,10 @@ export default function Leaderboard({ eventId, limit = null }) {
                   </td>
                   <td className={styles.driverCell}>
                     <span className={styles.lastName}>
-                      {item.driverName.split(' ').pop()}
+                      {item.driverName?.split(' ').pop()}
                     </span>
                     <span className={styles.firstName}>
-                      {item.driverName.split(' ').slice(0, -1).join(' ')}
+                      {item.driverName?.split(' ').slice(0, -1).join(' ')}
                     </span>
                   </td>
                   <td className={`${styles.teamCell} ${styles.hideMobile}`}>

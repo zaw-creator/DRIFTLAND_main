@@ -6,10 +6,12 @@ import Image from 'next/image';
 import StatusBadge from '@/components/events/StatusBadge';
 import DriveTypeBadge from '@/components/events/DriveTypeBadge';
 import RoleSelector from '@/components/events/RoleSelector';
-import Leaderboard from '@/components/events/Leaderboard';           // updated
-import TournamentBracket from '@/components/events/TournamentBracket'; 
+import Leaderboard from '@/components/events/Leaderboard';
+import TournamentBracket from '@/components/events/TournamentBracket';
 import { getEventById, getLeaderboard } from '@/services/eventService';
 import styles from './page.module.css';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
 function formatDateTime(dateStr) {
   const date = new Date(dateStr);
@@ -18,7 +20,11 @@ function formatDateTime(dateStr) {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  }) + ' · ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true });
+  }) + ' · ' + date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
 }
 
 function formatDeadline(dateStr) {
@@ -47,14 +53,17 @@ function groupClassesByDriveType(classes) {
 export default function EventDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const { id } = params;
+  const { id }  = params;
 
-  const [event, setEvent] = useState(null);
-   const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [event, setEvent]             = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
+  const [leaderboardUpdate, setLeaderboardUpdate] = useState(null);
+  const [bracketUpdate, setBracketUpdate]         = useState(null);
 
+  // Fetch event
   useEffect(() => {
     if (!id) return;
     setLoading(true);
@@ -64,30 +73,59 @@ export default function EventDetailPage() {
       .catch((err) => setError(err.message || 'Failed to load event'))
       .finally(() => setLoading(false));
   }, [id]);
- // NEW — fetch leaderboard for bracket driver name lookups
+
+  // Fetch leaderboard for bracket driver name lookups
   useEffect(() => {
     if (!id) return;
     getLeaderboard(id)
       .then((res) => setLeaderboard(res?.data ?? []))
       .catch(() => {});
   }, [id]);
-  // Reset role selection when navigating to a different event
+
+  // Reset role on navigation
   useEffect(() => {
     setSelectedRole(null);
   }, [id]);
 
-  // SSE — live capacity + role updates for this event
+  // SSE — live updates
   useEffect(() => {
     if (!event?._id) return;
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     const es = new EventSource(`${API_URL}/api/events/${event._id}/stream`);
+
     es.addEventListener('event-updated', (e) => {
-      const patch = JSON.parse(e.data);
-      setEvent((prev) => ({ ...prev, ...patch }));
+      try {
+        const patch = JSON.parse(e.data);
+
+        // Capacity / role updates
+        if (!patch.type) {
+          setEvent((prev) => ({ ...prev, ...patch }));
+        }
+
+        if (patch.type === 'LEADERBOARD_UPDATE') {
+          setLeaderboardUpdate(patch.leaderboard ?? []);
+        }
+
+        if (
+          patch.type === 'BRACKET_UPDATE' ||
+          patch.type === 'BRACKET_GENERATED' ||
+          patch.type === 'BRACKET_REGENERATED'
+        ) {
+          setBracketUpdate({ bracket: patch.bracket ?? [] });
+        }
+
+        if (patch.type === 'EVENT_ENDED') {
+          setEvent((prev) => ({ ...prev, status: 'ended' }));
+        }
+      } catch (err) {
+        console.error('SSE parse error:', err);
+      }
     });
+
+    es.onerror = () => es.close();
     return () => es.close();
   }, [event?._id]);
 
+  // ── Loading state ──────────────────────────────────────────────────────────
   if (loading) {
     return (
       <main className={styles.page}>
@@ -104,15 +142,8 @@ export default function EventDetailPage() {
       </main>
     );
   }
-    const showLeaderboard = event?.status === 'active' ||
-                          event?.status === 'ended'   ||
-                          event?.status === 'archived';
 
-  const showBracket = event?.bracketGenerated &&
-                      event?.driveTypes?.some(t =>
-                        t.toLowerCase().includes('drift')
-                      );
-
+  // ── Error state ────────────────────────────────────────────────────────────
   if (error) {
     return (
       <main className={styles.page}>
@@ -122,24 +153,13 @@ export default function EventDetailPage() {
             ← Back to Events
           </button>
         </div>
-          {showLeaderboard && (
-        <div className={styles.section}>
-          <Leaderboard eventId={id} limit={5} />
-        </div>
-      )}
-
-      {/* ── NEW: Tournament bracket ──────────────────────────────── */}
-      {showBracket && (
-        <div className={styles.section}>
-          <TournamentBracket eventId={id} leaderboard={leaderboard} />
-        </div>
-      )}
       </main>
     );
   }
 
   if (!event) return null;
 
+  // ── Derived values — after null check ─────────────────────────────────────
   const {
     name, description, eventDate, location, driveTypes, status, image,
     registrationDeadline, classes = [], waitlistCount,
@@ -150,17 +170,20 @@ export default function EventDetailPage() {
     enabledRoles,
   } = event;
 
-  const isPrevious = status === 'previous';
+  const isPrevious     = status === 'previous' || status === 'ended' || status === 'archived';
   const deadlinePassed = isDeadlinePassed(registrationDeadline);
-  const classGroups = groupClassesByDriveType(classes);
+  const classGroups    = groupClassesByDriveType(classes);
 
-  // Determine register button disabled reason
+  const showLeaderboard = status === 'active' || status === 'ended' || status === 'archived';
+  const showBracket     = event?.bracketGenerated &&
+                          driveTypes?.some(t => t.toLowerCase().includes('drift'));
+
   function getRegisterState() {
     if (!selectedRole) return { disabled: true, label: 'Register' };
     if (deadlinePassed) return { disabled: true, label: 'Registration Closed' };
-    if (selectedRole === 'Driver' && isDriverFull) return { disabled: true, label: 'FULL' };
+    if (selectedRole === 'Driver'      && isDriverFull)      return { disabled: true, label: 'FULL' };
     if (selectedRole === 'Participant' && isParticipantFull) return { disabled: true, label: 'FULL' };
-    if (selectedRole === 'Rider' && isRiderFull) return { disabled: true, label: 'FULL' };
+    if (selectedRole === 'Rider'       && isRiderFull)       return { disabled: true, label: 'FULL' };
     return { disabled: false, label: 'Register' };
   }
 
@@ -173,12 +196,13 @@ export default function EventDetailPage() {
 
   return (
     <main className={styles.page}>
-      {/* ── Back link ─────────────────────────────────────────── */}
+
+      {/* ── Back link ───────────────────────────────────────────── */}
       <button className={styles.backBtn} onClick={() => router.push('/events')}>
         ← Back to Events
       </button>
 
-      {/* ── Banner image ──────────────────────────────────────── */}
+      {/* ── Banner image ────────────────────────────────────────── */}
       <div className={styles.banner}>
         {image ? (
           <Image
@@ -196,7 +220,7 @@ export default function EventDetailPage() {
         )}
       </div>
 
-      {/* ── Event info ────────────────────────────────────────── */}
+      {/* ── Event info ──────────────────────────────────────────── */}
       <div className={styles.content}>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>{name}</h1>
@@ -234,11 +258,10 @@ export default function EventDetailPage() {
           </div>
         )}
 
-        {/* ── Capacity breakdown ────────────────────────────── */}
+        {/* ── Capacity ────────────────────────────────────────── */}
         <div className={styles.capacitySection}>
           <h2 className={styles.sectionHeading}>Capacity</h2>
 
-          {/* Driver classes grouped by drive type */}
           {Object.entries(classGroups).map(([driveType, classList]) => (
             <div key={driveType} className={styles.driveTypeGroup}>
               <h3 className={styles.driveTypeHeading}>{driveType}</h3>
@@ -252,12 +275,9 @@ export default function EventDetailPage() {
                         <td className={styles.classCount}>
                           {cls.registeredCount} / {cls.capacity}
                         </td>
-                        {classFull && (
-                          <td>
-                            <span className={styles.fullBadge}>FULL</span>
-                          </td>
-                        )}
-                        {!classFull && <td />}
+                        <td>
+                          {classFull && <span className={styles.fullBadge}>FULL</span>}
+                        </td>
                       </tr>
                     );
                   })}
@@ -271,7 +291,6 @@ export default function EventDetailPage() {
             </div>
           ))}
 
-          {/* Participant & Rider rows */}
           <table className={styles.classTable}>
             <tbody>
               <tr className={styles.classRow}>
@@ -307,16 +326,18 @@ export default function EventDetailPage() {
           </table>
         </div>
 
-        {/* ── CTA section ───────────────────────────────────── */}
+        {/* ── CTA ─────────────────────────────────────────────── */}
         {!isPrevious && (
           <div className={styles.ctaSection}>
-            <RoleSelector value={selectedRole} onChange={setSelectedRole} enabledRoles={enabledRoles} />
-
+            <RoleSelector
+              value={selectedRole}
+              onChange={setSelectedRole}
+              enabledRoles={enabledRoles}
+            />
             <div className={styles.registerRow}>
               {deadlinePassed && (
                 <p className={styles.closedNotice}>⛔ Registration deadline has passed.</p>
               )}
-
               <button
                 className={`${styles.registerBtn} ${registerDisabled ? styles.registerDisabled : ''}`}
                 disabled={registerDisabled}
@@ -331,6 +352,28 @@ export default function EventDetailPage() {
         {isPrevious && (
           <div className={styles.previousNotice}>
             <p>This event has ended. Registration is no longer available.</p>
+          </div>
+        )}
+
+        {/* ── Leaderboard ─────────────────────────────────────── */}
+        {showLeaderboard && (
+          <div className={styles.section}>
+            <Leaderboard
+              eventId={id}
+              limit={5}
+              leaderboardUpdate={leaderboardUpdate}
+            />
+          </div>
+        )}
+
+        {/* ── Tournament bracket ──────────────────────────────── */}
+        {showBracket && (
+          <div className={styles.section}>
+            <TournamentBracket
+              eventId={id}
+              leaderboard={leaderboard}
+              bracketUpdate={bracketUpdate}
+            />
           </div>
         )}
       </div>

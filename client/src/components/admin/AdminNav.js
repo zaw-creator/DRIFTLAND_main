@@ -19,7 +19,14 @@ export default function AdminNav() {
 
   return (
     <nav className={styles.nav}>
-      <div className={styles.brand}>DRIFTLAND Admin</div>
+      <div className={styles.brand}>
+        <div>
+          <span className={styles.accent}>Drift</span>
+          <span className={styles.brandName}>Land</span>
+        </div>
+        <p className={styles.subtitle}>Admin Portal</p>
+      </div>
+
       <ul className={styles.links}>
         <li>
           <Link href="/admin/events" className={styles.link}>
@@ -27,6 +34,7 @@ export default function AdminNav() {
           </Link>
         </li>
       </ul>
+
       <button className={styles.logoutBtn} onClick={handleLogout}>
         Logout
       </button>

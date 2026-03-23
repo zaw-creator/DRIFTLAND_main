@@ -1,0 +1,380 @@
+.panel {
+  background-color: #050505;
+  color: #ffffff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-transform: uppercase;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 20px;
+}
+
+.saveAllBtn {
+  background: none;
+  border: 1px solid #FFBB00;
+  color: #FFBB00;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.saveAllBtn:hover:not(:disabled) {
+  background-color: #1a1400;
+}
+
+.saveAllBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.savedBtn {
+  background-color: #1a1400 !important;
+  color: #FFBB00 !important;
+  border-color: #FFBB00 !important;
+}
+
+.taNote {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #535653;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-left: 0.75rem;
+}
+
+.panelHeader h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1.5px;
+  flex: 1;
+}
+.groupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.driverCount {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #535653;
+  margin-left: 8px;
+  letter-spacing: 0.05em;
+}
+
+/* Cutoff row */
+.cutoffRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cutoffLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #535653;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.cutoffInput {
+  width: 70px;
+  padding: 0.4rem 0.6rem;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  color: #ffffff;
+  outline: none;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.cutoffInput:focus {
+  border-color: #FFBB00;
+}
+
+.cutoffInput::-webkit-outer-spin-button,
+.cutoffInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.cutoffNote {
+  font-size: 0.65rem;
+  color: #535653;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cutoffBtn {
+  padding: 0.4rem 0.9rem;
+  background: none;
+  border: 1px solid #FFBB00;
+  color: #FFBB00;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cutoffBtn:hover:not(:disabled) {
+  background-color: #1a1400;
+}
+
+.cutoffBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Eliminated row */
+.eliminatedRow {
+  opacity: 0.4;
+}
+
+/* Status badges */
+.statusCell {
+  padding: 8px 16px;
+}
+
+.advancesBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #00cc44;
+  border: 1px solid #003a00;
+  background: #002a00;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.eliminatedBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ff4444;
+  border: 1px solid #3a0000;
+  background: #2a0000;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.redBar {
+  width: 8px;
+  height: 40px;
+  background-color: #e10600;
+  transform: skewX(-15deg);
+  flex-shrink: 0;
+}
+
+/* Drive type group */
+.group {
+  margin-bottom: 40px;
+}
+
+.groupHeading {
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-style: italic;
+  color: #666;
+  letter-spacing: 2px;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Score table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0a0a0c;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.table th {
+  background: #111;
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 12px 16px;
+  letter-spacing: 1px;
+  text-align: left;
+}
+
+.row {
+  border-bottom: 1px solid #1a1a1a;
+  transition: background 0.15s;
+}
+
+.row:hover {
+  background: #141417;
+}
+
+.rank {
+  padding: 12px 16px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: #e10600;
+  width: 60px;
+}
+
+.name {
+  padding: 12px 16px;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.cls {
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 700;
+}
+
+.scoreCell {
+  padding: 8px 16px;
+  width: 140px;
+}
+
+.scoreInput {
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  width: 100%;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: right;
+}
+
+.scoreInput:focus {
+  border-color: #e10600;
+}
+
+/* Remove default number input arrows */
+.scoreInput::-webkit-outer-spin-button,
+.scoreInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.scoreInput[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Save button */
+.saveBtn {
+  background: #111;
+  color: #888;
+  border: 1px solid #333;
+  padding: 8px 20px;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  transform: skewX(-15deg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: #222;
+  color: #fff;
+  border-color: #fff;
+}
+
+.saveBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.savedBtn {
+  background: #e10600 !important;
+  color: #fff !important;
+  border-color: #e10600 !important;
+}
+
+/* States */
+.state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #444;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+/* Drive type section — top level grouping */
+.driveTypeSection {
+  margin-bottom: 48px;
+}
+
+.driveTypeHeading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  background: #e10600;
+  border-radius: 2px;
+}
+
+.driveTypeHeading span {
+  font-size: 0.8rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.error {
+  padding: 40px 20px;
+  text-align: center;
+  color: #e10600;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .panelHeader h2 { font-size: 1.4rem; }
+  .cls { display: none; }
+  .scoreCell { width: 100px; }
+}

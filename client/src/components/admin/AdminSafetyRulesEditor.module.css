@@ -1,0 +1,257 @@
+.panel {
+  background-color: #050505;
+  color: #ffffff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-transform: uppercase;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 20px;
+}
+
+.panelHeader h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1.5px;
+}
+
+.redBar {
+  width: 8px;
+  height: 40px;
+  background-color: #e10600;
+  transform: skewX(-15deg);
+  flex-shrink: 0;
+}
+
+/* Rule list */
+.ruleList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 40px;
+}
+
+.ruleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #0a0a0c;
+  border: 1px solid #1a1a1a;
+  padding: 14px 16px;
+  transition: background 0.15s;
+}
+
+.ruleItem:hover {
+  background: #141417;
+}
+
+.ruleLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ruleCategory {
+  font-size: 0.75rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #e10600;
+  letter-spacing: 1.5px;
+}
+
+.ruleDesc {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #aaa;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ruleRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Mandatory / optional toggle */
+.mandatoryBtn {
+  padding: 6px 14px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1px;
+  border: 1px solid;
+  transform: skewX(-15deg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mandatory {
+  background: #1a0000;
+  color: #e10600;
+  border-color: #e10600;
+}
+
+.optional {
+  background: #111;
+  color: #555;
+  border-color: #333;
+}
+
+.mandatoryBtn:hover {
+  opacity: 0.8;
+}
+
+/* Delete button */
+.deleteBtn {
+  background: transparent;
+  color: #444;
+  border: 1px solid #222;
+  padding: 6px 14px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 1px;
+  transform: skewX(-15deg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  color: #e10600;
+  border-color: #e10600;
+}
+
+.deleteBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Add form */
+.addForm {
+  background: #0a0a0c;
+  border: 1px solid #1a1a1a;
+  padding: 24px;
+  border-radius: 4px;
+}
+
+.addHeading {
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-style: italic;
+  color: #666;
+  letter-spacing: 2px;
+  margin: 0 0 16px 0;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.input {
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 160px;
+}
+
+.input:focus {
+  border-color: #e10600;
+}
+
+.inputWide {
+  flex: 1;
+  min-width: 240px;
+}
+
+/* Mandatory checkbox */
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-style: italic;
+  color: #666;
+  letter-spacing: 1px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.checkLabel input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: #e10600;
+  cursor: pointer;
+}
+
+/* Add button */
+.addBtn {
+  background: #e10600;
+  color: #fff;
+  border: none;
+  padding: 10px 28px;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  transform: skewX(-15deg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.addBtn:hover:not(:disabled) {
+  background: #ff1a0f;
+}
+
+.addBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Empty state */
+.empty {
+  color: #333;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 20px 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .panelHeader h2 { font-size: 1.4rem; }
+  .formRow { flex-direction: column; align-items: stretch; }
+  .input, .inputWide { min-width: unset; width: 100%; }
+  .ruleItem { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .ruleRight { width: 100%; justify-content: flex-end; }
+}

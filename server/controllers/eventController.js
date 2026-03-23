@@ -37,7 +37,6 @@ export function attachDerivedFields(event) {
 }
 
 // GET /api/events
-// Query: ?includeAll=true to include previous events
 export async function getEvents(req, res) {
   try {
     const includeAll = req.query.includeAll === "true";
@@ -96,7 +95,7 @@ export async function getEventById(req, res) {
   }
 }
 
-// POST /api/events/:id/image  (Multer handles file, called after upload middleware)
+// POST /api/events/:id/image
 export async function uploadEventImage(req, res) {
   try {
     if (!req.file) {

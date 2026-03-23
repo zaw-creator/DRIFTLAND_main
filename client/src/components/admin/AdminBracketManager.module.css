@@ -1,0 +1,251 @@
+.panel {
+  background-color: #050505;
+  color: #ffffff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-transform: uppercase;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 20px;
+}
+
+.regenerateBtn {
+  background: none;
+  border: 1px solid #FFBB00;
+  color: #FFBB00;
+}
+
+.regenerateBtn:hover:not(:disabled) {
+  background-color: #1a1400;
+}
+
+.panelHeader h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1.5px;
+  flex: 1;
+}
+
+.redBar {
+  width: 8px;
+  height: 40px;
+  background-color: #e10600;
+  transform: skewX(-15deg);
+  flex-shrink: 0;
+}
+
+/* Generate button */
+.generateBtn {
+  background: #e10600;
+  color: #fff;
+  border: none;
+  padding: 10px 28px;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  transform: skewX(-15deg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.generateBtn:hover:not(:disabled) {
+  background: #ff1a0f;
+}
+
+.generateBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Pending state */
+.pendingState {
+  border: 1px dashed #1a1a1a;
+  border-radius: 4px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.pendingState p {
+  color: #444;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+/* Bracket scroll */
+.bracketScroll {
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.bracketGrid {
+  display: flex;
+  gap: 24px;
+  min-width: max-content;
+  align-items: flex-start;
+}
+
+.roundCol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 210px;
+}
+
+.roundLabel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-style: italic;
+  color: #666;
+  letter-spacing: 1.5px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Match card */
+.matchCard {
+  background: #0a0a0c;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.matchCard.completed {
+  border-color: #111;
+}
+
+.matchId {
+  background: #111;
+  color: #444;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 4px 10px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Driver buttons — clickable in admin */
+.driverBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  text-align: left;
+  cursor: default;
+  transition: background 0.15s;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.driverBtn.clickable {
+  cursor: pointer;
+}
+
+.driverBtn.clickable:hover {
+  background: #141417;
+}
+
+.driverBtn.winner {
+  background: #0f1a0f;
+  border-left: 3px solid #e10600;
+  cursor: default;
+}
+
+.driverBtn.loser {
+  opacity: 0.3;
+  cursor: default;
+}
+.classSection {
+  margin-bottom: 48px;
+}
+
+.classHeading {
+  font-size: 0.8rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  background: #e10600;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  border-radius: 2px;
+}
+
+.driverName {
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.winTag {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #e10600;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* VS divider */
+.vsDivider {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #333;
+  padding: 4px 0;
+  border-top: 1px solid #111;
+  border-bottom: 1px solid #111;
+  letter-spacing: 2px;
+}
+
+/* Saving overlay */
+.savingOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 5, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #e10600;
+}
+
+.state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #444;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .panelHeader h2 { font-size: 1.4rem; }
+  .roundCol { min-width: 160px; }
+  .driverName { max-width: 100px; font-size: 0.75rem; }
+}

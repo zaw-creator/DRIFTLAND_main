@@ -7,25 +7,43 @@ import styles from './EventForm.module.css';
 
 const DRIVE_TYPE_OPTIONS = ['Drift', 'Time Attack'];
 
+function toLocalDateString(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const y  = date.getFullYear();
+  const m  = String(date.getMonth() + 1).padStart(2, '0');
+  const d  = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function buildInitialState(initial) {
   return {
-    name: initial?.name || '',
-    description: initial?.description || '',
-    location: initial?.location || '',
-    eventDate: initial?.eventDate ? initial.eventDate.slice(0, 10) : '',
-    startTime: initial?.startTime || '',
-    endTime: initial?.endTime || '',
+    name:                 initial?.name                 || '',
+    description:          initial?.description          || '',
+    location:             initial?.location             || '',
+    eventDate:            toLocalDateString(initial?.eventDate),
+    eventEndDate:         toLocalDateString(initial?.eventEndDate),
+    startTime:            initial?.startTime            || '',
+    endTime:              initial?.endTime              || '',
     registrationDeadline: initial?.registrationDeadline
-      ? initial.registrationDeadline.slice(0, 16)
+      ? (() => {
+          const d   = new Date(initial.registrationDeadline);
+          const y   = d.getFullYear();
+          const mo  = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          const h   = String(d.getHours()).padStart(2, '0');
+          const min = String(d.getMinutes()).padStart(2, '0');
+          return `${y}-${mo}-${day}T${h}:${min}`;
+        })()
       : '',
-    editDeadlineHours: initial?.editDeadlineHours ?? 24,
-    driveTypes: initial?.driveTypes || [],
-    classes: initial?.classes || [],
-    enabledRoles: initial?.enabledRoles || { driver: true, participant: true, rider: true },
-    participantCapacity: initial?.participantCapacity ?? 0,
-    riderCapacity: initial?.riderCapacity ?? 0,
-    imageFile: null,
-    existingImageUrl: initial?.image || null,
+    editDeadlineHours:    initial?.editDeadlineHours    ?? 24,
+    driveTypes:           initial?.driveTypes           || [],
+    classes:              initial?.classes              || [],
+    enabledRoles:         initial?.enabledRoles         || { driver: true, participant: true, rider: true },
+    participantCapacity:  initial?.participantCapacity  ?? 0,
+    riderCapacity:        initial?.riderCapacity        ?? 0,
+    imageFile:            null,
+    existingImageUrl:     initial?.image                || null,
   };
 }
 
@@ -154,6 +172,16 @@ export default function EventForm({ initialValues, onSubmit, loading, error }) {
               required
             />
           </div>
+          <div className={styles.field}>
+    <label className={styles.label}>Event End Date</label>
+    <input
+      className={styles.input}
+      type="date"
+      value={form.eventEndDate}
+      onChange={(e) => set('eventEndDate', e.target.value)}
+      min={form.eventDate} // can't end before it starts
+    />
+  </div>
           <div className={styles.field}>
             <label className={styles.label}>Start Time</label>
             <input

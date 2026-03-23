@@ -2,15 +2,6 @@
 
 import styles from './ConfirmDialog.module.css';
 
-/**
- * Props:
- *   open: bool
- *   title: string
- *   message: string
- *   onConfirm(): called on confirm
- *   onCancel(): called on cancel
- *   loading: bool
- */
 export default function ConfirmDialog({ open, title, message, onConfirm, onCancel, loading }) {
   if (!open) return null;
 
@@ -34,7 +25,7 @@ export default function ConfirmDialog({ open, title, message, onConfirm, onCance
             onClick={onConfirm}
             disabled={loading}
           >
-            {loading ? 'Deleting…' : 'Delete'}
+            {loading ? 'Please wait...' : 'Confirm'}
           </button>
         </div>
       </div>

@@ -1,60 +1,58 @@
-/**
- * Computes the dynamic status of an event based on the current date/time.
- *
- * @param {Object} event - Event document or plain object with eventDate, startTime, endTime
- * @returns {'ongoing'|'nearby'|'upcoming'|'previous'}
- */
 export function computeStatus(event) {
-  const now = new Date();
-
-  // Normalise to date-only strings for day comparison (UTC)
-  const todayStr = toDateStr(now);
-  const eventDayStr = toDateStr(new Date(event.eventDate));
-
-  if (eventDayStr < todayStr) {
-    return 'previous';
+  if (event.status === 'ended' || event.status === 'archived') {
+    return event.status;
   }
 
+  const now         = new Date();
+  const todayStr    = toDateStr(now);
+  const eventDayStr = toDateStr(new Date(event.eventDate));
+
+  // Use eventEndDate if set, otherwise fall back to eventDate
+  const endDayStr = event.eventEndDate
+    ? toDateStr(new Date(event.eventEndDate))
+    : eventDayStr;
+
+  // ── Entirely in the past ──────────────────────────────────────────────────
+  if (endDayStr < todayStr) {
+    return 'ended';
+  }
+
+  // ── Multi-day event: started but not yet ended ────────────────────────────
+  if (eventDayStr < todayStr && endDayStr >= todayStr) {
+    return 'active';
+  }
+
+  // ── Event start day ───────────────────────────────────────────────────────
   if (eventDayStr === todayStr) {
     const { startTime, endTime } = event;
 
-    // No time range → treat as ongoing all day
     if (!startTime || !endTime) {
-      return 'ongoing';
+      return 'active';
     }
 
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const startMinutes = parseTime(startTime);
-    const endMinutes = parseTime(endTime);
+    const startMinutes   = parseTime(startTime);
+    const endMinutes     = parseTime(endTime);
 
-    if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
-      return 'ongoing';
-    }
+    if (currentMinutes < startMinutes)  return 'upcoming';
+    if (currentMinutes <= endMinutes)   return 'active';
 
-    // After the event ended on the same day
-    if (currentMinutes > endMinutes) {
-      return 'previous';
-    }
+    // Past end time on start day — check if multi-day
+    if (endDayStr > todayStr) return 'active';
 
-    // Before the event starts on the same day
-    return 'upcoming';
+    return 'ended';
   }
 
-  // Future days
+  // ── Future days ───────────────────────────────────────────────────────────
   const sevenDaysFromNow = new Date(now);
   sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
   const sevenDaysStr = toDateStr(sevenDaysFromNow);
 
-  if (eventDayStr <= sevenDaysStr) {
-    return 'nearby';
-  }
+  if (eventDayStr <= sevenDaysStr) return 'nearby';
 
   return 'upcoming';
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Returns "YYYY-MM-DD" in local time */
 function toDateStr(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -62,7 +60,6 @@ function toDateStr(date) {
   return `${y}-${m}-${d}`;
 }
 
-/** Converts "HH:MM" string to total minutes since midnight */
 function parseTime(timeStr) {
   const [hours, minutes] = timeStr.split(':').map(Number);
   return hours * 60 + (minutes || 0);

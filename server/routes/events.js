@@ -6,6 +6,8 @@ import {
   uploadEventImage,
   registerTicket,
   attachDerivedFields,
+  getLeaderboard,
+  getBracket,
 } from "../controllers/eventController.js";
 import { upload } from "../utils/multerConfig.js";
 import { addClient } from "../utils/sseManager.js";
@@ -39,7 +41,7 @@ router.get("/:id/stream", async (req, res) => {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
-    "X-Accel-Buffering": "no", // Strictly tells Nginx/AWS NOT to buffer this stream
+    "X-Accel-Buffering": "no", // prevent nginx buffering
   });
   res.flushHeaders();
 
@@ -60,22 +62,17 @@ router.get("/:id/stream", async (req, res) => {
   } catch (err) {
     console.error(`Sync on Connect failed for event ${eventId}:`, err);
   }
+  addClient(`event-${req.params.id}`, res);
 });
 
-// ═════════════════════════════════════════════════════════════════════════════
-// 2. STANDARD REST API (Data Fetching & Mutations)
-// ═════════════════════════════════════════════════════════════════════════════
-
-// Fetch all active events (Optimized to filter out old events in MongoDB)
+// ── REST routes ───────────────────────────────────────────────────────────────
 router.get("/", getEvents);
-
-// Fetch a single event's details
+// ── new: leaderboard + bracket (must be before /:id to avoid ID collision) ───
+router.get("/:id/leaderboard", getLeaderboard);
+router.get("/:id/bracket", getBracket);
+// 🧱 THE ATOMIC WALL
+router.post("/:id/register", registerTicket);
 router.get("/:id", getEventById);
-
-// Upload a banner image for an event
 router.post("/:id/image", upload.single("image"), uploadEventImage);
 
-// 🧱 THE ATOMIC WALL
-// Handles ticket checkouts with strict MongoDB $inc and $expr limits to prevent overselling
-router.post("/:id/register", registerTicket);
 export default router;

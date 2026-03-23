@@ -39,3 +39,11 @@ export async function getEventById(id) {
   // Caches specific event details for 30 seconds.
   return request(`/api/events/${id}`, [`event-${id}`], 30);
 }
+
+export async function getLeaderboard(id) {
+  return request(`/api/events/${id}/leaderboard`);
+}
+
+export async function getBracket(id) {
+  return request(`/api/events/${id}/bracket`);
+}

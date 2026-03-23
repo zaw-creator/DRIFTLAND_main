@@ -66,15 +66,27 @@ export default function EventsTable({ events, onDelete }) {
                 <EnabledRolesBadges enabledRoles={event.enabledRoles} />
               </td>
               <td className={styles.actions}>
-                <button
-                  className={styles.editBtn}
-                  onClick={() => router.push(`/admin/events/${event._id}/edit`)}
-                >
-                  Edit
-                </button>
-                <button className={styles.deleteBtn} onClick={() => onDelete(event._id, event.name)}>
-                  Delete
-                </button>
+           
+<div className={styles.actions}>
+  <button
+    className={styles.manageBtn}
+    onClick={() => router.push(`/admin/events/${event._id}/manage`)}
+  >
+    Manage
+  </button>
+  <button
+    className={styles.editBtn}
+    onClick={() => router.push(`/admin/events/${event._id}/edit`)}
+  >
+    Edit
+  </button>
+  <button
+    className={styles.deleteBtn}
+    onClick={() => onDelete(event._id, event.name)}
+  >
+    Delete
+  </button>
+</div>
               </td>
             </tr>
           ))}

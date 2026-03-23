@@ -1,15 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ['*.*.*.*'],
+  allowedDevOrigins: ["*.*.*.*"],
   reactCompiler: true,
   turbopack: {
-    root: new URL('.', import.meta.url).pathname,
+    root: new URL(".", import.meta.url).pathname,
   },
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
+        protocol: "https",
+        hostname: "res.cloudinary.com",
       },
     ],
   },

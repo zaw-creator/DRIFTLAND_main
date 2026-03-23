@@ -8,7 +8,9 @@ const channels = new Map(); // channelKey → Set<res>
 export function addClient(channelKey, res) {
   if (!channels.has(channelKey)) channels.set(channelKey, new Set());
   channels.get(channelKey).add(res);
-  res.on('close', () => channels.get(channelKey)?.delete(res));
+
+  // Cleanup when the user closes the tab or connection drops
+  res.on("close", () => channels.get(channelKey)?.delete(res));
 }
 
 export function broadcast(channelKey, eventName, data) {
@@ -17,3 +19,15 @@ export function broadcast(channelKey, eventName, data) {
   const payload = `event: ${eventName}\ndata: ${JSON.stringify(data)}\n\n`;
   for (const res of clients) res.write(payload);
 }
+
+// 🫀 THE HEARTBEAT: Runs continuously in the background
+// Sends a standard SSE comment (starting with a colon) every 20 seconds.
+// The frontend browser ignores comments, but it keeps the TCP connection alive!
+setInterval(() => {
+  channels.forEach((clients) => {
+    for (const res of clients) {
+      // The payload must end with \n\n to be a valid SSE message
+      res.write(": ping\n\n");
+    }
+  });
+}, 20000);

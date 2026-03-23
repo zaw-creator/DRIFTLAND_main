@@ -1,382 +1,42 @@
-'use client';
+import { getEventById } from "@/services/eventService";
+import LiveEventDetails from "@/components/events/LiveEventDetails";
+import { notFound } from "next/navigation";
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import Image from 'next/image';
-import StatusBadge from '@/components/events/StatusBadge';
-import DriveTypeBadge from '@/components/events/DriveTypeBadge';
-import RoleSelector from '@/components/events/RoleSelector';
-import Leaderboard from '@/components/events/Leaderboard';
-import TournamentBracket from '@/components/events/TournamentBracket';
-import { getEventById, getLeaderboard } from '@/services/eventService';
-import styles from './page.module.css';
+// 🚀 Premium SEO: Dynamically generate social share cards for each specific event!
+export async function generateMetadata({ params }) {
+  try {
+    // 1. Await the params Promise here!
+    const { id } = await params;
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+    // 2. Pass the unwrapped ID
+    const event = await getEventById(id);
 
-function formatDateTime(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }) + ' · ' + date.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  });
+    return {
+      title: `${event.name} | DriftLand`,
+      description:
+        event.description || "Join us for this upcoming DriftLand event.",
+      openGraph: {
+        images: [event.image || "/default-event-bg.jpg"],
+      },
+    };
+  } catch (error) {
+    return { title: "Event Not Found" };
+  }
 }
 
-function formatDeadline(dateStr) {
-  return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
+export default async function EventDetailPage({ params }) {
+  try {
+    // 1. Await the params Promise here too!
+    const { id } = await params;
 
-function isDeadlinePassed(deadline) {
-  return deadline && new Date(deadline) < new Date();
-}
+    // 2. Fetch the data instantly on the server using the unwrapped ID.
+    const initialEvent = await getEventById(id);
 
-function groupClassesByDriveType(classes) {
-  return classes.reduce((acc, cls) => {
-    if (!acc[cls.driveType]) acc[cls.driveType] = [];
-    acc[cls.driveType].push(cls);
-    return acc;
-  }, {});
-}
-
-export default function EventDetailPage() {
-  const router = useRouter();
-  const params = useParams();
-  const { id }  = params;
-
-  const [event, setEvent]             = useState(null);
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [error, setError]             = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [leaderboardUpdate, setLeaderboardUpdate] = useState(null);
-  const [bracketUpdate, setBracketUpdate]         = useState(null);
-
-  // Fetch event
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    setError(null);
-    getEventById(id)
-      .then(setEvent)
-      .catch((err) => setError(err.message || 'Failed to load event'))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  // Fetch leaderboard for bracket driver name lookups
-  useEffect(() => {
-    if (!id) return;
-    getLeaderboard(id)
-      .then((res) => setLeaderboard(res?.data ?? []))
-      .catch(() => {});
-  }, [id]);
-
-  // Reset role on navigation
-  useEffect(() => {
-    setSelectedRole(null);
-  }, [id]);
-
-  // SSE — live updates
-  useEffect(() => {
-    if (!event?._id) return;
-    const es = new EventSource(`${API_URL}/api/events/${event._id}/stream`);
-
-    es.addEventListener('event-updated', (e) => {
-      try {
-        const patch = JSON.parse(e.data);
-
-        // Capacity / role updates
-        if (!patch.type) {
-          setEvent((prev) => ({ ...prev, ...patch }));
-        }
-
-        if (patch.type === 'LEADERBOARD_UPDATE') {
-          setLeaderboardUpdate(patch.leaderboard ?? []);
-        }
-
-        if (
-          patch.type === 'BRACKET_UPDATE' ||
-          patch.type === 'BRACKET_GENERATED' ||
-          patch.type === 'BRACKET_REGENERATED'
-        ) {
-          setBracketUpdate({ bracket: patch.bracket ?? [] });
-        }
-
-        if (patch.type === 'EVENT_ENDED') {
-          setEvent((prev) => ({ ...prev, status: 'ended' }));
-        }
-      } catch (err) {
-        console.error('SSE parse error:', err);
-      }
-    });
-
-    es.onerror = () => es.close();
-    return () => es.close();
-  }, [event?._id]);
-
-  // ── Loading state ──────────────────────────────────────────────────────────
-  if (loading) {
-    return (
-      <main className={styles.page}>
-        <div className={styles.loadingState} aria-label="Loading event...">
-          <div className={styles.skeletonBanner} />
-          <div className={styles.skeletonContent}>
-            <div className={`${styles.skeletonLine} ${styles.skeletonTitle}`} />
-            <div className={`${styles.skeletonLine} ${styles.skeletonMeta}`} />
-            <div className={`${styles.skeletonLine} ${styles.skeletonMeta}`} />
-            <div className={`${styles.skeletonLine} ${styles.skeletonText}`} />
-            <div className={`${styles.skeletonLine} ${styles.skeletonText}`} />
-          </div>
-        </div>
-      </main>
-    );
+    // 3. Pass it to the interactive client component
+    // We will update LiveEventDetails next to handle the Leaderboard and Bracket!
+    return <LiveEventDetails initialEvent={initialEvent} eventId={id} />;
+  } catch (error) {
+    // If the ID is invalid, Next.js natively routes to your 404 / not-found.js page
+    notFound();
   }
-
-  // ── Error state ────────────────────────────────────────────────────────────
-  if (error) {
-    return (
-      <main className={styles.page}>
-        <div className={styles.errorState}>
-          <p className={styles.errorMsg}>⚠️ {error}</p>
-          <button className={styles.backBtn} onClick={() => router.push('/events')}>
-            ← Back to Events
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  if (!event) return null;
-
-  // ── Derived values — after null check ─────────────────────────────────────
-  const {
-    name, description, eventDate, location, driveTypes, status, image,
-    registrationDeadline, classes = [], waitlistCount,
-    participantCapacity, participantRegisteredCount,
-    riderCapacity, riderRegisteredCount,
-    isDriverFull, isParticipantFull, isRiderFull,
-    driverTotalCapacity, driverTotalRegisteredCount,
-    enabledRoles,
-  } = event;
-
-  const isPrevious     = status === 'previous' || status === 'ended' || status === 'archived';
-  const deadlinePassed = isDeadlinePassed(registrationDeadline);
-  const classGroups    = groupClassesByDriveType(classes);
-
-  const showLeaderboard = status === 'active' || status === 'ended' || status === 'archived';
-  const showBracket     = event?.bracketGenerated &&
-                          driveTypes?.some(t => t.toLowerCase().includes('drift'));
-
-  function getRegisterState() {
-    if (!selectedRole) return { disabled: true, label: 'Register' };
-    if (deadlinePassed) return { disabled: true, label: 'Registration Closed' };
-    if (selectedRole === 'Driver'      && isDriverFull)      return { disabled: true, label: 'FULL' };
-    if (selectedRole === 'Participant' && isParticipantFull) return { disabled: true, label: 'FULL' };
-    if (selectedRole === 'Rider'       && isRiderFull)       return { disabled: true, label: 'FULL' };
-    return { disabled: false, label: 'Register' };
-  }
-
-  const { disabled: registerDisabled, label: registerLabel } = getRegisterState();
-
-  function handleRegister() {
-    if (registerDisabled || !selectedRole) return;
-    router.push(`/register?event=${id}&role=${selectedRole}`);
-  }
-
-  return (
-    <main className={styles.page}>
-
-      {/* ── Back link ───────────────────────────────────────────── */}
-      <button className={styles.backBtn} onClick={() => router.push('/events')}>
-        ← Back to Events
-      </button>
-
-      {/* ── Banner image ────────────────────────────────────────── */}
-      <div className={styles.banner}>
-        {image ? (
-          <Image
-            src={image}
-            alt={name}
-            fill
-            sizes="100vw"
-            className={styles.bannerImage}
-            priority
-          />
-        ) : (
-          <div className={styles.bannerPlaceholder}>
-            <span className={styles.bannerIcon}>🏁</span>
-          </div>
-        )}
-      </div>
-
-      {/* ── Event info ──────────────────────────────────────────── */}
-      <div className={styles.content}>
-        <div className={styles.titleRow}>
-          <h1 className={styles.title}>{name}</h1>
-          <StatusBadge status={status} />
-        </div>
-
-        <div className={styles.badges}>
-          {driveTypes?.map((t) => <DriveTypeBadge key={t} type={t} />)}
-        </div>
-
-        <div className={styles.metaGrid}>
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>📅 Date & Time</span>
-            <span className={styles.metaValue}>{formatDateTime(eventDate)}</span>
-          </div>
-          <div className={styles.metaItem}>
-            <span className={styles.metaLabel}>📍 Location</span>
-            <span className={styles.metaValue}>{location}</span>
-          </div>
-          {registrationDeadline && (
-            <div className={styles.metaItem}>
-              <span className={styles.metaLabel}>⏰ Registration Deadline</span>
-              <span className={`${styles.metaValue} ${deadlinePassed ? styles.deadlinePassed : ''}`}>
-                {formatDeadline(registrationDeadline)}
-                {deadlinePassed && ' (Closed)'}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {description && (
-          <div className={styles.description}>
-            <h2 className={styles.sectionHeading}>About this event</h2>
-            <p>{description}</p>
-          </div>
-        )}
-
-        {/* ── Capacity ────────────────────────────────────────── */}
-        <div className={styles.capacitySection}>
-          <h2 className={styles.sectionHeading}>Capacity</h2>
-
-          {Object.entries(classGroups).map(([driveType, classList]) => (
-            <div key={driveType} className={styles.driveTypeGroup}>
-              <h3 className={styles.driveTypeHeading}>{driveType}</h3>
-              <table className={styles.classTable}>
-                <tbody>
-                  {classList.map((cls) => {
-                    const classFull = cls.registeredCount >= cls.capacity;
-                    return (
-                      <tr key={cls.name} className={styles.classRow}>
-                        <td className={styles.className}>{cls.name}</td>
-                        <td className={styles.classCount}>
-                          {cls.registeredCount} / {cls.capacity}
-                        </td>
-                        <td>
-                          {classFull && <span className={styles.fullBadge}>FULL</span>}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  <tr className={styles.totalRow}>
-                    <td>Total</td>
-                    <td>{driverTotalRegisteredCount} / {driverTotalCapacity}</td>
-                    <td />
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          ))}
-
-          <table className={styles.classTable}>
-            <tbody>
-              <tr className={styles.classRow}>
-                <td className={styles.className}>Participant</td>
-                <td className={styles.classCount}>
-                  {participantCapacity > 0
-                    ? `${participantRegisteredCount} / ${participantCapacity}`
-                    : 'N/A'}
-                </td>
-                <td>
-                  {isParticipantFull && <span className={styles.fullBadge}>FULL</span>}
-                </td>
-              </tr>
-              <tr className={styles.classRow}>
-                <td className={styles.className}>Rider</td>
-                <td className={styles.classCount}>
-                  {riderCapacity > 0
-                    ? `${riderRegisteredCount} / ${riderCapacity}`
-                    : 'N/A'}
-                </td>
-                <td>
-                  {isRiderFull && <span className={styles.fullBadge}>FULL</span>}
-                </td>
-              </tr>
-              {waitlistCount > 0 && (
-                <tr className={styles.classRow}>
-                  <td className={styles.className}>Waitlist</td>
-                  <td className={styles.classCount}>{waitlistCount}</td>
-                  <td />
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ── CTA ─────────────────────────────────────────────── */}
-        {!isPrevious && (
-          <div className={styles.ctaSection}>
-            <RoleSelector
-              value={selectedRole}
-              onChange={setSelectedRole}
-              enabledRoles={enabledRoles}
-            />
-            <div className={styles.registerRow}>
-              {deadlinePassed && (
-                <p className={styles.closedNotice}>⛔ Registration deadline has passed.</p>
-              )}
-              <button
-                className={`${styles.registerBtn} ${registerDisabled ? styles.registerDisabled : ''}`}
-                disabled={registerDisabled}
-                onClick={handleRegister}
-              >
-                {registerLabel}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {isPrevious && (
-          <div className={styles.previousNotice}>
-            <p>This event has ended. Registration is no longer available.</p>
-          </div>
-        )}
-
-        {/* ── Leaderboard ─────────────────────────────────────── */}
-        {showLeaderboard && (
-          <div className={styles.section}>
-            <Leaderboard
-              eventId={id}
-              limit={5}
-              leaderboardUpdate={leaderboardUpdate}
-            />
-          </div>
-        )}
-
-        {/* ── Tournament bracket ──────────────────────────────── */}
-        {showBracket && (
-          <div className={styles.section}>
-            <TournamentBracket
-              eventId={id}
-              leaderboard={leaderboard}
-              bracketUpdate={bracketUpdate}
-            />
-          </div>
-        )}
-      </div>
-    </main>
-  );
 }

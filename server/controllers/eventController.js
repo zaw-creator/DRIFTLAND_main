@@ -39,26 +39,14 @@ export function attachDerivedFields(event) {
 // GET /api/events
 export async function getEvents(req, res) {
   try {
-    const includeAll = req.query.includeAll === "true";
+    const events = await Event.find().lean().sort({ eventDate: 1 });
 
-    // 🚀 Premium DB Optimization: The "Memory Fix"
-    // Instead of loading 500 past events into Node.js RAM, we filter them at the database level.
-    // We subtract 1 day from "now" to account for global timezone overlaps safely.
-    let dbQuery = {};
-    if (!includeAll) {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      yesterday.setHours(0, 0, 0, 0);
-      dbQuery = { eventDate: { $gte: yesterday } };
-    }
-
-    // Only the relevant events are pulled into server memory
-    const events = await Event.find(dbQuery).lean().sort({ eventDate: 1 });
-
-    // Attach derived fields and apply your exact strict status logic
     const enriched = events
       .map(attachDerivedFields)
-      .filter((event) => includeAll || event.status !== "previous")
+      .filter(
+        (event) =>
+          req.query.includeAll === "true" || event.status !== "previous",
+      )
       .sort((a, b) => {
         const statusDiff = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
         if (statusDiff !== 0) return statusDiff;
@@ -103,8 +91,9 @@ export async function uploadEventImage(req, res) {
         .status(400)
         .json({ success: false, message: "No image file provided" });
     }
-
-    const imageUrl = `/uploads/events/${req.file.filename}`;
+    //Change to Cloudinary URL, from the multer upload middleware.
+    // In production, this would be the Cloudinary URL returned by the upload middleware
+    const imageUrl = req.file.path;
 
     const event = await Event.findByIdAndUpdate(
       req.params.id,
@@ -198,5 +187,102 @@ export async function registerTicket(req, res) {
     res
       .status(500)
       .json({ success: false, message: "Server error during checkout" });
+  }
+}
+
+// GET /api/events/:id/leaderboard
+// GET /api/events/:id/leaderboard
+export async function getLeaderboard(req, res) {
+  try {
+    const event = await Event.findById(req.params.id).select(
+      "registerEventId status top5 leaderboard",
+    );
+
+    if (!event) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
+    }
+
+    // Archived — serve stored top5 directly
+    if (event.status === "archived") {
+      return res.json({ success: true, source: "top5", data: event.top5 });
+    }
+
+    // No register event linked — return main DB leaderboard as-is
+    if (!event.registerEventId) {
+      return res.json({
+        success: true,
+        source: "main",
+        data: event.leaderboard,
+      });
+    }
+
+    // Fetch driver list from register DB
+    const response = await fetch(
+      `${process.env.REGISTER_API_URL}/api/events/${event.registerEventId}/leaderboard`,
+      { headers: { "x-api-key": process.env.REGISTER_API_KEY } },
+    );
+
+    if (!response.ok) {
+      // Fallback to main DB if register DB is unreachable
+      return res.json({
+        success: true,
+        source: "main",
+        data: event.leaderboard,
+      });
+    }
+
+    const json = await response.json();
+    const registerDrivers = json.data ?? [];
+
+    // Merge register DB driver list with main DB scores
+    const merged = registerDrivers.map((driver) => {
+      const mainEntry = event.leaderboard.find(
+        (d) => d.driverId === driver.driverId.toString(),
+      );
+      return {
+        ...driver,
+        qualifyScore: mainEntry?.qualifyScore ?? 0,
+        qualifyRank: mainEntry?.qualifyRank ?? 0,
+        wins: mainEntry?.wins ?? 0,
+        losses: mainEntry?.losses ?? 0,
+        eliminated: mainEntry?.eliminated ?? false,
+        class: mainEntry?.class ?? driver.class,
+      };
+    });
+
+    res.json({ success: true, source: "register", data: merged });
+  } catch (err) {
+    console.error("getLeaderboard error:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch leaderboard" });
+  }
+}
+
+export async function getBracket(req, res) {
+  try {
+    const event = await Event.findById(req.params.id).select(
+      "bracket bracketGenerated",
+    );
+
+    if (!event) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
+    }
+
+    // Return bracket and generated flag directly — not nested under data
+    res.json({
+      success: true,
+      bracket: event.bracket ?? [],
+      generated: event.bracketGenerated ?? false,
+    });
+  } catch (err) {
+    console.error("getBracket error:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch bracket" });
   }
 }

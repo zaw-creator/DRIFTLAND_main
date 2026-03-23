@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from "react";
 import EventCard from "@/components/events/EventCard";
 import EventSegmentedBar from "@/components/events/EventSegmentedBar";
-import Leaderboard from "@/components/events/Leaderboard";
 // Assuming you keep the same CSS module for the feed layout
 import styles from "@/app/events/page.module.css";
 
@@ -103,7 +102,6 @@ export default function LiveEventFeed({ initialEvents }) {
           );
         })}
       </div>
-      <Leaderboard />
     </>
   );
 }

@@ -46,8 +46,6 @@ router.get("/:id/stream", async (req, res) => {
   res.flushHeaders();
 
   const eventId = req.params.id;
-  addClient(`event-${eventId}`, res);
-
   // 🚀 SYNC ON CONNECT
   // The moment the tunnel opens, fetch the absolute truth from the DB and push it down.
   // This overwrites any "stale" data the user got from the Next.js cache.

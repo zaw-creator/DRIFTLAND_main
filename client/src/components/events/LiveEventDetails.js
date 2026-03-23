@@ -6,7 +6,7 @@ import Image from "next/image";
 import StatusBadge from "@/components/events/StatusBadge";
 import DriveTypeBadge from "@/components/events/DriveTypeBadge";
 import RoleSelector from "@/components/events/RoleSelector";
-import styles from "@/app/events/page.module.css"; // Adjust path as needed
+import styles from "@/app/events/[id]/page.module.css"; // Adjust path as needed
 
 // Helper functions (kept outside the component so they don't recreate on render)
 function formatDateTime(dateStr) {
@@ -49,37 +49,22 @@ export default function LiveEventDetails({ initialEvent }) {
   const [event, setEvent] = useState(initialEvent);
   const [selectedRole, setSelectedRole] = useState(null);
 
-  // 2. SSE — Live Capacity Updates (With Auto-Reconnect)
+  // 2. SSE — Live Capacity Updates
   useEffect(() => {
     if (!event?._id) return;
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-    let es;
-    let reconnectTimeout;
+    const es = new EventSource(`${API_URL}/api/events/${event._id}/stream`);
 
-    const connectSSE = () => {
-      es = new EventSource(`${API_URL}/api/events/${event._id}/stream`);
-      es.addEventListener("event-updated", (e) => {
-        const patch = JSON.parse(e.data);
-        setEvent((prev) => ({ ...prev, ...patch }));
-      });
+    es.addEventListener("event-updated", (e) => {
+      const patch = JSON.parse(e.data);
+      setEvent((prev) => ({ ...prev, ...patch }));
+    });
 
-      // 🔄 THE AUTO-RECONNECT LOOP
-      es.onerror = () => {
-        console.warn(
-          "Live connection dropped. Attempting to reconnect in 3 seconds...",
-        );
-        es.close(); // Close the dead connection
-        // Try again in 3 seconds (Exponential backoff can be added here for massive scale)
-        reconnectTimeout = setTimeout(connectSSE, 3000);
-      };
+    es.onerror = () => {
+      console.warn("SSE connection lost. Waiting for automatic reconnect...");
     };
 
-    connectSSE(); // Start the engine
-
-    return () => {
-      if (es) es.close();
-      clearTimeout(reconnectTimeout);
-    };
+    return () => es.close();
   }, [event._id]);
 
   // 3. 🚀 Premium Optimization: Memoize heavy calculations

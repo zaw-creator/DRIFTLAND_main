@@ -1,0 +1,146 @@
+/* ── 🎛️ THE CONTROL CENTER ── */
+.controlCenter {
+  /* 🚀 THE ULTIMATE FIX: Native sticky keeps it under your navbar */
+  position: sticky;
+  top: 80px; /* ⚠️ Change this to exactly match your Global Navbar's height! */
+  z-index: 100; /* This now works 100% of the time because position is set */
+  
+  width: 100vw; 
+  margin-left: calc(-50vw + 50%); 
+  background: rgba(0, 0, 0, 0.95); /* Slight transparency */
+  backdrop-filter: blur(10px);
+  border-top: 4px solid #fbc638; /* Harsh yellow track line */
+  border-bottom: 4px solid #fbc638;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* Hardware Acceleration for the hide/show slide animation */
+  transform: translateY(0);
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+/* ── DESKTOP: Sharp F1 Track ── */
+.desktopTrack {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+}
+
+.desktopTrack::-webkit-scrollbar { display: none; }
+
+.tabButton {
+  position: relative;
+  flex: 1;
+  min-width: 140px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 18px 20px;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 900;
+  font-style: italic; 
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  outline: none;
+  scroll-snap-align: start;
+  transition: color 0.1s ease;
+  z-index: 2;
+}
+
+.tabButton:hover { color: #fff; }
+.tabButton.active { color: #000; }
+
+.activePillBg {
+  position: absolute;
+  inset: 0;
+  background-color: #fbc638; 
+  z-index: -1;
+  clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+  box-shadow: 0 0 20px rgba(251, 198, 56, 0.4);
+}
+
+/* ── MOBILE: Minimalist Dropdown ── */
+.mobileDropdownContainer {
+  display: none;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+}
+
+.dropdownTrigger {
+  width: 100%;
+  background: transparent;
+  color: #fbc638;
+  border: none;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+
+.chevron {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.chevron.open { transform: rotate(180deg); }
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  background: rgba(5, 5, 5, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 2px solid #fbc638;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow scrolling inside the menu */
+  max-height: calc(100vh - 140px); /* Prevent menu from falling off screen */
+  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+}
+
+.dropdownItem {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 16px 24px;
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdownItem:hover, .dropdownItem:active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+.dropdownItem.active {
+  color: #000;
+  background: #fbc638;
+}
+
+@media (max-width: 900px) {
+  .desktopTrack { display: none; }
+  .mobileDropdownContainer { display: block; }
+}

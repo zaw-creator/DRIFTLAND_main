@@ -1,0 +1,90 @@
+.emptyContainer {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #555; /* A greyed-out racing line to imply inactivity */
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+/* ── The Static Telemetry Background ── */
+.telemetryBg {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 10px,
+    rgba(255, 255, 255, 0.02) 10px,
+    rgba(255, 255, 255, 0.02) 20px
+  );
+  z-index: 1;
+}
+
+.content {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+/* ── The Alert Badge ── */
+.badgeWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.blinker {
+  width: 8px;
+  height: 8px;
+  background-color: #fbc638;
+  animation: sharpBlink 2s infinite steps(2, start);
+}
+
+@keyframes sharpBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.warningBadge {
+  background: transparent;
+  color: #fbc638; /* Nyoki Yellow */
+  border: 1px solid #fbc638;
+  font-weight: 900;
+  font-style: italic;
+  padding: 4px 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.75rem;
+  /* The aggressive F1 cut */
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+/* ── Typography ── */
+.message {
+  color: rgba(255, 255, 255, 0.5); /* Faded out to show inactivity */
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin: 0;
+}
+
+.subMessage {
+  color: #666;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  margin: 0;
+  max-width: 400px;
+  font-family: 'Courier New', Courier, monospace; /* Computer terminal vibe */
+}

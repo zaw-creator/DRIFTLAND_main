@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./EventCard.module.css";
+import defaultEvent from "@/asset/events/DefaultEventPage.png";
 
 function formatDateTime(dateStr) {
   const date = new Date(dateStr);
@@ -46,7 +47,7 @@ export default function EventCard({ event }) {
   // 🎨 Dynamic Status Badge Logic
   let badgeClass = styles.badgeUpcoming;
   let badgeText = "UPCOMING";
-  if (status === "ongoing") {
+  if (status === "active") {
     badgeClass = styles.badgeOngoing;
     badgeText = "● LIVE NOW";
   } else if (status === "nearby") {
@@ -63,7 +64,7 @@ export default function EventCard({ event }) {
       {/* 📸 The Image Layer */}
       <div className={styles.mediaWrap}>
         <Image
-          src={image || "/default-event-bg.jpg"} // Make sure you have a fallback image in your public folder!
+          src={image || defaultEvent}
           alt={name}
           fill
           sizes="(max-width: 1023px) 100vw, 65vw" // ⚡ Core Web Vitals optimization

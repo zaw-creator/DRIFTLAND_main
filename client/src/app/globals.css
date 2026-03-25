@@ -15,7 +15,11 @@
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
+  /* NOTE: overflow-x: hidden was removed because it silently breaks
+     position: sticky on ALL descendant elements (CSS spec: any ancestor
+     with overflow != visible becomes the scroll container, preventing sticky).
+     If you need to prevent horizontal scroll, target the specific element
+     that's overflowing instead of hiding it globally. */
 }
 
 body {

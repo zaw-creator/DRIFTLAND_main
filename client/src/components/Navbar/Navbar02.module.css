@@ -27,7 +27,7 @@
   width: 100%;
   height: 80px;
 
-  background: transparent;
+  background:  #000; /* Pitch black for maximum contrast */
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-bottom: 1px solid transparent;

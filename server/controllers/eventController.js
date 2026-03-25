@@ -2,7 +2,16 @@ import Event from "../models/Event.js";
 import { computeStatus } from "../utils/computeStatus.js";
 import { broadcast } from "../utils/sseManager.js";
 
-const STATUS_ORDER = { ongoing: 0, nearby: 1, upcoming: 2, previous: 3 };
+// STATUS_ORDER drives the sort on GET /api/events.
+// Keys must match the values returned by computeStatus.js:
+//   active   → event is happening right now
+//   nearby   → starting within 7 days
+//   upcoming → more than 7 days away
+//   ended    → date has passed (auto-computed by computeStatus)
+//   archived → manually archived via PATCH endpoint
+// FIXED: previous keys "ongoing"/"previous" never matched computeStatus output,
+// causing the sort to produce NaN for every comparison (broken ordering).
+const STATUS_ORDER = { active: 0, nearby: 1, upcoming: 2, ended: 3, archived: 4 };
 
 /**
  * Computes and attaches derived fields that were defined as Mongoose virtuals.
@@ -41,12 +50,39 @@ export async function getEvents(req, res) {
   try {
     const events = await Event.find().lean().sort({ eventDate: 1 });
 
+    // ── FILTER LOGIC ──────────────────────────────────────────────────────────
+    // Supports three modes via query params:
+    //
+    //   No params (default public feed):
+    //     Excludes ended and archived — only active/nearby/upcoming shown.
+    //     FIXED: previous code filtered `!== "previous"` which computeStatus
+    //     never returns, so ended/archived were leaking into the public feed.
+    //
+    //   ?status=active|nearby|upcoming:
+    //     Returns only events matching that exact status.
+    //     Used by the TelemetryControl filter tabs on the Events page.
+    //
+    //   ?status=previous:
+    //     Returns both "ended" AND "archived" events.
+    //     "previous" is a client-side UI concept grouping both past states.
+    //
+    //   ?includeAll=true:
+    //     Returns every event regardless of status (admin use only).
+    const { status: reqStatus, includeAll } = req.query;
+
     const enriched = events
       .map(attachDerivedFields)
-      .filter(
-        (event) =>
-          req.query.includeAll === "true" || event.status !== "previous",
-      )
+      .filter((event) => {
+        if (includeAll === "true") return true;
+        // "previous" is the client's UI label for both ended + archived events
+        if (reqStatus === "previous") {
+          return event.status === "ended" || event.status === "archived";
+        }
+        // Any other specific status filter (active, nearby, upcoming, ended, archived)
+        if (reqStatus) return event.status === reqStatus;
+        // Default public feed: hide past events
+        return event.status !== "ended" && event.status !== "archived";
+      })
       .sort((a, b) => {
         const statusDiff = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
         if (statusDiff !== 0) return statusDiff;

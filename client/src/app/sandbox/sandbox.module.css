@@ -1,179 +1,146 @@
 .sandboxContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  min-height: 200vh;
   background-color: #050505;
+  color: #fff;
   font-family: 'Inter', sans-serif;
-  padding: 20px;
+  padding-bottom: 100px;
 }
 
-/* ── 💻 DESKTOP: THE CINEMATIC ROW (≥ 1024px) ── */
-.premiumCard {
+/* ── 🏔️ FAKE HERO BANNER ── */
+.headerSpacer {
+  height: 35vh;
   display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 1100px;
-  height: 400px;
-  border-radius: 16px;
-  background: #0a0a0a; /* Deepest black for smooth blending */
-  overflow: hidden;
-  position: relative;
-  border: 0px solid rgba(255, 255, 255, 0.05);
-  cursor: pointer;
-  
-  /* Buttery smooth physics */
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-}
-
-.premiumCard:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 30px 60px rgba(251, 198, 56, 0.08); /* Subtle Nyoki glow */
-}
-
-/* 📸 Left Side (Image) */
-.mediaWrap {
-  flex: 0 0 65%; /* Image gets 65% of the width */
-  position: relative;
-  overflow: hidden;
-}
-
-.heroImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.premiumCard:hover .heroImage {
-  transform: scale(1.05);
-}
-
-/* 🌫️ THE ULTRA-SMOOTH GRADIENT FIX */
-.fadeOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  /* Multi-stop feathered gradient for a flawless blend into the dark UI */
-  background: linear-gradient(to right, 
-    rgba(10, 10, 10, 0) 0%, 
-    rgba(10, 10, 10, 0) 40%, 
-    rgba(10, 10, 10, 0.3) 65%, 
-    rgba(10, 10, 10, 0.85) 85%, 
-    #0a0a0a 100%
-  );
-}
-
-/* 📊 Right Side (Data) */
-.contentWrap {
-  flex: 0 0 35%;
-  padding: 40px 40px 40px 10px; /* Less padding on left to pull text into the fade */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: #0a0a0a;
-  z-index: 3;
-}
-
-
-/* ── 📱 MOBILE & IPAD: GLASSMORPHISM CARD (≤ 1023px) ── */
-@media (max-width: 1023px) {
-  .premiumCard {
-    flex-direction: column;
-    height: 500px; /* Taller vertical card */
-    max-width: 420px;
-    background: transparent;
-  }
-
-  .mediaWrap {
-    position: absolute; /* Image takes over the whole card */
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .fadeOverlay {
-    /* Remove horizontal fade, apply a slight overall darkening for text */
-    background: rgba(0, 0, 0, 0.2); 
-  }
-
-  .contentWrap {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    padding: 24px;
-    
-    /* Premium Frosted Glass */
-    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 70%, transparent 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-  }
-}
-
-
-/* ── TYPOGRAPHY & COMPONENTS (Shared across both sizes) ── */
-.liveBadge {
-  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: #fbc638;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.title {
-  color: #ffffff;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    -45deg,
+    #0a0a0a,
+    #0a0a0a 10px,
+    #111 10px,
+    #111 20px
+  );
   font-size: 2rem;
   font-weight: 900;
-  line-height: 1.1;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
+  letter-spacing: 8px;
+  font-style: italic;
+  color: #333;
+  border-bottom: 4px solid #fbc638; /* Harsh yellow track line */
 }
 
-.meta {
-  color: #aaaaaa;
-  font-size: 0.9rem;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 24px;
-}
-
-/* Scarcity Bar */
-.scarcityContainer {
-  margin-top: auto; /* Pushes to bottom */
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.scarcityLabels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  font-family: 'Courier New', monospace;
-  color: #888;
-  font-weight: 700;
-}
-
-.scarcityTrack {
+/* ── 🎛️ THE AGGRESSIVE TELEMETRY CONTROL CENTER ── */
+.controlCenter {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   width: 100%;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  overflow: hidden;
+  background: #000; /* Pitch black for maximum contrast */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
 }
 
-.scarcityFill {
-  height: 100%;
+/* ── The Sharp Track Array ── */
+.pillTrack {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  
+  /* Mobile scrolling setup */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+}
+
+.pillTrack::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── The Geometric Buttons ── */
+.tabButton {
+  position: relative;
+  flex: 1; /* Stretch evenly to fill the bar on desktop */
+  min-width: 140px; /* Ensure they don't crush on mobile */
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.05); /* Dashboard separator lines */
+  padding: 18px 20px;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 900;
+  font-style: italic; /* Implies speed */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  outline: none;
+  scroll-snap-align: start;
+  transition: color 0.1s ease;
+  z-index: 2;
+}
+
+.tabButton:hover {
+  color: #fff;
+}
+
+.tabButton.active {
+  color: #000; /* Black text pops off the neon yellow */
+}
+
+/* ── The Attacking Sliding Block (Framer Motion Target) ── */
+.activePillBg {
+  position: absolute;
+  inset: 0;
+  background-color: #fbc638; /* Nyoki Yellow */
+  z-index: -1;
+  
+  /* 🔪 THE MAGIC CUT: Creates a sharp racing chevron shape instead of a boring rectangle */
+  clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+  
+  /* Harsh glowing underglow */
+  box-shadow: 0 0 20px rgba(251, 198, 56, 0.4);
+}
+
+/* ── FAKE EVENT FEED (Using the Track Sector Vibe) ── */
+.feed {
+  max-width: 900px;
+  margin: 60px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 0 20px;
+}
+
+.dummySection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dummyHeader {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #000;
   background: #fbc638;
-  border-radius: 3px;
-  transition: width 1s ease-out;
+  padding: 8px 30px 8px 16px;
+  display: inline-flex;
+  width: fit-content;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: 3px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+}
+
+.dummyCard {
+  height: 200px;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #fbc638; /* The racing line */
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+  font-weight: 900;
+  font-size: 2rem;
+  color: rgba(255,255,255,0.1);
+  letter-spacing: 5px;
 }

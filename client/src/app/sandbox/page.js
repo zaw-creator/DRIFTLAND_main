@@ -1,64 +1,62 @@
 "use client";
+
+import { useState } from "react";
+import { motion } from "framer-motion";
 import styles from "./sandbox.module.css";
 
-import driftImage from "./driftPic.jpg";
-
-// const driftImage = "/652623892_122105907980190710_1318177232604659671_n.jpg";
+const STATUS_OPTIONS = [
+  { id: "all", label: "All Events" },
+  { id: "ongoing", label: "● Live Now" },
+  { id: "nearby", label: "Starting Soon" },
+  { id: "upcoming", label: "Upcoming" },
+  { id: "previous", label: "Archived" },
+];
 
 export default function SandboxPage() {
-  // Mock Real-Time Data
-  const capacity = 32;
-  const registered = 24;
-  const fillPercentage = (registered / capacity) * 100;
-  const isAlmostFull = fillPercentage >= 85;
+  const [activeTab, setActiveTab] = useState("ongoing");
 
   return (
     <main className={styles.sandboxContainer}>
-      {/* This single HTML structure magically transforms based on screen size!
-        Desktop = Cinematic Row | Mobile = Glassmorphism Card 
-      */}
-      <article className={styles.premiumCard}>
-        {/* 📸 The Image Layer */}
-        <div className={styles.mediaWrap}>
-          <img
-            src={driftImage.src}
-            alt="Nyoki 2 Drift"
-            className={styles.heroImage}
-          />
-          {/* This overlay creates the smooth fade on desktop, and slight dim on mobile */}
-          <div className={styles.fadeOverlay}></div>
+      {/* 1. Hero Spacer */}
+      <div className={styles.headerSpacer}>DRIFTLAND HQ</div>
+
+      {/* 2. 🎛️ THE AGGRESSIVE TELEMETRY CONTROL CENTER */}
+      <nav className={styles.controlCenter}>
+        <div className={styles.pillTrack}>
+          {STATUS_OPTIONS.map((status) => {
+            const isActive = activeTab === status.id;
+
+            return (
+              <button
+                key={status.id}
+                onClick={() => setActiveTab(status.id)}
+                className={`${styles.tabButton} ${isActive ? styles.active : ""}`}
+              >
+                {/* Framer Motion Engine: 
+                  We use a stiffer spring to make the slide feel "mechanical" and fast.
+                */}
+                {isActive && (
+                  <motion.div
+                    layoutId="attackingBlock"
+                    className={styles.activePillBg}
+                    transition={{ type: "spring", stiffness: 600, damping: 40 }}
+                  />
+                )}
+                {status.label}
+              </button>
+            );
+          })}
         </div>
+      </nav>
 
-        {/* 📊 The Data & Frosted Glass Layer */}
-        <div className={styles.contentWrap}>
-          <div className={styles.liveBadge}>● UPCOMING</div>
-
-          <h2 className={styles.title}>Nyoki 2 Drift</h2>
-
-          <div className={styles.meta}>
-            <span>📍 DriftLand 154</span>
-            <span>📅 MARCH 27, 28, 29</span>
-          </div>
-
-          <div className={styles.scarcityContainer}>
-            <div className={styles.scarcityLabels}>
-              <span>AWT REGISTRATION</span>
-              <span style={{ color: isAlmostFull ? "#e10600" : "#fbc638" }}>
-                {registered} / {capacity}
-              </span>
-            </div>
-            <div className={styles.scarcityTrack}>
-              <div
-                className={styles.scarcityFill}
-                style={{
-                  width: `${fillPercentage}%`,
-                  backgroundColor: isAlmostFull ? "#e10600" : "#fbc638",
-                }}
-              />
-            </div>
-          </div>
+      {/* 3. The Dummy Feed to test scrolling */}
+      <div className={styles.feed}>
+        <div className={styles.dummySection}>
+          <div className={styles.dummyHeader}>Sector 1: {activeTab}</div>
+          <div className={styles.dummyCard}>EVENT ALPHA</div>
+          <div className={styles.dummyCard}>EVENT BETA</div>
         </div>
-      </article>
+      </div>
     </main>
   );
 }

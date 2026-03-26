@@ -1,61 +1,37 @@
-"use client";
-
-import { useState } from "react";
-import { motion } from "framer-motion";
+import Link from "next/link";
 import styles from "./sandbox.module.css";
 
-const STATUS_OPTIONS = [
-  { id: "all", label: "All Events" },
-  { id: "ongoing", label: "● Live Now" },
-  { id: "nearby", label: "Starting Soon" },
-  { id: "upcoming", label: "Upcoming" },
-  { id: "previous", label: "Archived" },
+// Dummy Database
+export const dummyEvents = [
+  { id: "1", name: "Tokyo Drift Masters", status: "LIVE NOW" },
+  { id: "2", name: "Formula D: Long Beach", status: "UPCOMING" },
+  { id: "3", name: "Ebisu Circuit Open Pit", status: "STARTING SOON" },
 ];
 
-export default function SandboxPage() {
-  const [activeTab, setActiveTab] = useState("ongoing");
-
+export default function SandboxFeed() {
   return (
     <main className={styles.sandboxContainer}>
-      {/* 1. Hero Spacer */}
-      <div className={styles.headerSpacer}>DRIFTLAND HQ</div>
+      <h1 className={styles.header}>TELEMETRY FEED</h1>
+      <p style={{ color: "#888", marginBottom: "40px" }}>
+        Scroll down and click a card. Notice how the URL changes, but the
+        background stays perfectly in place!
+      </p>
 
-      {/* 2. 🎛️ THE AGGRESSIVE TELEMETRY CONTROL CENTER */}
-      <nav className={styles.controlCenter}>
-        <div className={styles.pillTrack}>
-          {STATUS_OPTIONS.map((status) => {
-            const isActive = activeTab === status.id;
-
-            return (
-              <button
-                key={status.id}
-                onClick={() => setActiveTab(status.id)}
-                className={`${styles.tabButton} ${isActive ? styles.active : ""}`}
-              >
-                {/* Framer Motion Engine: 
-                  We use a stiffer spring to make the slide feel "mechanical" and fast.
-                */}
-                {isActive && (
-                  <motion.div
-                    layoutId="attackingBlock"
-                    className={styles.activePillBg}
-                    transition={{ type: "spring", stiffness: 600, damping: 40 }}
-                  />
-                )}
-                {status.label}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-
-      {/* 3. The Dummy Feed to test scrolling */}
-      <div className={styles.feed}>
-        <div className={styles.dummySection}>
-          <div className={styles.dummyHeader}>Sector 1: {activeTab}</div>
-          <div className={styles.dummyCard}>EVENT ALPHA</div>
-          <div className={styles.dummyCard}>EVENT BETA</div>
-        </div>
+      <div className={styles.grid}>
+        {/* Render 12 fake cards to test scrolling */}
+        {[...dummyEvents, ...dummyEvents, ...dummyEvents, ...dummyEvents].map(
+          (event, i) => (
+            <Link
+              key={i}
+              href={`/sandbox/${event.id}`}
+              className={styles.card}
+              scroll={false} // Prevents jumping to the top of the feed
+            >
+              <span className={styles.cardStatus}>{event.status}</span>
+              <h2 className={styles.cardTitle}>{event.name}</h2>
+            </Link>
+          ),
+        )}
       </div>
     </main>
   );

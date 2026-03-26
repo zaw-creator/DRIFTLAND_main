@@ -1,146 +1,102 @@
 .sandboxContainer {
-  min-height: 200vh;
+  min-height: 100vh;
   background-color: #050505;
   color: #fff;
+  padding: 60px 20px;
   font-family: 'Inter', sans-serif;
-  padding-bottom: 100px;
 }
 
-/* ── 🏔️ FAKE HERO BANNER ── */
-.headerSpacer {
-  height: 35vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: repeating-linear-gradient(
-    -45deg,
-    #0a0a0a,
-    #0a0a0a 10px,
-    #111 10px,
-    #111 20px
-  );
-  font-size: 2rem;
+.header {
+  font-size: 2.5rem;
   font-weight: 900;
-  letter-spacing: 8px;
   font-style: italic;
-  color: #333;
-  border-bottom: 4px solid #fbc638; /* Harsh yellow track line */
-}
-
-/* ── 🎛️ THE AGGRESSIVE TELEMETRY CONTROL CENTER ── */
-.controlCenter {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 100%;
-  background: #000; /* Pitch black for maximum contrast */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  justify-content: center;
-}
-
-/* ── The Sharp Track Array ── */
-.pillTrack {
-  display: flex;
-  width: 100%;
-  max-width: 1200px;
-  
-  /* Mobile scrolling setup */
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-snap-type: x mandatory;
-}
-
-.pillTrack::-webkit-scrollbar {
-  display: none;
-}
-
-/* ── The Geometric Buttons ── */
-.tabButton {
-  position: relative;
-  flex: 1; /* Stretch evenly to fill the bar on desktop */
-  min-width: 140px; /* Ensure they don't crush on mobile */
-  background: transparent;
-  border: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.05); /* Dashboard separator lines */
-  padding: 18px 20px;
-  color: #666;
-  font-size: 0.85rem;
-  font-weight: 900;
-  font-style: italic; /* Implies speed */
   text-transform: uppercase;
-  letter-spacing: 2px;
-  cursor: pointer;
-  white-space: nowrap;
-  outline: none;
-  scroll-snap-align: start;
-  transition: color 0.1s ease;
-  z-index: 2;
+  letter-spacing: 4px;
+  color: #fbc638;
+  margin-bottom: 40px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
 }
 
-.tabButton:hover {
-  color: #fff;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
 }
 
-.tabButton.active {
-  color: #000; /* Black text pops off the neon yellow */
-}
-
-/* ── The Attacking Sliding Block (Framer Motion Target) ── */
-.activePillBg {
-  position: absolute;
-  inset: 0;
-  background-color: #fbc638; /* Nyoki Yellow */
-  z-index: -1;
-  
-  /* 🔪 THE MAGIC CUT: Creates a sharp racing chevron shape instead of a boring rectangle */
-  clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
-  
-  /* Harsh glowing underglow */
-  box-shadow: 0 0 20px rgba(251, 198, 56, 0.4);
-}
-
-/* ── FAKE EVENT FEED (Using the Track Sector Vibe) ── */
-.feed {
-  max-width: 900px;
-  margin: 60px auto;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  padding: 0 20px;
-}
-
-.dummySection {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.dummyHeader {
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: #000;
-  background: #fbc638;
-  padding: 8px 30px 8px 16px;
-  display: inline-flex;
-  width: fit-content;
-  text-transform: uppercase;
-  font-style: italic;
-  letter-spacing: 3px;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
-}
-
-.dummyCard {
-  height: 200px;
+.card {
   background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-left: 4px solid #fbc638; /* The racing line */
+  border-left: 4px solid #fbc638;
+  padding: 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: #1a1a1a;
+}
+
+.cardTitle {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.cardStatus {
+  color: #fbc638;
+  font-weight: 900;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+}
+
+/* ── MODAL UI ── */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
   display: flex;
   align-items: center;
-  padding-left: 40px;
-  font-weight: 900;
-  font-size: 2rem;
-  color: rgba(255,255,255,0.1);
-  letter-spacing: 5px;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalContent {
+  background: #0a0a0a;
+  width: 100%;
+  max-width: 800px;
+  min-height: 500px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #fbc638;
+  position: relative;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  color: #888;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #fff;
 }

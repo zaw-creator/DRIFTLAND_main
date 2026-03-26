@@ -1,5 +1,6 @@
 import { getEventById } from "@/services/eventService";
 import LiveEventDetails from "@/components/events/LiveEventDetails";
+import defaultEvent from "@/asset/events/DefaultEventPage.png";
 import { notFound } from "next/navigation";
 
 // 🚀 Premium SEO: Dynamically generate social share cards for each specific event!
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }) {
       description:
         event.description || "Join us for this upcoming DriftLand event.",
       openGraph: {
-        images: [event.image || "/default-event-bg.jpg"],
+        images: [event.image || defaultEvent],
       },
     };
   } catch (error) {

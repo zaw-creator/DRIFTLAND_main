@@ -10,7 +10,6 @@
   background: rgba(0, 0, 0, 0.95); /* Slight transparency */
   backdrop-filter: blur(10px);
   border-top: 4px solid #fbc638; /* Harsh yellow track line */
-  border-bottom: 4px solid #fbc638;
   display: flex;
   justify-content: center;
   align-items: center;

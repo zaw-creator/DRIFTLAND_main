@@ -10,62 +10,6 @@
  *   - Section → matches .dummyHeader   (yellow chevron-cut badge)
  */
 
-/* ── PAGE HERO HEADER ─────────────────────────────────────────────────────────
-   Breaks out of the max-width padded container to span the full viewport width
-   (same technique used by TelemetryControl's .controlCenter).
-   The diagonal stripe background and bottom border match the sandbox look.
-   NOTE: once the static <header> in app/events/page.js is removed, this
-   becomes the only header on the Events page.
-───────────────────────────────────────────────────────────────────────────── */
-.header {
-  /* Break out of the padded .page container to be truly full-width */
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-
-  /* Diagonal construction-tape pattern — matches sandbox .headerSpacer */
-  background: repeating-linear-gradient(
-    -45deg,
-    #0a0a0a,
-    #0a0a0a 10px,
-    #111 10px,
-    #111 20px
-  );
-
-  min-height: 18vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding:28px 24px;
-
-  /* The signature yellow race-line at the bottom */
-  border-bottom: 4px solid #fbc638;
-
-  /* No extra bottom margin — TelemetryControl follows immediately */
-  margin-bottom: 0;
-}
-
-.title {
-  /* Bold italic uppercase — matches sandbox header text style */
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 900;
-  font-style: italic;
-  text-transform: uppercase;
-  letter-spacing: 8px;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 8px;
-}
-
-.subtitle {
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #555;
-  margin: 0;
-}
-
 /* ── EMPTY STATE ─────────────────────────────────────────────────────────── */
 .emptyState {
   text-align: center;
@@ -128,4 +72,43 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* ── INFINITE SCROLL SENTINELS ───────────────────────────────────────────── */
+
+/* Top sentinel — 1px invisible div. IntersectionObserver watches it to detect
+   when the user has scrolled back to the top of the feed. */
+.topSentinel {
+  height: 1px;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* Bottom sentinel per section — sits below the last EventCard.
+   When it enters the viewport (with 200px rootMargin), the next page loads. */
+.sentinel {
+  height: 1px;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* ── NEW EVENTS BANNER ───────────────────────────────────────────────────── */
+.newEventsBanner {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  background: #fbc638;
+  color: #000;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.newEventsBanner:hover {
+  background: #f0b800;
 }

@@ -17,9 +17,8 @@
  * NOTE: The static <header> block was removed — LiveEventFeed now renders
  *   a dynamic header that updates when the active tab changes.
  */
-
-import { getEvents } from "@/services/eventService";
 import LiveEventFeed from "@/components/events/LiveEventFeed";
+import { getEvents } from "@/services/eventService";
 import styles from "./page.module.css";
 
 export const metadata = {

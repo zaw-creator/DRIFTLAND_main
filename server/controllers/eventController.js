@@ -68,7 +68,7 @@ export async function getEvents(req, res) {
     //
     //   ?includeAll=true:
     //     Returns every event regardless of status (admin use only).
-    const { status: reqStatus, includeAll } = req.query;
+    const { status: reqStatus, includeAll, page, limit } = req.query;
 
     const enriched = events
       .map(attachDerivedFields)
@@ -88,6 +88,26 @@ export async function getEvents(req, res) {
         if (statusDiff !== 0) return statusDiff;
         return new Date(a.eventDate) - new Date(b.eventDate);
       });
+
+    // ── PAGINATION ─────────────────────────────────────────────────────────────
+    // Optional: ?page=1&limit=10
+    // If neither param is present, return the full list (backward-compatible).
+    if (page || limit) {
+      const pageNum = Math.max(1, parseInt(page) || 1);
+      const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10));
+      const start = (pageNum - 1) * limitNum;
+      const paginated = enriched.slice(start, start + limitNum);
+      return res.json({
+        success: true,
+        data: {
+          events: paginated,
+          page: pageNum,
+          hasNextPage: start + limitNum < enriched.length,
+          hasPrevPage: pageNum > 1,
+          total: enriched.length,
+        },
+      });
+    }
 
     res.json({ success: true, data: enriched });
   } catch (err) {

@@ -62,6 +62,22 @@ export async function getEventById(id) {
   return request(`/api/events/${id}`, [`event-${id}`], 30);
 }
 
+/**
+ * Client-side paginated fetch for the infinite scroll feed.
+ * Unlike getEvents(), this does NOT use Next.js server caching —
+ * it's called from client components inside useInfiniteSection.
+ *
+ * Returns: { events, page, hasNextPage, hasPrevPage, total }
+ */
+export async function getEventsPaginated({ status, page = 1, limit = 10 } = {}) {
+  const params = new URLSearchParams({ page, limit });
+  if (status && status !== "all") params.set("status", status);
+  const res = await fetch(`${API_URL}/api/events?${params}`);
+  if (!res.ok) throw new Error(`Paginated fetch failed: ${res.status}`);
+  const json = await res.json();
+  return json.data; // { events, page, hasNextPage, hasPrevPage, total }
+}
+
 export async function getLeaderboard(id) {
   return request(`/api/events/${id}/leaderboard`);
 }

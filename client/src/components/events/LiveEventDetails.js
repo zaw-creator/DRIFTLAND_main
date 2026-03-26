@@ -109,10 +109,6 @@ export default function LiveEventDetails({ initialEvent }) {
 
   return (
     <main className={styles.page}>
-      <button className={styles.backBtn} onClick={() => router.push("/events")}>
-        ← Back to Events
-      </button>
-
       {/* ── Banner image ── */}
       <div className={styles.banner}>
         {event.image ? (

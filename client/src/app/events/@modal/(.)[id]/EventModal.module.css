@@ -1,0 +1,98 @@
+/*
+ * EventModal.module.css  —  app/events/@modal/(.)[id]/EventModal.module.css
+ *
+ * Styles for the intercepting-route event detail modal.
+ * Controls the backdrop overlay and the sliding panel that contains LiveEventDetails.
+ *
+ * Layout:
+ *   Mobile  (<640px) → full-width sheet that slides up from the bottom (92dvh)
+ *   Desktop (≥640px) → centered floating panel (85vh, max 900px wide)
+ *
+ * To adjust the panel size: edit .panel (height, max-width, border-radius)
+ * To adjust the animation: edit the `transition` prop in ModalUI.js
+ * To adjust the backdrop darkness: edit .backdrop background rgba alpha value
+ */
+
+/* ── Backdrop ────────────────────────────────────────────────────── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: flex-end;       /* slide up from bottom on mobile */
+  justify-content: center;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .backdrop {
+    align-items: center;
+    padding: 24px;
+  }
+}
+
+/* ── Panel ───────────────────────────────────────────────────────── */
+.panel {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin-top: 35px;
+  height: 90dvh;             /* almost full screen on mobile */
+  background: var(--background, #fff);
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .panel {
+    height: 85vh;
+    border-radius: 16px;
+  }
+}
+
+/* ── Close button ────────────────────────────────────────────────── */
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--foreground, #171717);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.closeBtn:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* ── Scrollable content area ─────────────────────────────────────── */
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 32px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .closeBtn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ededed;
+  }
+  .closeBtn:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+}

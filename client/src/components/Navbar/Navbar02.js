@@ -36,7 +36,7 @@ import styles from "./Navbar02.module.css";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/events", label: "Events" },
-  { href: "/drivers", label: "Drivers" },
+  { href: "/shop", label: "Shop" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
 ];

@@ -1,173 +1,86 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getLeaderboard } from "@/services/eventService";
+/**
+ * Leaderboard.js
+ *
+ * Reusable qualifying results table styled like the telemetry sandbox.
+ * Renders a ranked list of drivers with their qualifying score and class.
+ *
+ * Props:
+ *   title    {string}    Section heading text (default: "QUALIFYING TELEMETRY")
+ *   results  {Object[]}  Leaderboard entries from the event schema.
+ *                        Shape: [{ driverId, driverName, class, qualifyScore, qualifyRank, eliminated }]
+ *   limit    {number}    Cap the number of rows shown (omit = show all)
+ */
+
 import styles from "./Leaderboard.module.css";
 
-export default function Leaderboard({ eventId, limit = null }) {
-  useEffect(() => {
-    if (!bracketUpdate) return;
-    setBracket(bracketUpdate.bracket ?? []);
-    setGenerated(true);
-  }, [bracketUpdate]);
+export default function Leaderboard({
+  title = "QUALIFYING TELEMETRY",
+  results = [],
+  limit,
+}) {
+  // Return nothing if there are no results to display
+  if (!results || results.length === 0) return null;
 
-  const [drivers, setDrivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState("qualifying");
-  const [updatedId, setUpdatedId] = useState(null);
-
-  // Initial fetch
-  useEffect(() => {
-    if (!eventId) return;
-    setLoading(true);
-    getLeaderboard(eventId)
-      .then((res) => setDrivers(res?.data ?? []))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [eventId]);
-
-  // SSE — live leaderboard updates
-  // useEffect(() => {
-  //   if (!eventId) return;
-  //   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  //   const es = new EventSource(`${API_URL}/api/events/${eventId}/stream`);
-
-  //   es.addEventListener('event-updated', (e) => {
-  //     const patch = JSON.parse(e.data);
-  //     if (patch.type === 'LEADERBOARD_UPDATE' && patch.leaderboard) {
-  //       setDrivers(patch.leaderboard);
-  //       // Flash updated rows
-  //       patch.leaderboard.forEach((d) => {
-  //         setUpdatedId(d.driverId);
-  //         setTimeout(() => setUpdatedId(null), 1500);
-  //       });
-  //     }
-  //     if (patch.type === 'EVENT_ENDED') {
-  //       // Re-fetch final state
-  //       getLeaderboard(eventId).then((res) => setDrivers(res?.data ?? []));
-  //     }
-  //   });
-
-  //   return () => es.close();
-  // }, [eventId]);
-
-  // Filter by session tab, then apply limit for top-5 mode
-  const filtered = drivers
-    .filter((d) => session === "qualifying" || !d.eliminated)
-    .sort((a, b) => a.qualifyRank - b.qualifyRank);
-
-  const displayed = limit ? filtered.slice(0, limit) : filtered;
-
-  // Gap calculation vs leader
-  const leaderScore = displayed[0]?.qualifyScore ?? 0;
-
-  if (loading) {
-    return (
-      <div className={styles.trackContainer}>
-        <div className={styles.loadingRow}>Loading leaderboard...</div>
-      </div>
-    );
-  }
-
-  if (!displayed.length) {
-    return (
-      <div className={styles.trackContainer}>
-        <div className={styles.emptyRow}>No results yet.</div>
-      </div>
-    );
-  }
+  // If a limit is provided (e.g. top-3 preview), slice the sorted array
+  const rows = limit ? results.slice(0, limit) : results;
 
   return (
-    <div className={styles.trackContainer}>
-      <header className={styles.raceHeader}>
-        <div className={styles.titleBlock}>
-          <div className={styles.redBar}></div>
-          <h1>
-            <span className={styles.liveIndicator}></span>
-            {limit ? `TOP ${limit}` : "LIVE TIMING & SCORING"}
-          </h1>
-        </div>
+    <div className={styles.leaderboardContainer}>
 
-        {/* Session tabs — only show on full leaderboard */}
-        {!limit && (
-          <div className={styles.sessionControls}>
-            <button
-              className={`${styles.sessionBtn} ${session === "qualifying" ? styles.activeSession : ""}`}
-              onClick={() => setSession("qualifying")}
+      {/* ── Telemetry-style header with blinking dot ── */}
+      <div className={styles.headerWrapper}>
+        <h2 className={styles.headerTitle}>
+          {/* Blinking indicator dot — pure CSS animation defined in module */}
+          <span className={styles.blinker}></span>
+          {title}
+        </h2>
+        {/* Hatched line that fills the remaining header width */}
+        <div className={styles.telemetryLine}></div>
+      </div>
+
+      {/* ── Column labels row ── */}
+      <div className={styles.tableHeader}>
+        <span className={styles.colPos}>POS</span>
+        <span className={styles.colDriver}>DRIVER</span>
+        {/* "CLASS" column — hidden on narrow mobile via CSS */}
+        <span className={styles.colCar}>CLASS</span>
+        <span className={styles.colScore}>SCORE</span>
+      </div>
+
+      {/* ── Driver rows ── */}
+      <div className={styles.resultsList}>
+        {rows.map((driver) => {
+          // P1 (rank 1) gets the gold gradient highlight treatment
+          const isP1 = driver.qualifyRank === 1;
+
+          return (
+            <div
+              // driverId is the stable unique key from the leaderboard schema
+              key={driver.driverId}
+              className={`${styles.row} ${isP1 ? styles.rowP1 : ""} ${driver.eliminated ? styles.rowEliminated : ""}`}
             >
-              QUALIFYING
-            </button>
-            <button
-              className={`${styles.sessionBtn} ${session === "bracket" ? styles.activeSession : ""}`}
-              onClick={() => setSession("bracket")}
-            >
-              TOP 32 BATTLES
-            </button>
-          </div>
-        )}
-      </header>
+              {/* Position: show "P1" for pole, "P2" etc. for the rest */}
+              <span className={styles.colPos}>
+                P{driver.qualifyRank}
+              </span>
 
-      <div className={styles.telemetryWrapper}>
-        <table className={styles.timingTable}>
-          <thead>
-            <tr>
-              <th>POS</th>
-              <th>DRIVER</th>
-              <th className={styles.hideMobile}>DRIVE TYPE</th>
-              <th className={styles.scoreCol}>SCORE</th>
-              <th className={styles.scoreCol}>W</th>
-              <th className={styles.scoreCol}>L</th>
-              <th className={styles.gapCol}>GAP</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayed.map((item, index) => {
-              const isUpdated = updatedId === item.driverId;
-              const gap =
-                index === 0
-                  ? "LEADER"
-                  : `+${(leaderScore - item.qualifyScore).toFixed(1)}`;
+              {/* Driver name — stored as driverName in the leaderboard schema */}
+              <span className={styles.colDriver}>{driver.driverName}</span>
 
-              return (
-                <tr
-                  key={item.driverId}
-                  className={`${styles.driverRow} ${isUpdated ? styles.recentlyUpdated : ""} ${item.eliminated ? styles.eliminated : ""}`}
-                >
-                  <td className={styles.posCell}>
-                    <div
-                      className={`${styles.posBadge} ${item.qualifyRank === 1 ? styles.pos1 : ""}`}
-                    >
-                      {item.qualifyRank}
-                    </div>
-                  </td>
-                  <td className={styles.driverCell}>
-                    <span className={styles.lastName}>
-                      {item.driverName.split(" ").pop()}
-                    </span>
-                    <span className={styles.firstName}>
-                      {item.driverName.split(" ").slice(0, -1).join(" ")}
-                    </span>
-                  </td>
-                  <td className={`${styles.teamCell} ${styles.hideMobile}`}>
-                    <span className={styles.carDetail}>{item.driveType}</span>
-                  </td>
-                  <td className={styles.scoreCol}>{item.qualifyScore}</td>
-                  <td className={styles.scoreCol}>{item.wins}</td>
-                  <td className={styles.scoreCol}>{item.losses}</td>
-                  <td className={styles.gapCol}>
-                    <span
-                      className={
-                        gap === "LEADER" ? styles.leaderText : styles.gapText
-                      }
-                    >
-                      {gap}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              {/* Class — e.g. "Class A". Hidden on very small screens via CSS */}
+              <span className={styles.colCar}>{driver.class}</span>
+
+              {/* Qualifying score — toFixed(1) guards against missing decimals */}
+              <span className={styles.colScore}>
+                {driver.qualifyScore != null
+                  ? driver.qualifyScore.toFixed(1)
+                  : "—"}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

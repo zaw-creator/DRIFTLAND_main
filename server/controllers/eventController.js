@@ -11,7 +11,13 @@ import { broadcast } from "../utils/sseManager.js";
 //   archived → manually archived via PATCH endpoint
 // FIXED: previous keys "ongoing"/"previous" never matched computeStatus output,
 // causing the sort to produce NaN for every comparison (broken ordering).
-const STATUS_ORDER = { active: 0, nearby: 1, upcoming: 2, ended: 3, archived: 4 };
+const STATUS_ORDER = {
+  active: 0,
+  nearby: 1,
+  upcoming: 2,
+  ended: 3,
+  archived: 4,
+};
 
 /**
  * Computes and attaches derived fields that were defined as Mongoose virtuals.

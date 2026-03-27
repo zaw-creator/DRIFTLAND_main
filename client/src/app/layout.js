@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavbarWrapper from "@/components/NavbarWrapper";
+import ServerWakeup from "@/components/ServerWakeup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {/* Navbar hidden on admin pages - admin has its own navbar */}
         
+        <ServerWakeup />
         <NavbarWrapper />
         {children}
       </body>

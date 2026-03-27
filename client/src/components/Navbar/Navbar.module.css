@@ -28,12 +28,9 @@
 }
 
 .brand {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #fff;
+  display: flex;
+  align-items: center;
   flex-shrink: 0;
-  text-transform: uppercase;
 }
 
 .links {

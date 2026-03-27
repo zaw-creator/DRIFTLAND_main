@@ -1,0 +1,355 @@
+.page {
+  padding: 32px;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.heading {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.subheading {
+  font-size: 12px;
+  color: #535653;
+  letter-spacing: 0.08em;
+  margin: 4px 0 0;
+  text-transform: uppercase;
+}
+
+/* ── Upload card ── */
+.uploadCard {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.uploadArea {
+  border: 1px dashed #2a2a2a;
+  border-radius: 4px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  position: relative;
+}
+
+.uploadArea:hover {
+  border-color: #FFBB00;
+}
+
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #535653;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.uploadIcon {
+  font-size: 32px;
+  color: #2a2a2a;
+  line-height: 1;
+}
+
+.uploadHint {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fileInput {
+  display: none;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #535653;
+}
+
+.input {
+  height: 38px;
+  padding: 0 12px;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #FFBB00;
+}
+
+.uploadError {
+  font-size: 12px;
+  color: #ff4444;
+  margin: 0;
+}
+
+.formActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.clearBtn {
+  height: 36px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  color: #535653;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.clearBtn:hover {
+  border-color: #535653;
+  color: #fff;
+}
+
+.uploadBtn {
+  height: 36px;
+  padding: 0 24px;
+  background: #FFBB00;
+  border: none;
+  border-radius: 4px;
+  color: #000401;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.uploadBtn:hover:not(:disabled) {
+  background: #ffd000;
+}
+
+.uploadBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cardImg {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.cardInfo {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cardCategory {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.cardTitle2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  opacity: 0;
+}
+
+.card:hover .deleteBtn {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  background: rgba(255, 68, 68, 0.85);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ── States ── */
+.loading, .empty, .error {
+  font-size: 13px;
+  color: #535653;
+  text-align: center;
+  padding: 48px 0;
+}
+
+.error {
+  color: #ff4444;
+}
+
+/* ── Confirm dialog ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 28px;
+  max-width: 380px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dialogText {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  height: 36px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  color: #535653;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.cancelBtn:hover {
+  color: #fff;
+  border-color: #535653;
+}
+
+.confirmBtn {
+  height: 36px;
+  padding: 0 16px;
+  background: #ff4444;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.confirmBtn:hover:not(:disabled) {
+  background: #ff2222;
+}
+
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

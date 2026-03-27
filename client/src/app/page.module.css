@@ -7,39 +7,47 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #0a0a0a;
   overflow: hidden;
   text-align: center;
   padding: 0 24px;
 }
 
-/* Subtle grid overlay */
-.hero::before {
-  content: '';
+/* ─── Slideshow ────────────────────────────────────────────── */
+.slideshowContainer {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
+  z-index: 0;
 }
 
-/* Bottom fade */
-.hero::after {
-  content: '';
+.slide {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background: linear-gradient(to bottom, transparent, #0a0a0a);
-  pointer-events: none;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(100%);
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+
+.slideActive {
+  opacity: 1;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 4, 1, 0.5) 0%,
+    rgba(0, 4, 1, 0.7) 50%,
+    rgba(0, 4, 1, 0.95) 100%
+  );
+  z-index: 1;
 }
 
 .heroContent {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,7 +59,7 @@
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: #FFBB00;
 }
 
 .heroTitle {
@@ -60,12 +68,16 @@
   letter-spacing: -0.04em;
   line-height: 1;
   color: #fff;
-  font-family: var(--font-geist-sans);
+  text-shadow: 0 0 40px rgba(255, 187, 0, 0.2);
+}
+
+.heroAccent {
+  color: #FFBB00;
 }
 
 .heroSub {
   font-size: clamp(15px, 2vw, 18px);
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
   max-width: 460px;
   line-height: 1.6;
 }
@@ -83,7 +95,7 @@
   bottom: 36px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -97,7 +109,7 @@
 .scrollArrow {
   width: 1px;
   height: 36px;
-  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.25));
+  background: linear-gradient(to bottom, transparent, #FFBB00);
   animation: scrollPulse 2s ease-in-out infinite;
 }
 
@@ -112,16 +124,19 @@
   align-items: center;
   height: 44px;
   padding: 0 28px;
-  background: #fff;
-  color: #000;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  transition: background 0.15s;
+  background: #FFBB00;
+  color: #000401;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background 0.15s, transform 0.15s;
 }
 
 .ctaPrimary:hover {
-  background: #e5e5e5;
+  background: #ffd000;
+  transform: translateY(-2px);
 }
 
 .ctaSecondary {
@@ -132,24 +147,27 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .ctaSecondary:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #fff;
+  border-color: #FFBB00;
+  color: #FFBB00;
 }
 
 /* ─── Section 2 — What We Do ─────────────────────────────── */
 .section {
-  background: #0a0a0a;
+  background: #000401;
   padding: 120px 24px;
   display: flex;
   justify-content: center;
+  border-top: 1px solid #1a1a1a;
 }
 
 .sectionInner {
@@ -160,11 +178,11 @@
 }
 
 .sectionEyebrow {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  color: #FFBB00;
 }
 
 .sectionTitle {
@@ -183,10 +201,11 @@
 
 /* ─── Section 3 — How It Works ───────────────────────────── */
 .featuresSection {
-  background: #111;
+  background: #0d0d0d;
   padding: 120px 24px;
   display: flex;
   justify-content: center;
+  border-top: 1px solid #1a1a1a;
 }
 
 .featuresInner {
@@ -204,26 +223,36 @@
 }
 
 .card {
-  background: #1a1a1a;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 12px;
+  background: #111;
+  border: 1px solid #1a1a1a;
+  border-top: 2px solid #FFBB00;
+  border-radius: 4px;
   padding: 32px 28px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+
+.card:hover {
+  border-color: #FFBB00;
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(255, 187, 0, 0.12);
 }
 
 .cardIcon {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.15em;
+  color: #FFBB00;
 }
 
 .cardTitle {
   font-size: 18px;
   font-weight: 700;
   color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .cardBody {
@@ -232,40 +261,13 @@
   line-height: 1.7;
 }
 
-/* ─── Section 4 — CTA Banner ─────────────────────────────── */
-.ctaBanner {
-  background: #0a0a0a;
-  padding: 120px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.ctaBannerTitle {
-  font-size: clamp(28px, 5vw, 48px);
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.03em;
-}
-
-.ctaBannerSub {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.45);
-  max-width: 400px;
-  line-height: 1.6;
-  margin-bottom: 8px;
-}
-
-/* ─── Section 5 — Stats ──────────────────────────────────── */
+/* ─── Section 4 — Stats ──────────────────────────────────── */
 .statsSection {
-  background: #111;
+  background: #000401;
   padding: 120px 24px;
   display: flex;
   justify-content: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid #1a1a1a;
 }
 
 .statsInner {
@@ -289,56 +291,366 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding: 2rem;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
 }
 
 .statNumber {
   font-size: clamp(40px, 6vw, 72px);
   font-weight: 900;
-  color: #fff;
+  color: #FFBB00;
   letter-spacing: -0.04em;
   line-height: 1;
 }
 
 .statLabel {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.35);
 }
 
-/* ─── Section 6 — Pull quote ─────────────────────────────── */
-.quoteSection {
-  background: #0a0a0a;
-  padding: 120px 24px;
+/* ─── Upcoming Events Preview ────────────────────────────── */
+.eventsPreviewSection {
+  background: #0d0d0d;
+  padding: 100px 24px;
   display: flex;
   justify-content: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid #1a1a1a;
+}
+
+.eventsPreviewInner {
+  max-width: 960px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.eventsPreviewHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.seeAllLink {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #FFBB00;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  padding-bottom: 4px;
+}
+
+.seeAllLink:hover {
+  opacity: 0.75;
+}
+
+.eventCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.eventCard {
+  background: #111;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.eventCardImg {
+  position: relative;
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+  background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eventCardNoImg {
+  font-size: 28px;
+  font-weight: 900;
+  color: #2a2a2a;
+  letter-spacing: -0.04em;
+}
+
+.eventBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.eventBadgeUpcoming {
+  background: rgba(255, 187, 0, 0.15);
+  color: #FFBB00;
+  border: 1px solid rgba(255, 187, 0, 0.3);
+}
+
+.eventBadgeLive {
+  background: rgba(255, 68, 68, 0.15);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.eventBadgeNearby {
+  background: rgba(255, 187, 0, 0.1);
+  color: #FFBB00;
+  border: 1px solid rgba(255, 187, 0, 0.2);
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff4444;
+  animation: pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.eventCardBody {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.eventCardDate {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FFBB00;
+  margin: 0;
+}
+
+.eventCardName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.eventCardLocation {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* ─── Gallery Preview ────────────────────────────────────── */
+.galleryPreviewSection {
+  background: #000401;
+  padding: 100px 24px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #1a1a1a;
+}
+
+.galleryPreviewInner {
+  max-width: 960px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.galleryPreviewHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 180px);
+  gap: 4px;
+}
+
+.galleryThumb {
+  background-size: cover;
+  background-position: center;
+  background-color: #111;
+  position: relative;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+}
+
+.galleryThumbLarge {
+  grid-row: span 2;
+}
+
+.galleryThumbOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,4,1,0.85) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.galleryThumb:hover .galleryThumbOverlay {
+  opacity: 1;
+}
+
+.galleryThumbCategory {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.galleryThumbTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ─── Responsive additions ───────────────────────────────── */
+@media (max-width: 640px) {
+  .eventCards {
+    grid-template-columns: 1fr;
+  }
+
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 160px);
+  }
+
+  .galleryThumbLarge {
+    grid-row: span 1;
+  }
+
+  .eventsPreviewHeader,
+  .galleryPreviewHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* ─── Section 5 — Pull quote ─────────────────────────────── */
+.quoteSection {
+  position: relative;
+  padding: 160px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #1a1a1a;
+  background-image: url('/field.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+.quoteBgOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 4, 1, 0.72);
 }
 
 .quoteInner {
+  position: relative;
+  z-index: 1;
   max-width: 720px;
   display: flex;
   flex-direction: column;
   gap: 24px;
   margin: 0;
+  border-left: 3px solid #FFBB00;
+  padding-left: 2rem;
 }
 
 .quoteText {
-  font-size: clamp(20px, 3vw, 28px);
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.6;
+  font-size: clamp(20px, 3.5vw, 30px);
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.5;
   letter-spacing: -0.01em;
   font-style: italic;
 }
 
 .quoteAuthor {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
+  color: #FFBB00;
+}
+
+/* ─── Section 6 — CTA Banner ─────────────────────────────── */
+.ctaBanner {
+  background: #000401;
+  padding: 120px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  border-top: 4px solid #FFBB00;
+  position: relative;
+}
+
+.ctaBanner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 187, 0, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.ctaBannerTitle {
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+}
+
+.ctaBannerSub {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.45);
+  max-width: 400px;
+  line-height: 1.6;
+  margin-bottom: 8px;
 }
 
 /* ─── Responsive ──────────────────────────────────────────── */

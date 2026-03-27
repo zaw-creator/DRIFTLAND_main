@@ -1,0 +1,322 @@
+/* ── Header ─────────────────────────────────────────────────── */
+.header {
+  position: relative;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url('/hero3.jpg');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.headerOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 4, 1, 0.5) 0%,
+    rgba(0, 4, 1, 0.88) 100%
+  );
+}
+
+.headerContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.title {
+  font-size: clamp(48px, 10vw, 88px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 60px rgba(255, 187, 0, 0.15);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.45);
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+/* ── Body layout ─────────────────────────────────────────────── */
+.body {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+/* ── Info sidebar ────────────────────────────────────────────── */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding-right: 64px;
+  border-right: 1px solid #1a1a1a;
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.infoLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.infoValue {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.infoMuted {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+}
+
+.infoLink {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.infoLink:hover {
+  color: #FFBB00;
+}
+
+.socials {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.socialLink {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+  width: fit-content;
+}
+
+.socialLink:hover {
+  color: #FFBB00;
+}
+
+/* ── Form ────────────────────────────────────────────────────── */
+.formWrap {
+  padding-left: 64px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.input {
+  height: 44px;
+  padding: 0 14px;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #FFBB00;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.textarea {
+  height: auto;
+  padding: 12px 14px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: #ff4444;
+  margin: 0;
+}
+
+.submitBtn {
+  align-self: flex-start;
+  height: 46px;
+  padding: 0 32px;
+  background: #FFBB00;
+  border: none;
+  border-radius: 4px;
+  color: #000401;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #ffd000;
+  transform: translateY(-2px);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Success state ───────────────────────────────────────────── */
+.successBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 40px;
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-top: 3px solid #FFBB00;
+  border-radius: 4px;
+}
+
+.successIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 187, 0, 0.1);
+  border: 1px solid rgba(255, 187, 0, 0.3);
+  color: #FFBB00;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.successBody {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 380px;
+}
+
+.resetBtn {
+  height: 38px;
+  padding: 0 20px;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  margin-top: 8px;
+}
+
+.resetBtn:hover {
+  border-color: #FFBB00;
+  color: #FFBB00;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .body {
+    grid-template-columns: 1fr;
+    padding: 48px 24px 80px;
+    gap: 48px;
+  }
+
+  .info {
+    padding-right: 0;
+    border-right: none;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 48px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+
+  .formWrap {
+    padding-left: 0;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .submitBtn {
+    width: 100%;
+    justify-content: center;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+  }
+}

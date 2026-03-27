@@ -33,6 +33,11 @@ export default function AdminNav() {
             Events
           </Link>
         </li>
+        <li>
+          <Link href="/admin/gallery" className={styles.link}>
+            Gallery
+          </Link>
+        </li>
       </ul>
 
       <button className={styles.logoutBtn} onClick={handleLogout}>

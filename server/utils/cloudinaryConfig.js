@@ -23,4 +23,15 @@ const eventImageStorage = new CloudinaryStorage({
 });
 
 export const uploadEventImage = multer({ storage: eventImageStorage });
+
+const galleryImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder:          'driftland-main/gallery',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation:  [{ quality: 'auto' }],
+  },
+});
+
+export const uploadGalleryImage = multer({ storage: galleryImageStorage });
 export default cloudinary;

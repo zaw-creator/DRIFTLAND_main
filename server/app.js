@@ -8,6 +8,9 @@ import createAdminUser from "./utils/createAdminUser.js";
 import authRoutes from "./routes/auth.js";
 import eventRoutes from "./routes/events.js";
 import adminEventRoutes from "./routes/admin/events.js";
+import galleryRoutes from "./routes/gallery.js";
+import adminGalleryRoutes from "./routes/admin/gallery.js";
+import contactRoutes from "./routes/contact.js";
 import {
   checkAndEndEvents,
   cleanupExpiredData,
@@ -44,6 +47,9 @@ app.use(cookieParser());
 app.use("/api/events", eventRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/events", adminEventRoutes);
+app.use("/api/gallery", galleryRoutes);
+app.use("/api/admin/gallery", adminGalleryRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.get("/health", (req, res) => {
   console.log(`[${new Date().toLocaleTimeString()}] Server pinged!`);

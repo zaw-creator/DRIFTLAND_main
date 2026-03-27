@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import styles from './Navbar.module.css';
@@ -47,7 +48,7 @@ export default function Navbar() {
     <nav className={`${styles.nav} ${visible ? styles.visible : styles.hidden}`}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand}>
-          DRIFTLAND
+          <Image src="/logo.png" alt="Driftland" height={36} width={120} priority />
         </Link>
 
         <ul className={styles.links}>

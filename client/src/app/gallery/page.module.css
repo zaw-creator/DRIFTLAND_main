@@ -1,0 +1,298 @@
+/* ── Page header ──────────────────────────────────────────── */
+.header {
+  position: relative;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url('/field.jpg');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.headerOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 4, 1, 0.55) 0%,
+    rgba(0, 4, 1, 0.85) 100%
+  );
+}
+
+.headerContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.title {
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 60px rgba(255, 187, 0, 0.15);
+}
+
+.subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.03em;
+}
+
+/* ── Filter bar ───────────────────────────────────────────── */
+.filterBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 24px;
+  background: #000401;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.filterBtn {
+  height: 36px;
+  padding: 0 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid #2a2a2a;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.filterBtn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.filterActive {
+  background: #FFBB00;
+  border-color: #FFBB00;
+  color: #000401;
+}
+
+.filterActive:hover {
+  background: #ffd000;
+  border-color: #ffd000;
+  color: #000401;
+}
+
+/* ── Grid ─────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  background: #000401;
+  padding: 3px;
+  min-height: 60vh;
+}
+
+/* Every 7th card spans 2 columns for visual variety */
+.card:nth-child(7n + 1) {
+  grid-column: span 2;
+}
+
+.card {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background-size: cover;
+  background-position: center;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+}
+
+.card:nth-child(7n + 1) {
+  aspect-ratio: 16 / 7;
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 4, 1, 0.85) 0%,
+    rgba(0, 4, 1, 0.1) 50%,
+    transparent 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .cardOverlay {
+  opacity: 1;
+}
+
+.cardCategory {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FFBB00;
+  margin-bottom: 4px;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+/* ── Lightbox ─────────────────────────────────────────────── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+.lbClose {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.lbClose:hover {
+  color: #FFBB00;
+  border-color: #FFBB00;
+}
+
+.lbContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 900px;
+  width: 100%;
+}
+
+.lbImage {
+  width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.lbCaption {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.lbCategory {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.lbTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  flex: 1;
+}
+
+.lbCounter {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.1em;
+}
+
+.lbNav {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.lbNav:hover {
+  color: #FFBB00;
+  border-color: #FFBB00;
+  background: rgba(255, 187, 0, 0.08);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card:nth-child(7n + 1) {
+    grid-column: span 2;
+  }
+
+  .lbNav {
+    display: none;
+  }
+
+  .lbImage {
+    max-height: 60vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card:nth-child(7n + 1) {
+    grid-column: span 1;
+    aspect-ratio: 4 / 3;
+  }
+}

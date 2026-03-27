@@ -233,6 +233,7 @@ export default function Navbar02({ foldSelector = DEFAULT_SELECTOR }) {
             animate="visible"
             exit="exit"
           >
+            <span className={styles.overlayBrand}>DRIFTLAND</span>
             <motion.ul
               className={styles.fullscreenLinks}
               variants={listVariants}

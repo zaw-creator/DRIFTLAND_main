@@ -88,6 +88,9 @@ qualifyingCutoffs: {
       rider:       { type: Boolean, default: true },
     },
 
+    // ── Registration open/closed toggle (admin-controlled) ───────────────────
+    registrationOpen: { type: Boolean, default: true },
+
     // ── NEW: link to register site event ─────────────────────────────────────
     registerEventId: { type: String, default: null },
 

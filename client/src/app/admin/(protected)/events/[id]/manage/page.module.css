@@ -241,6 +241,45 @@
   text-align: right;
 }
 
+/* ── Registration open/closed toggle ─────────────────────────────────────── */
+.regToggleBtn {
+  border: 1px solid;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.regToggleBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.regToggleOpen {
+  background: rgba(0, 204, 68, 0.08);
+  color: #00cc44;
+  border-color: #00cc44;
+}
+
+.regToggleOpen:hover:not(:disabled) {
+  background: rgba(0, 204, 68, 0.18);
+}
+
+.regToggleClosed {
+  background: rgba(225, 6, 0, 0.08);
+  color: #e10600;
+  border-color: #e10600;
+}
+
+.regToggleClosed:hover:not(:disabled) {
+  background: rgba(225, 6, 0, 0.18);
+}
+
 /* ── Sync registrations button ───────────────────────────────────────────── */
 .syncBtn {
   background: none;

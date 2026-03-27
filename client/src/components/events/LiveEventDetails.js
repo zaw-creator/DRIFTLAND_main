@@ -11,33 +11,19 @@ import LeaderboardPreview from "@/components/events/LeaderboardPreview";
 import styles from "@/app/events/[id]/page.module.css"; // Adjust path as needed
 
 // Helper functions (kept outside the component so they don't recreate on render)
+const WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MONTHS_LONG = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function pad(n) { return String(n).padStart(2, "0"); }
+
 function formatDateTime(dateStr) {
-  const date = new Date(dateStr);
-  return (
-    date.toLocaleDateString("en-GB", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }) +
-    " · " +
-    date.toLocaleTimeString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    })
-  );
+  const d = new Date(dateStr);
+  return `${WEEKDAYS[d.getDay()]}, ${d.getDate()} ${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()} · ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function formatDeadline(dateStr) {
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const d = new Date(dateStr);
+  return `${d.getDate()} ${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function isDeadlinePassed(deadline) {
@@ -75,8 +61,11 @@ export default function LiveEventDetails({ initialEvent }) {
     [event.registrationDeadline],
   );
 
+  const registrationClosed = event.registrationOpen === false;
+
   const { disabled: registerDisabled, label: registerLabel } = useMemo(() => {
     if (!selectedRole) return { disabled: true, label: "Register" };
+    if (registrationClosed) return { disabled: true, label: "Registration Closed" };
     if (deadlinePassed) return { disabled: true, label: "Registration Closed" };
     if (selectedRole === "Driver" && event.isDriverFull)
       return { disabled: true, label: "FULL" };
@@ -87,6 +76,7 @@ export default function LiveEventDetails({ initialEvent }) {
     return { disabled: false, label: "Register" };
   }, [
     selectedRole,
+    registrationClosed,
     deadlinePassed,
     event.isDriverFull,
     event.isParticipantFull,
@@ -179,7 +169,12 @@ export default function LiveEventDetails({ initialEvent }) {
               enabledRoles={event.enabledRoles}
             />
             <div className={styles.registerRow}>
-              {deadlinePassed && (
+              {registrationClosed && (
+                <p className={styles.closedNotice}>
+                  ⛔ Registration is currently closed.
+                </p>
+              )}
+              {!registrationClosed && deadlinePassed && (
                 <p className={styles.closedNotice}>
                   ⛔ Registration deadline has passed.
                 </p>

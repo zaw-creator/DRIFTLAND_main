@@ -52,6 +52,7 @@ export default function ManageEventPage() {
   const [leaderboardUpdate, setLeaderboardUpdate]   = useState(null);
   const [syncing, setSyncing]         = useState(false);
   const [syncMsg, setSyncMsg]         = useState(null);
+  const [togglingReg, setTogglingReg] = useState(false);
 
   // ── Fetch event data ────────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
@@ -122,6 +123,23 @@ export default function ManageEventPage() {
     } finally {
       setSyncing(false);
       setTimeout(() => setSyncMsg(null), 4000);
+    }
+  }
+
+  // ── Toggle registration open/closed ────────────────────────────────────
+  async function handleToggleRegistration() {
+    setTogglingReg(true);
+    try {
+      const next = !(event.registrationOpen !== false);
+      await authRequest(`/api/admin/events/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ registrationOpen: next }),
+      });
+      setEvent((prev) => ({ ...prev, registrationOpen: next }));
+    } catch (err) {
+      alert(`Failed to update registration: ${err.message}`);
+    } finally {
+      setTogglingReg(false);
     }
   }
 
@@ -221,6 +239,19 @@ export default function ManageEventPage() {
                 </span>
               )}
             </div>
+
+            <button
+              className={`${styles.regToggleBtn} ${event.registrationOpen === false ? styles.regToggleClosed : styles.regToggleOpen}`}
+              onClick={handleToggleRegistration}
+              disabled={togglingReg || isEnded}
+              title={event.registrationOpen === false ? 'Click to open registration' : 'Click to close registration'}
+            >
+              {togglingReg
+                ? 'Updating...'
+                : event.registrationOpen === false
+                  ? '🔒 Registration Closed'
+                  : '🟢 Registration Open'}
+            </button>
 
             <button
               className={styles.editBtn}

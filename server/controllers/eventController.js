@@ -182,6 +182,18 @@ export async function registerTicket(req, res) {
   const { role, className } = req.body; // e.g., role: 'Participant', or role: 'Driver', className: 'AWT'
 
   try {
+    // Check registration is open before doing anything
+    const eventDoc = await Event.findById(id).select("registrationOpen registrationDeadline").lean();
+    if (!eventDoc) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    if (eventDoc.registrationOpen === false) {
+      return res.status(403).json({ success: false, message: "Registration is currently closed for this event." });
+    }
+    if (eventDoc.registrationDeadline && new Date(eventDoc.registrationDeadline) < new Date()) {
+      return res.status(403).json({ success: false, message: "Registration deadline has passed." });
+    }
+
     let updatedEvent;
 
     // 🧱 THE ATOMIC WALL: Handle based on the selected role

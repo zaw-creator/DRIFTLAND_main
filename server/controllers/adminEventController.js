@@ -22,6 +22,7 @@ const ALLOWED_UPDATE_FIELDS = [
   "startTime",
   "endTime",
   "enabledRoles",
+  "registrationOpen",
 ];
 
 function attachDerivedFields(event) {
@@ -863,20 +864,24 @@ export async function forceEndEvent(req, res) {
 // PATCH /api/admin/events/:id
 export async function patchEvent(req, res) {
   try {
-    const allowed = ["registerEventId", "status"];
+    const allowed = ["registerEventId", "status", "registrationOpen"];
     const update = {};
     allowed.forEach((key) => {
       if (req.body[key] !== undefined) update[key] = req.body[key];
     });
     const event = await Event.findByIdAndUpdate(req.params.id, update, {
       new: true,
-    });
+    }).lean();
     if (!event) {
       return res
         .status(404)
         .json({ success: false, message: "Event not found" });
     }
-    res.json({ success: true, data: event });
+    // Broadcast so live event detail pages update instantly
+    const enriched = attachDerivedFields(event);
+    broadcast(`event-${event._id}`, "event-updated", enriched);
+    broadcast("events-list", "event-updated", enriched);
+    res.json({ success: true, data: enriched });
   } catch (err) {
     console.error("patchEvent error:", err);
     res.status(500).json({ success: false, message: "Failed to patch event" });

@@ -25,7 +25,7 @@
 
 import { useTransition, useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import styles from "./TelemetryControl.module.css";
 
 // ── PROP: options ─────────────────────────────────────────────────────────────
@@ -121,6 +121,7 @@ export default function TelemetryControl({ options }) {
         `}
       >
         {/* ── DESKTOP: F1 Tab Track ──────────────────────────────────────── */}
+        <LayoutGroup>
         <div className={styles.desktopTrack}>
           {options.map((status) => {
             const isActive = currentStatus === status.id;
@@ -146,6 +147,7 @@ export default function TelemetryControl({ options }) {
             );
           })}
         </div>
+        </LayoutGroup>
 
         {/* ── MOBILE: Minimalist Dropdown (visible ≤ 900px) ─────────────── */}
         <div className={styles.mobileDropdownContainer}>

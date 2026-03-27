@@ -25,8 +25,15 @@ import { getEventById } from "@/services/eventService";
 import LiveEventDetails from "@/components/events/LiveEventDetails";
 import ModalUI from "./ModalUI";
 
+// Guard: reject anything that isn't a 24-char hex ObjectId before hitting the DB.
+// This catches routing edge cases (e.g. Next.js intercepting-route syntax leaking
+// into params) and returns a clean 404 instead of a Mongoose CastError.
+const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
+
 export default async function InterceptedEventModal({ params }) {
   const { id } = await params;
+
+  if (!isValidObjectId(id)) notFound();
 
   let event;
   try {

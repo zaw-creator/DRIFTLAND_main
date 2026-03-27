@@ -1,23 +1,23 @@
-import styles from './RoleSelector.module.css';
+import styles from "./RoleSelector.module.css";
 
 const ROLES = [
   {
-    id: 'Driver',
-    label: 'Driver',
-    icon: '🚗',
-    description: 'You are driving a vehicle in the event',
+    id: "Driver",
+    label: "Driver",
+    // icon: '🚗',
+    description: "You are driving a vehicle in the event",
   },
   {
-    id: 'Participant',
-    label: 'Participant',
-    icon: '🏁',
-    description: 'You are taking part in activities (non-driving)',
+    id: "Participant",
+    label: "Participant",
+    // icon: '🏁',
+    description: "You are taking part in activities (non-driving)",
   },
   {
-    id: 'Rider',
-    label: 'Rider',
-    icon: '🪑',
-    description: 'You are a passenger in a vehicle',
+    id: "Rider",
+    label: "Rider",
+    // icon: '🪑',
+    description: "You are a passenger in a vehicle",
   },
 ];
 
@@ -28,7 +28,7 @@ const ROLES = [
  */
 export default function RoleSelector({ value, onChange, enabledRoles }) {
   const visibleRoles = ROLES.filter(
-    (role) => !enabledRoles || enabledRoles[role.id.toLowerCase()] !== false
+    (role) => !enabledRoles || enabledRoles[role.id.toLowerCase()] !== false,
   );
 
   return (
@@ -39,10 +39,10 @@ export default function RoleSelector({ value, onChange, enabledRoles }) {
           <button
             key={role.id}
             type="button"
-            className={`${styles.card} ${value === role.id ? styles.selected : ''}`}
+            className={`${styles.card} ${value === role.id ? styles.selected : ""}`}
             onClick={() => onChange(role.id)}
           >
-            <span className={styles.icon}>{role.icon}</span>
+            {/* <span className={styles.icon}>{role.icon}</span> */}
             <span className={styles.label}>{role.label}</span>
             <span className={styles.description}>{role.description}</span>
           </button>

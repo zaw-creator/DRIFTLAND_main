@@ -69,16 +69,7 @@ export default function LiveEventDetails({ initialEvent }) {
     return () => es.close();
   }, [event._id]);
 
-  // 3. 🚀 Premium Optimization: Memoize heavy calculations
-  const classGroups = useMemo(() => {
-    if (!event.classes) return {};
-    return event.classes.reduce((acc, cls) => {
-      if (!acc[cls.driveType]) acc[cls.driveType] = [];
-      acc[cls.driveType].push(cls);
-      return acc;
-    }, {});
-  }, [event.classes]);
-
+  // 3. Memoize register button state
   const deadlinePassed = useMemo(
     () => isDeadlinePassed(event.registrationDeadline),
     [event.registrationDeadline],
@@ -111,22 +102,21 @@ export default function LiveEventDetails({ initialEvent }) {
 
   return (
     <main className={styles.page}>
+      {/* ── Back to events ── */}
+      <button className={styles.backBtn} onClick={() => router.push("/events")}>
+        ← Events
+      </button>
+
       {/* ── Banner image ── */}
       <div className={styles.banner}>
-        {event.image ? (
-          <Image
-            src={event.image || defaultEvent}
-            alt={event.name}
-            fill
-            sizes="100vw"
-            className={styles.bannerImage}
-            priority
-          />
-        ) : (
-          <div className={styles.bannerPlaceholder}>
-            <span className={styles.bannerIcon}>🏁</span>
-          </div>
-        )}
+        <Image
+          src={event.image || defaultEvent}
+          alt={event.name}
+          fill
+          sizes="100vw"
+          className={styles.bannerImage}
+          priority
+        />
       </div>
 
       {/* ── Event info ── */}
@@ -172,77 +162,6 @@ export default function LiveEventDetails({ initialEvent }) {
             <p>{event.description}</p>
           </div>
         )}
-
-        {/* ── Capacity breakdown ── */}
-        <div className={styles.capacitySection}>
-          <h2 className={styles.sectionHeading}>Capacity</h2>
-
-          {Object.entries(classGroups).map(([driveType, classList]) => (
-            <div key={driveType} className={styles.driveTypeGroup}>
-              <h3 className={styles.driveTypeHeading}>{driveType}</h3>
-              <table className={styles.classTable}>
-                <tbody>
-                  {classList.map((cls) => {
-                    const classFull = cls.registeredCount >= cls.capacity;
-                    return (
-                      <tr key={cls.name} className={styles.classRow}>
-                        <td className={styles.className}>{cls.name}</td>
-                        <td className={styles.classCount}>
-                          {cls.registeredCount} / {cls.capacity}
-                        </td>
-                        <td>
-                          {classFull && (
-                            <span className={styles.fullBadge}>FULL</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  <tr className={styles.totalRow}>
-                    <td>Total</td>
-                    <td>
-                      {event.driverTotalRegisteredCount} /{" "}
-                      {event.driverTotalCapacity}
-                    </td>
-                    <td />
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          ))}
-
-          {/* Participant & Rider Rows (Kept standard logic) */}
-          <table className={styles.classTable}>
-            <tbody>
-              <tr className={styles.classRow}>
-                <td className={styles.className}>Participant</td>
-                <td className={styles.classCount}>
-                  {event.participantCapacity > 0
-                    ? `${event.participantRegisteredCount} / ${event.participantCapacity}`
-                    : "N/A"}
-                </td>
-                <td>
-                  {event.isParticipantFull && (
-                    <span className={styles.fullBadge}>FULL</span>
-                  )}
-                </td>
-              </tr>
-              <tr className={styles.classRow}>
-                <td className={styles.className}>Rider</td>
-                <td className={styles.classCount}>
-                  {event.riderCapacity > 0
-                    ? `${event.riderRegisteredCount} / ${event.riderCapacity}`
-                    : "N/A"}
-                </td>
-                <td>
-                  {event.isRiderFull && (
-                    <span className={styles.fullBadge}>FULL</span>
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
 
         {/* ── Leaderboard preview — shows dummy data until qualifying scores exist ── */}
         {/* Links to /events/:id/results for the full telemetry page */}

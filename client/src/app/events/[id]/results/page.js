@@ -20,6 +20,7 @@
  *   bracketGenerated — shows/hides the BRACKET tab in EventTelemetry
  */
 
+import { notFound }          from "next/navigation";
 import { getEventById }      from "@/services/eventService";
 import EventTelemetry        from "@/components/events/EventTelemetry";
 

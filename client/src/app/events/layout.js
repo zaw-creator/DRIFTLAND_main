@@ -15,7 +15,7 @@
  *
  *   When a user clicks an EventCard:
  *     1. URL changes to /events/[id]
- *     2. Next.js intercepts via @modal/(.)[id]/page.js
+ *     2. Next.js intercepts via @modal/(..)[id]/page.js
  *     3. The modal renders ON TOP of the feed — feed stays mounted
  *     4. router.back() dismisses the modal, URL reverts to /events
  *

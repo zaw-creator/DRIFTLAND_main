@@ -60,7 +60,11 @@ export default function EventCard({ event }) {
 
   return (
     // 🚀 Premium SEO: <Link> triggers background prefetching for 0ms load times!
-    <Link href={`/events/${_id}`} className={styles.premiumCard}>
+    <Link
+      href={`/events/${_id}`}
+      className={styles.premiumCard}
+      prefetch={false}
+    >
       {/* 📸 The Image Layer */}
       <div className={styles.mediaWrap}>
         <Image

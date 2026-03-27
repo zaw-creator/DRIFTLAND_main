@@ -1,0 +1,123 @@
+/* shop/page.module.css
+ * Coming Soon page — dark telemetry aesthetic matching the rest of the app.
+ * #050505 background · #fbc638 gold accent · Inter italic uppercase
+ */
+
+/* ── Page shell ── */
+.page {
+  position: relative;
+  min-height: 100vh;
+  background-color: #050505;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Hatched top accent — mirrors LeaderboardPreview header bar ── */
+.accentLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #fbc638;
+}
+
+/* ── Main content block ── */
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  padding: 0 24px;
+}
+
+/* ── Eyebrow — "DRIFTLAND STORE" with blinking dot ── */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(251, 198, 56, 0.7);
+  margin: 0 0 28px;
+}
+
+.blinker {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #fbc638;
+  flex-shrink: 0;
+  animation: sharpBlink 1s infinite steps(2, start);
+}
+
+@keyframes sharpBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Main heading ── */
+.heading {
+  font-size: clamp(4rem, 14vw, 10rem);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -2px;
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 36px;
+}
+
+/* ── Gold divider line ── */
+.divider {
+  width: 60px;
+  height: 3px;
+  background: #fbc638;
+  margin: 0 auto 32px;
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+
+/* ── Sub-copy ── */
+.body {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.8;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0;
+}
+
+/* ── Large faded watermark in the background ── */
+.watermark {
+  position: absolute;
+  bottom: -0.1em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(8rem, 30vw, 22rem);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -4px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.025);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .heading {
+    letter-spacing: -1px;
+  }
+}

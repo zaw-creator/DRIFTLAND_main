@@ -1,7 +1,12 @@
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
+function authHeaders(extra = {}) {
+  const token = localStorage.getItem('adminToken');
+  return token ? { Authorization: `Bearer ${token}`, ...extra } : extra;
+}
+
 export async function getAdminGallery() {
-  const res = await fetch(`${API}/api/admin/gallery`, { credentials: 'include' });
+  const res = await fetch(`${API}/api/admin/gallery`, { headers: authHeaders() });
   const data = await res.json();
   if (!data.success) throw new Error(data.error || 'Failed to fetch gallery');
   return data.items;
@@ -14,7 +19,7 @@ export async function uploadGalleryItem(file, title, category) {
   form.append('category', category);
   const res = await fetch(`${API}/api/admin/gallery`, {
     method: 'POST',
-    credentials: 'include',
+    headers: authHeaders(),
     body: form,
   });
   const data = await res.json();
@@ -25,7 +30,7 @@ export async function uploadGalleryItem(file, title, category) {
 export async function deleteGalleryItem(id) {
   const res = await fetch(`${API}/api/admin/gallery/${id}`, {
     method: 'DELETE',
-    credentials: 'include',
+    headers: authHeaders(),
   });
   const data = await res.json();
   if (!data.success) throw new Error(data.error || 'Delete failed');

@@ -1,0 +1,172 @@
+/* EventTelemetry.module.css
+ *
+ * Full-page telemetry UI styles.
+ * Aesthetic: near-black bg (#050505), yellow accent (#fbc638),
+ * italic uppercase text, parallelogram toggle buttons — matching sandbox.
+ */
+
+/* ── Page shell ───────────────────────────────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  background-color: #050505;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  /* Breathing room below the global navbar */
+  padding: 100px 20px 60px;
+}
+
+/* ── Page header ──────────────────────────────────────────────────────────── */
+.pageHeader {
+  max-width: 900px;
+  margin: 0 auto 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 24px;
+}
+
+/* Small event name label above the big TELEMETRY heading */
+.eventLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #555;
+  margin: 0 0 6px;
+}
+
+/* Large bold page title */
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 6px;
+  color: #fff;
+  margin: 0;
+}
+
+/* ── Main view toggle (QUALIFYING / ELIMINATION BRACKET) ──────────────────── */
+.mainToggle {
+  max-width: 900px;
+  margin: 0 auto 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Parallelogram toggle button — same clip-path as sandbox */
+.toggleBtn {
+  background: transparent;
+  color: #666;
+  border: 1px solid #fbc638;
+  padding: 10px 24px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 2px;
+  cursor: pointer;
+  /* Slanted left and right edges */
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  transition: color 0.2s ease, background 0.2s ease;
+  text-transform: uppercase;
+}
+
+.toggleBtn:hover {
+  color: #ccc;
+}
+
+/* Active state: filled yellow, black text */
+.activeBtn {
+  background: #fbc638;
+  color: #000 !important;
+}
+
+/* ── Class sub-tabs ───────────────────────────────────────────────────────── */
+.classTabs {
+  max-width: 900px;
+  margin: 0 auto 28px;
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Individual class tab */
+.classTab {
+  background: transparent;
+  color: #555;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 20px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  text-transform: uppercase;
+  margin-bottom: -1px;   /* overlaps the container border-bottom */
+}
+
+.classTab:hover {
+  color: #aaa;
+}
+
+/* Active class tab: yellow underline + white text */
+.activeClassTab {
+  color: #fbc638;
+  border-bottom-color: #fbc638;
+}
+
+/* ── Content pane ─────────────────────────────────────────────────────────── */
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Empty state ──────────────────────────────────────────────────────────── */
+.emptyState {
+  max-width: 900px;
+  margin: 60px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  opacity: 0.35;
+  margin-bottom: 4px;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 4px;
+  color: rgba(251, 198, 56, 0.45);
+}
+
+.emptySubtitle {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.5px;
+  max-width: 320px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .pageTitle {
+    font-size: 1.5rem;
+    letter-spacing: 4px;
+  }
+
+  .toggleBtn {
+    padding: 10px 16px;
+    font-size: 0.75rem;
+  }
+
+  .classTab {
+    padding: 8px 14px;
+    font-size: 0.7rem;
+  }
+}

@@ -1,0 +1,231 @@
+/* LeaderboardPreview.module.css
+ *
+ * Compact telemetry teaser widget — matches the dark sandbox aesthetic.
+ * Background: near-black (#050505), accent: yellow (#fbc638).
+ */
+
+/* ── Outer wrapper ────────────────────────────────────────────────────────── */
+.wrapper {
+  /* Sits inside the event detail content column */
+  width: 100%;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Telemetry header bar ─────────────────────────────────────────────────── */
+.headerWrapper {
+  /* Flex row: yellow title pill + hatched filler line */
+  display: flex;
+  align-items: stretch;
+  border-bottom: 2px solid rgba(251, 198, 56, 0.2);
+}
+
+.headerTitle {
+  /* Yellow parallelogram pill identical to sandbox */
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-style: italic;
+  letter-spacing: 3px;
+  color: #000;
+  background-color: #fbc638;
+  margin: 0;
+  padding: 8px 30px 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  /* Slanted right edge */
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  white-space: nowrap;
+}
+
+/* Blinking dot inside the header — steps(2) gives the sharp on/off feel */
+.blinker {
+  width: 7px;
+  height: 7px;
+  background-color: #000;
+  flex-shrink: 0;
+  animation: sharpBlink 1s infinite steps(2, start);
+}
+
+@keyframes sharpBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Hatched diagonal fill on the right side of the header bar */
+.telemetryLine {
+  flex-grow: 1;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    rgba(255, 255, 255, 0.04) 4px,
+    rgba(255, 255, 255, 0.04) 8px
+  );
+  margin-left: -10px;
+  z-index: -1;
+}
+
+/* ── Per-class grid ───────────────────────────────────────────────────────── */
+/* Side-by-side on desktop, stacked on mobile */
+.classGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;                                  /* thin divider lines between columns */
+  background: rgba(255, 255, 255, 0.06);     /* gap colour = the divider */
+  padding: 0;
+}
+
+/* Each class occupies one column */
+.classBlock {
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 16px;
+}
+
+/* Class label — e.g. "CLASS A" */
+.classLabel {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #fbc638;
+  text-transform: uppercase;
+  font-style: italic;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(251, 198, 56, 0.2);
+}
+
+/* ── Individual driver row ────────────────────────────────────────────────── */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s ease;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Gold gradient highlight for P1 */
+.rowP1 {
+  background: linear-gradient(
+    90deg,
+    rgba(251, 198, 56, 0.12) 0%,
+    transparent 100%
+  );
+  border-left: 3px solid #fbc638;
+  padding-left: 5px;
+}
+
+/* Position badge — e.g. "P1" */
+.pos {
+  flex: 0 0 36px;
+  font-weight: 900;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* P1 position gets yellow colour */
+.rowP1 .pos {
+  color: #fbc638;
+  font-size: 1rem;
+}
+
+/* Driver name */
+.driverName {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* P1 driver name brightened */
+.rowP1 .driverName {
+  color: #fff;
+}
+
+/* Score — monospace for consistent digit alignment */
+.score {
+  flex: 0 0 44px;
+  text-align: right;
+  font-weight: 900;
+  font-size: 0.9rem;
+  font-family: monospace;
+  color: #fbc638;
+}
+
+/* ── Empty state — shown when no qualifying results exist yet ─────────────── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 24px;
+  gap: 8px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 2rem;
+  opacity: 0.4;
+  margin-bottom: 4px;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 3px;
+  color: rgba(251, 198, 56, 0.5);
+}
+
+.emptySubtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.5px;
+  max-width: 260px;
+}
+
+/* ── "VIEW FULL RESULTS →" CTA link ──────────────────────────────────────── */
+.viewAllLink {
+  display: block;
+  text-align: center;
+  padding: 14px 0;
+  font-size: 0.75rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 3px;
+  color: #fbc638;
+  text-decoration: none;
+  border-top: 1px solid rgba(251, 198, 56, 0.2);
+  background: rgba(251, 198, 56, 0.03);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.viewAllLink:hover {
+  background: rgba(251, 198, 56, 0.08);
+  color: #fff;
+}

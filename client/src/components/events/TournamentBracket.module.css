@@ -1,199 +1,115 @@
-.bracketContainer {
-  background-color: #050505;
-  color: #ffffff;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  padding: 40px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-transform: uppercase;
+.bracketWrapper {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%); /* Edge-to-edge breakout */
+  background: #050505;
+  padding: 40px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.bracketHeader {
+.scrollTrack {
   display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
-  border-bottom: 2px solid #1a1a1a;
-  padding-bottom: 20px;
-}
-
-.bracketHeader h2 {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: 1.5px;
-}
-
-.redBar {
-  width: 8px;
-  height: 40px;
-  background-color: #e10600;
-  transform: skewX(-15deg);
-  flex-shrink: 0;
-}
-
-/* Scroll wrapper for wide brackets */
-.bracketScroll {
+  gap: 40px;
+  padding: 0 5vw;
   overflow-x: auto;
-  padding-bottom: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #fbc638 #111;
+  /* Snap scrolling for mobile */
+  scroll-snap-type: x mandatory;
 }
 
-.bracketGrid {
-  display: flex;
-  gap: 24px;
-  min-width: max-content;
-  align-items: flex-start;
-}
-
-/* Each round column */
-.roundCol {
+.roundColumn {
+  flex: 0 0 300px; /* Fixed width for each round */
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-width: 200px;
+  gap: 20px;
+  scroll-snap-align: center;
 }
 
-.roundLabel {
-  font-size: 0.75rem;
-  font-weight: 800;
+.roundHeader {
+  color: #fbc638;
+  font-size: 1rem;
+  font-weight: 900;
   font-style: italic;
-  color: #666;
-  letter-spacing: 1.5px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-align: center;
+  border-bottom: 2px solid rgba(251, 198, 56, 0.2);
   padding-bottom: 8px;
-  border-bottom: 1px solid #1a1a1a;
 }
 
-/* Individual match card */
 .matchList {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
+  justify-content: center;
+  height: 100%;
 }
 
+/* ── THE BATTLE CARD ── */
 .matchCard {
-  background: #0a0a0c;
-  border: 1px solid #1a1a1a;
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-  transition: border-color 0.2s;
-}
-
-.matchCard.completed {
-  border-color: #1a1a1a;
-}
-
-.matchId {
-  background: #111;
-  color: #444;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  padding: 4px 10px;
-  border-bottom: 1px solid #1a1a1a;
-}
-
-/* Driver slot (public read-only) */
-.driverSlot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  transition: background 0.15s;
-}
-
-.driverSlot.winner {
-  background: #0f1a0f;
-  border-left: 3px solid #e10600;
-}
-
-.driverSlot.loser {
-  opacity: 0.35;
-}
-
-.slotName {
-  font-size: 0.85rem;
-  font-weight: 800;
-  font-style: italic;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 140px;
-}
-
-.winBadge {
-  font-size: 0.65rem;
-  font-weight: 900;
-  color: #e10600;
-  letter-spacing: 1px;
-  flex-shrink: 0;
-}
-
-/* VS divider */
-.vsDivider {
-  text-align: center;
-  font-size: 0.65rem;
-  font-weight: 900;
-  color: #333;
-  padding: 4px 0;
-  border-top: 1px solid #111;
-  border-bottom: 1px solid #111;
-  letter-spacing: 2px;
-}
-
-/* Pending / empty state */
-.pendingState {
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 60px 20px;
-  border: 1px dashed #1a1a1a;
-  border-radius: 4px;
-  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.pendingIcon {
-  font-size: 2rem;
-}
-
-.pendingState p {
-  color: #444;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin: 0;
-}
-.classSection {
-  margin-bottom: 48px;
-}
-
-.classHeading {
-  font-size: 0.8rem;
+.vsDivider {
+  background: #111;
+  color: #555;
+  font-size: 0.7rem;
   font-weight: 900;
-  font-style: italic;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #fff;
-  background: #e10600;
-  padding: 10px 16px;
-  margin-bottom: 20px;
-  border-radius: 2px;
-}
-
-.loadingRow {
-  padding: 40px 20px;
   text-align: center;
-  color: #444;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+  padding: 4px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  letter-spacing: 2px;
 }
 
-@media (max-width: 768px) {
-  .bracketHeader h2 { font-size: 1.4rem; }
-  .roundCol { min-width: 160px; }
-  .slotName { max-width: 100px; font-size: 0.75rem; }
+.driverRow {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  color: #888;
+  transition: background 0.2s ease;
+}
+
+.seed {
+  font-family: monospace;
+  font-size: 0.75rem;
+  background: #1a1a1a;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.name {
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-grow: 1;
+}
+
+/* ── THE WINNER HIGHLIGHT ── */
+.driverRow.winner {
+  background: rgba(251, 198, 56, 0.1);
+  color: #fff;
+}
+
+.driverRow.winner .name {
+  font-weight: 900;
+  color: #fbc638;
+}
+
+.driverRow.winner .seed {
+  background: #fbc638;
+  color: #000;
+  font-weight: 900;
+}
+
+.advanceIcon {
+  color: #fbc638;
+  font-size: 0.8rem;
 }

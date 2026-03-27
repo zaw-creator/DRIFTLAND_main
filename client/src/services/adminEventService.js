@@ -1,10 +1,10 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 async function request(method, path, body) {
   const res = await fetch(`${API_URL}${path}`, {
     method,
-    credentials: 'include',
-    headers: body ? { 'Content-Type': 'application/json' } : {},
+    credentials: "include",
+    headers: body ? { "Content-Type": "application/json" } : {},
     body: body ? JSON.stringify(body) : undefined,
   });
   const json = await res.json().catch(() => ({}));
@@ -13,19 +13,19 @@ async function request(method, path, body) {
 }
 
 export async function getAdminEvents() {
-  return request('GET', '/api/admin/events');
+  return request("GET", "/api/admin/events");
 }
 
 export async function getAdminEventById(id) {
-  return request('GET', `/api/admin/events/${id}`);
+  return request("GET", `/api/admin/events/${id}`);
 }
 // Add to your existing adminEventService.js
 export async function patchEvent(id, data) {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem("adminToken");
   const res = await fetch(`${API_URL}/api/admin/events/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
@@ -38,24 +38,24 @@ export async function patchEvent(id, data) {
 }
 
 export async function createEvent(data) {
-  return request('POST', '/api/admin/events', data);
+  return request("POST", "/api/admin/events", data);
 }
 
 export async function updateEvent(id, data) {
-  return request('PUT', `/api/admin/events/${id}`, data);
+  return request("PUT", `/api/admin/events/${id}`, data);
 }
 
 export async function deleteEvent(id) {
-  return request('DELETE', `/api/admin/events/${id}`);
+  return request("DELETE", `/api/admin/events/${id}`);
 }
 
 export async function uploadEventImage(id, file) {
   const formData = new FormData();
-  formData.append('image', file);
+  formData.append("image", file);
 
   const res = await fetch(`${API_URL}/api/admin/events/${id}/image`, {
-    method: 'POST',
-    credentials: 'include',
+    method: "POST",
+    credentials: "include",
     body: formData,
   });
   const json = await res.json().catch(() => ({}));

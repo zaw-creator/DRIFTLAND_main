@@ -3,9 +3,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import defaultEvent from "@/asset/events/DefaultEventPage.png";
 import StatusBadge from "@/components/events/StatusBadge";
 import DriveTypeBadge from "@/components/events/DriveTypeBadge";
 import RoleSelector from "@/components/events/RoleSelector";
+import LeaderboardPreview from "@/components/events/LeaderboardPreview";
 import styles from "@/app/events/[id]/page.module.css"; // Adjust path as needed
 
 // Helper functions (kept outside the component so they don't recreate on render)
@@ -113,7 +115,7 @@ export default function LiveEventDetails({ initialEvent }) {
       <div className={styles.banner}>
         {event.image ? (
           <Image
-            src={event.image}
+            src={event.image || defaultEvent}
             alt={event.name}
             fill
             sizes="100vw"
@@ -241,6 +243,13 @@ export default function LiveEventDetails({ initialEvent }) {
             </tbody>
           </table>
         </div>
+
+        {/* ── Leaderboard preview — shows dummy data until qualifying scores exist ── */}
+        {/* Links to /events/:id/results for the full telemetry page */}
+        <LeaderboardPreview
+          leaderboard={event.leaderboard ?? []}
+          eventId={event._id}
+        />
 
         {/* ── CTA section ── */}
         {!isPrevious ? (

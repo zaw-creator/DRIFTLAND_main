@@ -1,12 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { login } from '@/services/authService';
 import styles from './page.module.css';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -18,7 +16,9 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      router.push('/admin/events');
+      // Hard redirect so the browser sends the fresh cookie to the Next.js middleware.
+      // router.push() uses client-side fetch which can miss a just-set cookie.
+      window.location.href = '/admin/events';
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {

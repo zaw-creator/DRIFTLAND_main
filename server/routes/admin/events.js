@@ -21,7 +21,7 @@ import {
   saveAllScores,
   getEventScores,
   setCutoff,
- 
+  syncRegistrations,
 } from '../../controllers/adminEventController.js';
 
 const router = express.Router();
@@ -50,4 +50,5 @@ router.put('/:id/bracket/:matchId/winner',     setMatchWinner);
 router.post('/:id/leaderboard/bulk', saveAllScores);
 router.get('/:id/scores', getEventScores);
 router.post('/:id/cutoff', setCutoff);
+router.post('/:id/sync-registrations', syncRegistrations);
 export default router;

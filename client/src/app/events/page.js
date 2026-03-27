@@ -1,47 +1,39 @@
-/**
- * app/events/page.js — Events Page (Server Component)
- *
- * WHY THIS IS A SERVER COMPONENT:
- *   Server components run on the server before the page is sent to the browser.
- *   This means the initial HTML already contains the correct filtered events —
- *   no loading spinner, no client-side fetch waterfall.
- *
- * HOW SERVER-SIDE FILTERING WORKS:
- *   1. TelemetryControl (client) clicks a tab → writes ?status=active to URL
- *   2. Next.js detects the URL change and re-renders this server component
- *   3. This component reads searchParams.status ("active", "nearby", etc.)
- *   4. Passes it to getEvents(status) → GET /api/events?status=active
- *   5. Server returns only matching events
- *   6. LiveEventFeed renders the pre-filtered list
- *
- * NOTE: The static <header> block was removed — LiveEventFeed now renders
- *   a dynamic header that updates when the active tab changes.
- */
+import { Suspense } from "react";
 import LiveEventFeed from "@/components/events/LiveEventFeed";
+import EventSkeleton from "@/components/events/EventSkeleton";
 import { getEvents } from "@/services/eventService";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Upcoming Events | DriftLand",
-  description: "Find and register for premium DriftLand events.",
+  title: "Events | Driftland 154",
+  description: "Find and register for Driftland 154 drift events.",
 };
 
 export default async function EventsPage({ searchParams }) {
-  // Read the active filter from the URL (?status=active, ?status=nearby, etc.)
-  // TelemetryControl writes this param when a tab is clicked.
-  // Falls back to null → getEvents returns default public feed.
-  const status = searchParams?.status || null;
-
-  // Fetch server-side with the active filter applied.
-  // Next.js caches this by full URL, so each tab has its own cache entry.
+  // Next.js 15: searchParams is a Promise
+  const params = await searchParams;
+  const status = params?.status || null;
   const initialEvents = await getEvents(status);
 
   return (
-    <main className={styles.page}>
-      {/* LiveEventFeed is a client component — handles SSE live updates,
-          TelemetryControl rendering, and dynamic header display.
-          initialEvents is the server-pre-filtered starting data. */}
-      <LiveEventFeed initialEvents={initialEvents} />
-    </main>
+    <>
+      <section className={styles.pageHero}>
+        <div className={styles.pageHeroOverlay} />
+        <div className={styles.pageHeroContent}>
+          <p className={styles.pageHeroEyebrow}>Driftland 154</p>
+          <h1 className={styles.pageHeroTitle}>EVENTS</h1>
+          <p className={styles.pageHeroSub}>Register your ride. Show up. Drift.</p>
+        </div>
+      </section>
+
+      <div className={styles.page}>
+        <div className={styles.inner}>
+          {/* Suspense is required whenever a client component calls useSearchParams() */}
+          <Suspense fallback={<EventSkeleton />}>
+            <LiveEventFeed initialEvents={initialEvents} />
+          </Suspense>
+        </div>
+      </div>
+    </>
   );
 }

@@ -33,9 +33,9 @@
 }
 
 .upcoming {
-  background-color: #001a2a;
-  color: #66b3ff;
-  border: 1px solid #003a66;
+  background-color: #2a2000;
+  color: #FFBB00;
+  border: 1px solid #3a3000;
 }
 
 /* legacy fallbacks — map to new styles */

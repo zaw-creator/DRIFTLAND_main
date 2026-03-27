@@ -882,6 +882,65 @@ export async function patchEvent(req, res) {
     res.status(500).json({ success: false, message: "Failed to patch event" });
   }
 }
+// POST /api/admin/events/:id/sync-registrations
+// Pulls approved driver counts from the register DB and updates classes[].registeredCount
+export async function syncRegistrations(req, res) {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    if (!event.registerEventId) {
+      return res.status(400).json({
+        success: false,
+        message: "No register event linked. Set a Register Event ID first.",
+      });
+    }
+
+    const response = await fetch(
+      `${process.env.REGISTER_API_URL}/api/events/${event.registerEventId}/approved-drivers`,
+      { headers: { "x-api-key": process.env.REGISTER_API_KEY } },
+    );
+
+    if (!response.ok) {
+      return res.status(502).json({
+        success: false,
+        message: "Failed to fetch drivers from register DB",
+      });
+    }
+
+    const json = await response.json();
+    const drivers = Array.isArray(json.data) ? json.data : (Array.isArray(json) ? json : []);
+
+    // Count approved drivers per class name
+    const countsByClass = {};
+    drivers.forEach((driver) => {
+      const cls = driver.class || driver.className || "Open";
+      countsByClass[cls] = (countsByClass[cls] || 0) + 1;
+    });
+
+    // Update each class's registeredCount in main DB
+    event.classes.forEach((cls) => {
+      cls.registeredCount = countsByClass[cls.name] ?? 0;
+    });
+
+    await event.save();
+
+    const enriched = attachDerivedFields(event.toObject());
+    broadcast(`event-${event._id}`, "event-updated", enriched);
+    broadcast("events-list", "event-updated", enriched);
+
+    res.json({
+      success: true,
+      message: `Synced ${drivers.length} registrations across ${Object.keys(countsByClass).length} class(es).`,
+      data: enriched,
+    });
+  } catch (err) {
+    console.error("syncRegistrations error:", err);
+    res.status(500).json({ success: false, message: "Sync failed" });
+  }
+}
+
 // GET /api/admin/events/register-site/events
 export async function getRegisterSiteEvents(req, res) {
   try {

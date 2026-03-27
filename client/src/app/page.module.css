@@ -65,7 +65,7 @@
 .heroTitle {
   font-size: clamp(52px, 10vw, 100px);
   font-weight: 900;
-  letter-spacing: -0.04em;
+  letter-spacing: 0.08em;
   line-height: 1;
   color: #fff;
   text-shadow: 0 0 40px rgba(255, 187, 0, 0.2);

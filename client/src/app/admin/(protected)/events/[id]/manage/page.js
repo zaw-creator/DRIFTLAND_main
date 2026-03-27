@@ -50,6 +50,8 @@ export default function ManageEventPage() {
   const [endError, setEndError]       = useState(null);
   const [bracketUpdate, setBracketUpdate]           = useState(null);
   const [leaderboardUpdate, setLeaderboardUpdate]   = useState(null);
+  const [syncing, setSyncing]         = useState(false);
+  const [syncMsg, setSyncMsg]         = useState(null);
 
   // ── Fetch event data ────────────────────────────────────────────────────
   const fetchData = useCallback(async () => {
@@ -104,6 +106,24 @@ export default function ManageEventPage() {
     es.onerror = () => es.close();
     return () => es.close();
   }, [id]);
+
+  // ── Sync registrations from register DB ────────────────────────────────
+  async function handleSyncRegistrations() {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const result = await authRequest(`/api/admin/events/${id}/sync-registrations`, { method: 'POST' });
+      setSyncMsg({ type: 'ok', text: result.message || 'Sync complete' });
+      // refresh event so the registration counts update on this page too
+      const updated = await authRequest(`/api/admin/events/${id}`);
+      setEvent(updated);
+    } catch (err) {
+      setSyncMsg({ type: 'err', text: err.message || 'Sync failed' });
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(null), 4000);
+    }
+  }
 
   // ── Force end ───────────────────────────────────────────────────────────
   async function handleForceEnd() {
@@ -185,6 +205,21 @@ export default function ManageEventPage() {
                 initialValue={event.registerEventId || ''}
                 onSaved={(val) => setEvent((prev) => ({ ...prev, registerEventId: val }))}
               />
+              {event.registerEventId && (
+                <button
+                  className={`${styles.syncBtn} ${syncing ? styles.syncBtnLoading : ''}`}
+                  onClick={handleSyncRegistrations}
+                  disabled={syncing}
+                  title="Pull registration counts from register DB"
+                >
+                  {syncing ? 'Syncing...' : '↻ Sync Registrations'}
+                </button>
+              )}
+              {syncMsg && (
+                <span className={syncMsg.type === 'ok' ? styles.syncOk : styles.syncErr}>
+                  {syncMsg.text}
+                </span>
+              )}
             </div>
 
             <button

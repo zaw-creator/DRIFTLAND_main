@@ -241,6 +241,48 @@
   text-align: right;
 }
 
+/* ── Sync registrations button ───────────────────────────────────────────── */
+.syncBtn {
+  background: none;
+  color: #535653;
+  border: 1px solid #1a1a1a;
+  padding: 0.5rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.syncBtn:hover:not(:disabled) {
+  border-color: #FFBB00;
+  color: #FFBB00;
+}
+
+.syncBtnLoading {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.syncOk {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #00cc44;
+  text-transform: uppercase;
+}
+
+.syncErr {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #ff4444;
+  text-transform: uppercase;
+}
+
 /* ── Tab bar ─────────────────────────────────────────────────────────────── */
 .tabBar {
   display: flex;

@@ -15,6 +15,7 @@
  *   topN         {number}    How many drivers to show per class (default: 3).
  */
 
+import { useState } from "react";
 import Link from "next/link";
 import styles from "./LeaderboardPreview.module.css";
 
@@ -39,6 +40,10 @@ export default function LeaderboardPreview({
   const hasData = leaderboard.length > 0;
   const classGroups = hasData ? groupTopN(leaderboard, topN) : {};
   const classNames = Object.keys(classGroups).sort();
+  const [activeClass, setActiveClass] = useState(() => classNames[0] ?? null);
+
+  // Keep activeClass valid if classNames changes
+  const currentClass = classNames.includes(activeClass) ? activeClass : classNames[0] ?? null;
 
   return (
     <div className={styles.wrapper}>
@@ -53,12 +58,27 @@ export default function LeaderboardPreview({
       </div>
 
       {hasData ? (
-        /* ── Per-class top-N grids ── */
-        <div className={styles.classGrid}>
-          {classNames.map((cls) => (
-            <div key={cls} className={styles.classBlock}>
-              <div className={styles.classLabel}>{cls.toUpperCase()}</div>
-              {classGroups[cls].map((driver) => {
+        <>
+          {/* ── Class switcher tabs (only shown when >1 class) ── */}
+          {classNames.length > 1 && (
+            <div className={styles.classTabs}>
+              {classNames.map((cls) => (
+                <button
+                  key={cls}
+                  className={`${styles.classTab} ${cls === currentClass ? styles.classTabActive : ""}`}
+                  onClick={() => setActiveClass(cls)}
+                >
+                  {cls.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* ── Active class block ── */}
+          {currentClass && (
+            <div className={styles.classBlock}>
+              <div className={styles.classLabel}>{currentClass.toUpperCase()}</div>
+              {classGroups[currentClass].map((driver) => {
                 const isP1 = driver.qualifyRank === 1;
                 return (
                   <div
@@ -76,8 +96,8 @@ export default function LeaderboardPreview({
                 );
               })}
             </div>
-          ))}
-        </div>
+          )}
+        </>
       ) : (
         /* ── Empty state — no qualifying results yet ── */
         <div className={styles.emptyState}>

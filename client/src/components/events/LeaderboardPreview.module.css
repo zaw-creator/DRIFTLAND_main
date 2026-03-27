@@ -1,7 +1,7 @@
 /* LeaderboardPreview.module.css
  *
  * Compact telemetry teaser widget — matches the dark sandbox aesthetic.
- * Background: near-black (#050505), accent: yellow (#fbc638).
+ * Background: near-black (#050505), accent: yellow (#FFBB00).
  */
 
 /* ── Outer wrapper ────────────────────────────────────────────────────────── */
@@ -33,7 +33,7 @@
   font-style: italic;
   letter-spacing: 3px;
   color: #000;
-  background-color: #fbc638;
+  background-color: #FFBB00;
   margin: 0;
   padding: 8px 30px 8px 16px;
   display: inline-flex;
@@ -72,17 +72,48 @@
   z-index: -1;
 }
 
-/* ── Per-class grid ───────────────────────────────────────────────────────── */
-/* Side-by-side on desktop, stacked on mobile */
-.classGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1px;                                  /* thin divider lines between columns */
-  background: rgba(255, 255, 255, 0.06);     /* gap colour = the divider */
-  padding: 0;
+/* ── Class switcher tabs ──────────────────────────────────────────────────── */
+.classTabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Each class occupies one column */
+.classTab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 10px 16px;
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.classTab:last-child {
+  border-right: none;
+}
+
+.classTab:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.classTabActive {
+  color: #000;
+  background: #FFBB00;
+}
+
+.classTabActive:hover {
+  color: #000;
+  background: #FFBB00;
+}
+
+/* ── Active class block ───────────────────────────────────────────────────── */
 .classBlock {
   background: #050505;
   display: flex;
@@ -96,7 +127,7 @@
   font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 3px;
-  color: #fbc638;
+  color: #FFBB00;
   text-transform: uppercase;
   font-style: italic;
   margin-bottom: 10px;
@@ -129,7 +160,7 @@
     rgba(251, 198, 56, 0.12) 0%,
     transparent 100%
   );
-  border-left: 3px solid #fbc638;
+  border-left: 3px solid #FFBB00;
   padding-left: 5px;
 }
 
@@ -144,7 +175,7 @@
 
 /* P1 position gets yellow colour */
 .rowP1 .pos {
-  color: #fbc638;
+  color: #FFBB00;
   font-size: 1rem;
 }
 
@@ -172,7 +203,7 @@
   font-weight: 900;
   font-size: 0.9rem;
   font-family: monospace;
-  color: #fbc638;
+  color: #FFBB00;
 }
 
 /* ── Empty state — shown when no qualifying results exist yet ─────────────── */
@@ -218,7 +249,7 @@
   font-weight: 900;
   font-style: italic;
   letter-spacing: 3px;
-  color: #fbc638;
+  color: #FFBB00;
   text-decoration: none;
   border-top: 1px solid rgba(251, 198, 56, 0.2);
   background: rgba(251, 198, 56, 0.03);

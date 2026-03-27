@@ -22,18 +22,19 @@ connectDB().then(() => createAdminUser());
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        "http://localhost:3000",
-        "http://192.168.1.156:3000",
-        process.env.CLIENT_URL || "http://localhost:3000",
-      ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+origin: (origin, callback) => {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    process.env.CLIENT_URL,
+  ].filter(Boolean);
+
+  if (!origin || allowedOrigins.includes(origin) ||
+      origin.match(/https:\/\/.*\.vercel\.app$/)) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+},
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

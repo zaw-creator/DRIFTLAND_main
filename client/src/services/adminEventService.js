@@ -1,10 +1,17 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+function getAuthHeaders(extra = {}) {
+  const token = localStorage.getItem('adminToken');
+  return {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...extra,
+  };
+}
+
 async function request(method, path, body) {
   const res = await fetch(`${API_URL}${path}`, {
     method,
-    credentials: "include",
-    headers: body ? { "Content-Type": "application/json" } : {},
+    headers: getAuthHeaders(body ? { "Content-Type": "application/json" } : {}),
     body: body ? JSON.stringify(body) : undefined,
   });
   const json = await res.json().catch(() => ({}));
@@ -21,13 +28,9 @@ export async function getAdminEventById(id) {
 }
 // Add to your existing adminEventService.js
 export async function patchEvent(id, data) {
-  const token = localStorage.getItem("adminToken");
   const res = await fetch(`${API_URL}/api/admin/events/${id}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(data),
   });
   if (!res.ok) {
@@ -55,7 +58,7 @@ export async function uploadEventImage(id, file) {
 
   const res = await fetch(`${API_URL}/api/admin/events/${id}/image`, {
     method: "POST",
-    credentials: "include",
+    headers: getAuthHeaders(),
     body: formData,
   });
   const json = await res.json().catch(() => ({}));

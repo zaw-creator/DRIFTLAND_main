@@ -20,13 +20,18 @@ async function request(method, path, body) {
 export async function login(email, password) {
   const data = await request('POST', '/api/auth/login', { email, password });
   if (data.token) {
-    document.cookie = `adminToken=${data.token}; path=/; max-age=${60 * 60 * 24}`; // 1 day
+    // Store in localStorage for API calls (cross-domain, Authorization header)
+    localStorage.setItem('adminToken', data.token);
+    // Store in cookie for Next.js middleware (must include Secure + SameSite for production HTTPS)
+    const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+    document.cookie = `adminToken=${data.token}; path=/; max-age=${60 * 60 * 24}; SameSite=Lax${isSecure ? '; Secure' : ''}`;
+  }
   return data;
-}
 }
 
 export async function logout() {
-  document.cookie = 'adminToken=; path=/; max-age=0';
+  localStorage.removeItem('adminToken');
+  document.cookie = 'adminToken=; path=/; max-age=0; SameSite=Lax';
   return request('POST', '/api/auth/logout');
 }
 

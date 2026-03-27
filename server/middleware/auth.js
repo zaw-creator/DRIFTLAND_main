@@ -21,10 +21,10 @@ const auth = async (req, res, next) => {
   }
 };
 
-// Verify JWT token from cookie (for admin routes)
+// Verify JWT token from cookie or Authorization header (for admin routes)
 export const verifyToken = async (req, res, next) => {
   try {
-    const token = req.cookies.adminToken;
+    const token = req.cookies.adminToken || req.headers.authorization?.split(' ')[1];
     if (!token) {
       return res.status(401).json({ success: false, error: 'No token provided' });
     }

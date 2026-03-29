@@ -2,6 +2,7 @@ import Event from "../models/Event.js";
 import { computeStatus } from "../utils/computeStatus.js";
 import { broadcast } from "../utils/sseManager.js";
 import { endEvent } from "../utils/eventLifecycle.js";
+import { generateSeedingMap } from "../utils/bracketMath.js";
 
 const ALLOWED_UPDATE_FIELDS = [
   "name",
@@ -515,9 +516,10 @@ export async function generateBracket(req, res) {
       while (padded.length < n) padded.push(null);
 
       const classPrefix = cls.replace(" ", "");
-      for (let i = 0; i < n / 2; i++) {
-        const top = padded[i];
-        const bottom = padded[n - 1 - i];
+      const seedingMap = generateSeedingMap(n);
+      seedingMap.forEach(([seed1, seed2], i) => {
+        const top = padded[seed1 - 1];
+        const bottom = padded[seed2 - 1];
         matches.push({
           matchId: `${classPrefix}-R1-M${i + 1}`,
           round: "round1",
@@ -528,7 +530,7 @@ export async function generateBracket(req, res) {
           winnerId: !bottom ? top.driverId : null,
           status: !bottom ? "completed" : "pending",
         });
-      }
+      });
     });
 
     if (!hasAtLeastOneClass) {

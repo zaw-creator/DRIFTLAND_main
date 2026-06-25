@@ -4,6 +4,7 @@ import HeroSlideshow from "./HeroSlideshow";
 import StatCounter from "./StatCounter";
 import HomeEvents from "./HomeEvents";
 import HomeGallery from "./HomeGallery";
+import YangonNation from "./YangonNation";
 
 export default function Home() {
   return (
@@ -106,6 +107,7 @@ export default function Home() {
 
       <HomeEvents />
       <HomeGallery />
+      <YangonNation />
 
       <section className={styles.quoteSection}>
         <div className={styles.quoteBgOverlay} />

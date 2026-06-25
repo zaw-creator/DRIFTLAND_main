@@ -670,3 +670,213 @@
     justify-content: center;
   }
 }
+
+/* ─── Yangon Nation ──────────────────────────────────────── */
+.ynSection {
+  background: #0d0d0d;
+  padding: 100px 24px;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #1a1a1a;
+}
+
+.ynInner {
+  max-width: 960px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.ynHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.ynDesc {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.75;
+  max-width: 520px;
+  margin-top: 16px;
+}
+
+.ynBadge {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 187, 0, 0.3);
+  border-radius: 4px;
+  padding: 28px 36px;
+  background: rgba(255, 187, 0, 0.04);
+  text-align: center;
+  min-width: 200px;
+}
+
+.ynBadgeLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.ynBadgeName {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.ynBadgeSub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+}
+
+.ynHighlights {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: #1a1a1a;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ynHighlightItem {
+  background: #111;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ynHighlightStat {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFBB00;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ynHighlightDesc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.5;
+}
+
+.ynPhotoGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 4px;
+  height: 280px;
+}
+
+.ynPhoto {
+  background: #111;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.ynPhotoMain {
+  background-image: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.ynPhoto:not(.ynPhotoMain):nth-child(2) {
+  background-image: linear-gradient(135deg, #141414 0%, #0a0a0a 100%);
+}
+
+.ynPhoto:not(.ynPhotoMain):nth-child(3) {
+  background-image: linear-gradient(135deg, #181818 0%, #0c0c0c 100%);
+}
+
+.ynPhotoOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0,4,1,0.7) 0%, transparent 55%);
+}
+
+.ynPhotoTag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #FFBB00;
+}
+
+.ynActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ynSocialBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.ynSocialBtn:hover {
+  border-color: #FFBB00;
+  color: #FFBB00;
+  background: rgba(255, 187, 0, 0.05);
+}
+
+.ynSocialIcon {
+  font-size: 10px;
+  font-weight: 800;
+  color: #FFBB00;
+  letter-spacing: 0;
+}
+
+@media (max-width: 768px) {
+  .ynHeader {
+    flex-direction: column;
+  }
+
+  .ynBadge {
+    width: 100%;
+  }
+
+  .ynHighlights {
+    grid-template-columns: 1fr;
+  }
+
+  .ynPhotoGrid {
+    grid-template-columns: 1fr 1fr;
+    height: auto;
+    grid-template-rows: 160px 160px;
+  }
+
+  .ynPhotoMain {
+    grid-column: span 2;
+  }
+}
